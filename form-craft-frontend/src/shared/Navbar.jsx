@@ -1,5 +1,4 @@
 import { Link, NavLink } from "react-router";
-
 const Navbar = () => {
   const navLinks = (
     <>

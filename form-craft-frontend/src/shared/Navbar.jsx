@@ -1,18 +1,64 @@
 import { Link, NavLink } from "react-router";
+import useAuth from "../hooks/useAuth";
+import Swal from "sweetalert2";
 const Navbar = () => {
+  const { user, loading: authLoading, logOut } = useAuth();
+
+  const handleLogout = () => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await logOut();
+          Swal.fire({
+            title: "Logged out!",
+            text: "You have successfully logout!",
+            icon: "success",
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Error logout:", error);
+    }
+  };
+
   const navLinks = (
     <>
       <li>
         <NavLink to="/">Home</NavLink>
       </li>
+      {user ? (
+        ""
+      ) : (
+        <li>
+          <NavLink to="sign-up">Sign up</NavLink>
+        </li>
+      )}
+      {user ? (
+        ""
+      ) : (
+        <li>
+          <NavLink to="login">Login</NavLink>
+        </li>
+      )}
       <li>
-        <NavLink to="sign-up">Sign up</NavLink>
-      </li>
-      <li>
-        <NavLink to="login">Login</NavLink>
+        <NavLink to="demo">Demo</NavLink>
       </li>
     </>
   );
+
+  if (authLoading) {
+    return (
+      <span className="loading loading-spinner loading-xl text-blue-700"></span>
+    );
+  }
 
   return (
     <>
@@ -51,7 +97,11 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1">{navLinks}</ul>
         </div>
         <div className="navbar-end">
-          <a className="btn">Button</a>
+          {user && (
+            <button className="btn" onClick={handleLogout}>
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </>

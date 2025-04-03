@@ -1,5 +1,7 @@
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
+import useAuth from "../../hooks/useAuth";
+import { updateProfile } from "firebase/auth";
 
 const SignupPage = () => {
   const {
@@ -8,7 +10,20 @@ const SignupPage = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
+  const { createUser } = useAuth();
+
+  const onSubmit = async (data) => {
+    try {
+      const { name, email, password } = data;
+      const userCredential = await createUser(email, password);
+      const user = userCredential.user;
+      await updateProfile(user, { displayName: name });
+      console.log("Current user:", userCredential);
+      console.log("User created successfully:", user);
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
+  };
 
   return (
     <div className="hero bg-base-200 min-h-screen">

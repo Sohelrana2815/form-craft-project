@@ -3,6 +3,8 @@ import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/home/Home";
 import SignupPage from "../pages/auth/SignupPage";
 import LoginPage from "../pages/auth/LoginPage";
+import Demo from "../pages/Demo";
+import PrivateRoute from "./PrivateRoute";
 
 const MainRoutes = () => {
   return (
@@ -12,6 +14,14 @@ const MainRoutes = () => {
           <Route index element={<Home />} />
           <Route path="sign-up" element={<SignupPage />} />
           <Route path="login" element={<LoginPage />} />
+          <Route
+            path="demo"
+            element={
+              <PrivateRoute>
+                <Demo />
+              </PrivateRoute>
+            }
+          />
         </Route>
       </Routes>
     </>

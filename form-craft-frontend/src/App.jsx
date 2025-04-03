@@ -1,7 +1,7 @@
 function App() {
   return (
     <>
-      <h2 className="text-2xl text-red-600">Hello World!!!</h2>
+      <h1>Firs Tailwind CSS</h1>
     </>
   );
 }

@@ -2,15 +2,16 @@ import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import { updateProfile } from "firebase/auth";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const SignupPage = () => {
+  const axiosPublic = useAxiosPublic();
+  const { createUser } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-
-  const { createUser } = useAuth();
 
   const onSubmit = async (data) => {
     try {
@@ -18,6 +19,11 @@ const SignupPage = () => {
       const userCredential = await createUser(email, password);
       const user = userCredential.user;
       await updateProfile(user, { displayName: name });
+
+      // Ready data to send to the backend
+
+      const response = await axiosPublic.post("/signup", data);
+      console.log(response);
       console.log("Current user:", userCredential);
       console.log("User created successfully:", user);
     } catch (error) {

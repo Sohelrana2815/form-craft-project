@@ -49,15 +49,13 @@ const Navbar = () => {
         </li>
       )}
       <li>
-        <NavLink to="demo">Demo</NavLink>
+        <NavLink to="manage-users">Manage users</NavLink>
       </li>
     </>
   );
 
   if (authLoading) {
-    return (
-      <span className="loading loading-spinner loading-xl text-blue-700"></span>
-    );
+    return <div>Loading...</div>;
   }
 
   return (

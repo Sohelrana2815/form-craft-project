@@ -5,7 +5,9 @@ const PrivateRoute = ({ children }) => {
   const { loading, user } = useAuth();
   if (loading) {
     return (
-      <span className="loading loading-spinner loading-xl text-blue-700"></span>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <p className="loading loading-dots loading-xl text-blue-700"></p>
+      </div>
     );
   }
   if (user) {

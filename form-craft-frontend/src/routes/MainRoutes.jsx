@@ -3,8 +3,8 @@ import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/home/Home";
 import SignupPage from "../pages/auth/SignupPage";
 import LoginPage from "../pages/auth/LoginPage";
-import Demo from "../pages/Demo";
 import PrivateRoute from "./PrivateRoute";
+import ManageUsers from "../pages/admin/manage-users/ManageUsers";
 
 const MainRoutes = () => {
   return (
@@ -15,10 +15,10 @@ const MainRoutes = () => {
           <Route path="sign-up" element={<SignupPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route
-            path="demo"
+            path="manage-users"
             element={
               <PrivateRoute>
-                <Demo />
+                <ManageUsers />
               </PrivateRoute>
             }
           />

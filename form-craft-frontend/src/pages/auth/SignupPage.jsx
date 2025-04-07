@@ -22,10 +22,12 @@ const SignupPage = () => {
 
       // Ready data to send to the backend
 
-      const response = await axiosPublic.post("/signup", data);
-      console.log(response);
-      console.log("Current user:", userCredential);
-      console.log("User created successfully:", user);
+      if (user) {
+        const response = await axiosPublic.post("/signup", data);
+        console.log(response);
+        console.log("Current user:", userCredential);
+        console.log("User created successfully:", user);
+      }
     } catch (error) {
       console.error("Error creating user:", error);
     }

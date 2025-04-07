@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const LoginPage = () => {
   const {
@@ -9,11 +10,16 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm();
   const { loginUser } = useAuth();
-
+  const axiosPublic = useAxiosPublic();
   const onSubmit = async (data) => {
     try {
       const { email, password } = data;
-      await loginUser(email, password);
+      const userCredential = await loginUser(email, password);
+      const user = userCredential.user;
+      const response = await axiosPublic.patch(`/login/${user?.email}`);
+      console.log(response.data);
+      // console.log(userCredential);
+      // console.log(userCredential.user);
     } catch (error) {
       console.error("Error login:", error);
     }

@@ -1,5 +1,12 @@
-const UsersRow = ({ user, idx }) => {
+const UsersRow = ({ user, idx, onSelect }) => {
   const { name, email, created_at } = user;
+
+  // function will called when toggled checkboxes
+
+  const handleCheckboxChange = (e) => {
+    onSelect(e.target.checked);
+  };
+
   return (
     <>
       {/* row 1 */}
@@ -7,7 +14,11 @@ const UsersRow = ({ user, idx }) => {
         <td>{idx + 1}</td>
         <td>
           <label className="mr-2">
-            <input type="checkbox" className="checkbox checkbox-sm" />
+            <input
+              onChange={handleCheckboxChange}
+              type="checkbox"
+              className="checkbox checkbox-sm"
+            />
           </label>
           {name}
         </td>

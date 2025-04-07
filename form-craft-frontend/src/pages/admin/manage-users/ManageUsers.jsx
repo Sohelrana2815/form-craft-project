@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
-import UsersRow from "../manage-users/UsersRow";
 
 import Toolbar from "./Toolbar";
 import { useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
 
 const ManageUsers = () => {
   const axiosPublic = useAxiosPublic();
@@ -34,31 +34,56 @@ const ManageUsers = () => {
       axiosPublic.delete("/users", { data: { ids: userIds } }), // Send array of IDs
     onSuccess: () => {
       // Invalidate the query to remove user from the UI
-      queryClient.invalidateQueries(["users"]);
-      setSelectedIds([]); // Reset selection
+      queryClient.invalidateQueries(["users"]); // Refresh data
+      setSelectedIds([]); // Clear selection
     },
   });
 
-  // Disabled delete btn
+  const columns = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: 80,
+    },
+    {
+      field: "name",
+      headerName: "Name",
+      width: 200,
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      width: 250,
+    },
+    {
+      field: "created_at",
+      headerName: "User Since",
+      width: 250,
+    },
+    {
+      field: "last_login",
+      headerName: "Last seen",
+      width: 250,
+    },
+    {
+      field: "role",
+      headerName: "Role",
+      width: 200,
+    },
+    {
+      field: "is_blocked",
+      headerName: "Blok status",
+      width: 200,
+    },
+  ];
 
-  const deleteDisabled = selectedIds.length === 0;
-
-  // delete event handler
+  // Delete selected users
   const handleDelete = () => {
     if (selectedIds.length === 0) {
       console.log("No user selected");
       return;
     }
     deleteMutation.mutate(selectedIds);
-  };
-
-  // Checkbox select handler
-  const handleSelect = (userId, isSelected) => {
-    console.log(userId, isSelected);
-
-    setSelectedIds((prevId) =>
-      isSelected ? [...prevId, userId] : prevId.filter((id) => id !== userId)
-    );
   };
 
   if (isLoading) {
@@ -71,35 +96,24 @@ const ManageUsers = () => {
 
   return (
     <>
-      <Toolbar onDelete={handleDelete} deleteDisabled={deleteDisabled} />
-      <div className="overflow-x-auto 2xl:max-w-[1600px] xl:max-w-7xl lg:max-w-6xl mx-auto">
-        <table className="table">
-          {/* head */}
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox checkbox-sm" />
-                </label>{" "}
-                Name
-              </th>
-              <th>Email</th>
-              <th>User since</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Map and show user data */}
-            {users.map((user, idx) => (
-              <UsersRow
-                key={user.id}
-                user={user}
-                idx={idx}
-                onSelect={(isSelected) => handleSelect(user.id, isSelected)}
-              />
-            ))}
-          </tbody>
-        </table>
+      <Toolbar
+        onDelete={handleDelete}
+        deleteDisabled={selectedIds.length === 0}
+      />
+
+      {/* Replace the table with MUI DataGrid */}
+
+      <div className="p-4">
+        <DataGrid
+          rows={users}
+          columns={columns}
+          getRowId={(row) => row.id}
+          checkboxSelection
+          rowSelectionModel={selectedIds}
+          onRowSelectionModelChange={(newSelection) => {
+            setSelectedIds(newSelection);
+          }}
+        />
       </div>
     </>
   );

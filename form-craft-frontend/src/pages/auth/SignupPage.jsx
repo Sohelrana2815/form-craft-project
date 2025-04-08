@@ -24,7 +24,7 @@ const SignupPage = () => {
 
       if (user) {
         const response = await axiosPublic.post("/signup", data);
-        console.log(response);
+        console.log(response.data);
         console.log("Current user:", userCredential);
         console.log("User created successfully:", user);
       }

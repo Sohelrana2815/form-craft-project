@@ -28,7 +28,7 @@ const ManageUsers = () => {
     queryFn: fetchUsers,
   });
 
-  // mutation function
+  // delete mutation function
   const deleteMutation = useMutation({
     mutationFn: (userIds) =>
       axiosPublic.delete("/users", { data: { ids: userIds } }), // Send array of IDs
@@ -36,6 +36,20 @@ const ManageUsers = () => {
       // Invalidate the query to remove user from the UI
       queryClient.invalidateQueries(["users"]); // Refresh data
       setSelectedIds([]); // Clear selection
+    },
+  });
+  // block mutation function
+
+  const blockMutation = useMutation({
+    mutationFn: (isBlocked) =>
+      axiosPublic.patch("/users/block", {
+        is_blocked: isBlocked,
+        userIds: selectedIds,
+      }),
+    onSuccess: () => {
+      // Invalidate the query to remove user from UI
+      queryClient.invalidateQueries(["users"]); // Data refresh
+      setSelectedIds([]);
     },
   });
 
@@ -74,6 +88,11 @@ const ManageUsers = () => {
       field: "is_blocked",
       headerName: "Blok status",
       width: 200,
+      renderCell: (params) => (
+        <span className={`${params.value ? "text-red-600" : "text-green-600"}`}>
+          {params.value ? "Blocked" : "Active"}
+        </span>
+      ),
     },
   ];
 
@@ -85,6 +104,11 @@ const ManageUsers = () => {
     }
     deleteMutation.mutate(selectedIds);
   };
+
+  // Block & unblock handler
+
+  const handleBlock = () => blockMutation.mutate(true);
+  const handleUnblock = () => blockMutation.mutate(false);
 
   if (isLoading) {
     return <p className="loading loading-dots loading-xl text-blue-700"></p>;
@@ -99,11 +123,14 @@ const ManageUsers = () => {
       <Toolbar
         onDelete={handleDelete}
         deleteDisabled={selectedIds.length === 0}
+        onBlock={handleBlock}
+        onUnblock={handleUnblock}
+        actionDisabled={selectedIds.length === 0}
       />
 
       {/* Replace the table with MUI DataGrid */}
 
-      <div className="p-4">
+      <div className="p-5 lg:max-w-7xl 2xl:max-w-[1600px] mx-auto">
         <DataGrid
           rows={users}
           columns={columns}

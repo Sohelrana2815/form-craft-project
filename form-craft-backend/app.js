@@ -114,27 +114,70 @@ app.post("/api/signup", async (req, res) => {
 // });
 
 app.patch("/api/users/block", async (req, res) => {
-  const userIds = req.params.ids; // Array of IDs
-  const { is_blocked } = req.body;
-  // try {
-  //   // SQL query for block/unblock mul
-  //   const result = await db.query(
-  //     "UPDATE users SET is_blocked = $1 WHERE id = ANY($2 :: int[]) RETURNING *",
-  //     [is_blocked, userIds]
-  //   );
-  //   if (result.rowCount === 0) {
-  //     return res.status(404).json({ error: "No users found to block/unblock" });
-  //   }
+  const { userIds, is_blocked } = req.body;
+  // console.log(ids.userIds);
+  console.log("userIds from post man", userIds, is_blocked);
 
-  //   res.status(200).json({
-  //     message: `${result.rowCount} successfully block/unblock `,
-  //     user: result.rows,
-  //   });
-  // } catch (error) {
-  //   console.log("Error updating block status:", error);
-  //   res.status(500).json({ error: "Internal server error" });
-  // }
+  try {
+    const userResult = await db.query("SELECT * FROM users");
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "No users found" });
+    }
+    const result = await db.query(
+      "UPDATE users SET is_blocked = $1 WHERE id = ANY($2::int[]) RETURNING *",
+      [is_blocked, userIds]
+    );
+    res.status(200).json({
+      message: "Block status updated Successfully",
+      usersResult: result.rows,
+    });
+  } catch (error) {
+    console.log("Error update block status");
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
+
+app.patch("/api/users/role", async (req, res) => {
+  const { userIds, role } = req.body;
+  console.log(userIds, role);
+
+  try {
+    const userResult = await db.query("SELECT * FROM users");
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "No user found" });
+    }
+    const result = await db.query(
+      "UPDATE users SET role = $1 WHERE id = ANY($2::int[]) RETURNING *",
+      [role, userIds]
+    );
+
+    res
+      .status(200)
+      .json({ message: "User role changed successfully!", data: result.rows });
+  } catch (error) {
+    console.log("Error changing role");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// try {
+//   // SQL query for block/unblock mul
+//   const result = await db.query(
+//     "UPDATE users SET is_blocked = $1 WHERE id = ANY($2 :: int[]) RETURNING *",
+//     [is_blocked, userIds]
+//   );
+//   if (result.rowCount === 0) {
+//     return res.status(404).json({ error: "No users found to block/unblock" });
+//   }
+
+//   res.status(200).json({
+//     message: `${result.rowCount} successfully block/unblock `,
+//     user: result.rows,
+//   });
+// } catch (error) {
+//   console.log("Error updating block status:", error);
+//   res.status(500).json({ error: "Internal server error" });
+// }
 
 app.patch("/api/login/:email", async (req, res) => {
   const userEmail = req.params.email;
@@ -169,7 +212,7 @@ app.delete("/api/users", async (req, res) => {
     // SQL query for delete many users
     const result = await db.query(
       // ANY CHECK THAT THE VALUE/IDs IS INSIDE THE ARRAY OR NOT.
-      "DELETE FROM users WHERE id = ANY($1 ::int[]) RETURNING *",
+      "DELETE FROM users WHERE id = ANY($1::int[]) RETURNING *",
       [userIds]
     );
     if (result.rowCount === 0) {

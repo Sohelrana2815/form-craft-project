@@ -4,6 +4,61 @@ import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import Toolbar from "./Toolbar";
 import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import Swal from "sweetalert2";
+
+const columns = [
+  {
+    field: "id",
+    headerName: "ID",
+    width: 80,
+  },
+  {
+    field: "name",
+    headerName: "Name",
+    width: 200,
+  },
+  {
+    field: "email",
+    headerName: "Email",
+    width: 250,
+  },
+  {
+    field: "created_at",
+    headerName: "User Since",
+    width: 250,
+  },
+  {
+    field: "last_login",
+    headerName: "Last seen",
+    width: 250,
+  },
+  {
+    field: "role",
+    headerName: "Role",
+    width: 200,
+    renderCell: (params) => (
+      <span
+        className={`badge ${
+          params.value === "admin" ? "badge-primary" : "badge-ghost"
+        }`}
+      >
+        {params.value === "admin" ? "Admin" : "User"}
+      </span>
+    ),
+  },
+  {
+    field: "is_blocked",
+    headerName: "Blok status",
+    width: 200,
+    renderCell: (params) => (
+      <span
+        className={`badge ${params.value ? "badge-error" : "badge-success"}`}
+      >
+        {params.value ? "Blocked" : "Active"}
+      </span>
+    ),
+  },
+];
 
 const ManageUsers = () => {
   const axiosPublic = useAxiosPublic();
@@ -53,62 +108,46 @@ const ManageUsers = () => {
     },
   });
 
-  const columns = [
-    {
-      field: "id",
-      headerName: "ID",
-      width: 80,
+  // role mutation function
+
+  const roleMutation = useMutation({
+    mutationFn: (role) =>
+      axiosPublic.patch("/users/role", { role: role, userIds: selectedIds }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["users"]);
+      setSelectedIds([]);
     },
-    {
-      field: "name",
-      headerName: "Name",
-      width: 200,
-    },
-    {
-      field: "email",
-      headerName: "Email",
-      width: 250,
-    },
-    {
-      field: "created_at",
-      headerName: "User Since",
-      width: 250,
-    },
-    {
-      field: "last_login",
-      headerName: "Last seen",
-      width: 250,
-    },
-    {
-      field: "role",
-      headerName: "Role",
-      width: 200,
-    },
-    {
-      field: "is_blocked",
-      headerName: "Blok status",
-      width: 200,
-      renderCell: (params) => (
-        <span className={`${params.value ? "text-red-600" : "text-green-600"}`}>
-          {params.value ? "Blocked" : "Active"}
-        </span>
-      ),
-    },
-  ];
+  });
+
+
 
   // Delete selected users
   const handleDelete = () => {
     if (selectedIds.length === 0) {
-      console.log("No user selected");
       return;
     }
-    deleteMutation.mutate(selectedIds);
+    Swal.fire({
+      title: `Delete ${selectedIds.length} users?`,
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteMutation.mutate(selectedIds);
+      }
+    });
   };
 
   // Block & unblock handler
-
   const handleBlock = () => blockMutation.mutate(true);
   const handleUnblock = () => blockMutation.mutate(false);
+
+  // Role changing handler
+  const makeAdmin = () => roleMutation.mutate("admin");
+  const makeUser = () => roleMutation.mutate("user");
 
   if (isLoading) {
     return <p className="loading loading-dots loading-xl text-blue-700"></p>;
@@ -122,10 +161,12 @@ const ManageUsers = () => {
     <>
       <Toolbar
         onDelete={handleDelete}
-        deleteDisabled={selectedIds.length === 0}
         onBlock={handleBlock}
         onUnblock={handleUnblock}
+        onMakeAdmin={makeAdmin}
+        onMakeUser={makeUser}
         actionDisabled={selectedIds.length === 0}
+        selectedUsers={users.filter((user) => selectedIds.includes(user.id))}
       />
 
       {/* Replace the table with MUI DataGrid */}

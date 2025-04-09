@@ -21,9 +21,15 @@ const SignupPage = () => {
       await updateProfile(user, { displayName: name });
 
       // Ready data to send to the backend
+      // Add uid as well in data
+
+      const userData = {
+        ...data,
+        uid: user.uid,
+      };
 
       if (user) {
-        const response = await axiosPublic.post("/signup", data);
+        const response = await axiosPublic.post("/signup", userData);
         console.log(response.data);
         console.log("Current user:", userCredential);
         console.log("User created successfully:", user);

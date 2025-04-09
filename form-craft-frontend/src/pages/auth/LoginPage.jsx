@@ -1,24 +1,31 @@
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const LoginPage = () => {
+  const { loginUser } = useAuth();
+  const axiosPublic = useAxiosPublic();
+  const location = useLocation();
+  const navigate = useNavigate();
+  // console.log("location in login page", location);
+  const from = location.state?.from?.pathname || "/";
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { loginUser } = useAuth();
-  const axiosPublic = useAxiosPublic();
+
   const onSubmit = async (data) => {
     try {
       const { email, password } = data;
       const userCredential = await loginUser(email, password);
       const user = userCredential.user;
       const response = await axiosPublic.patch(`/login/${user?.email}`);
-      console.log(response.data);
-      // console.log(userCredential);
+      // console.log(response.data);
+      if (response.data.id) {
+        navigate(from, { replace: true });
+      }
       // console.log(userCredential.user);
     } catch (error) {
       console.error("Error login:", error);

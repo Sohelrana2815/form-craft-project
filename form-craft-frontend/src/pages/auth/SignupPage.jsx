@@ -1,12 +1,18 @@
-import { Link } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import { updateProfile } from "firebase/auth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import Swal from "sweetalert2";
 
 const SignupPage = () => {
   const axiosPublic = useAxiosPublic();
-  const { createUser } = useAuth();
+  const navigate = useNavigate();
+  const { createUser, logOut } = useAuth();
+
+  const logOutUser = async () => {
+    await logOut();
+  };
   const {
     register,
     handleSubmit,
@@ -30,6 +36,16 @@ const SignupPage = () => {
 
       if (user) {
         const response = await axiosPublic.post("/signup", userData);
+        if (response.data.id) {
+          Swal.fire({
+            title: `${name} registered successfully!`,
+            text: `${name} login please.`,
+            icon: "success",
+            draggable: true,
+          });
+          logOutUser();
+          navigate("/login");
+        }
         console.log(response.data);
         console.log("Current user:", userCredential);
         console.log("User created successfully:", user);

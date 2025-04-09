@@ -88,6 +88,11 @@ const ManageUsers = () => {
     mutationFn: (userIds) =>
       axiosPublic.delete("/users", { data: { ids: userIds } }), // Send array of IDs
     onSuccess: () => {
+      Swal.fire(
+        "Deleted!",
+        `${selectedIds.length} Users have been deleted.`,
+        "success"
+      );
       // Invalidate the query to remove user from the UI
       queryClient.invalidateQueries(["users"]); // Refresh data
       setSelectedIds([]); // Clear selection
@@ -101,9 +106,15 @@ const ManageUsers = () => {
         is_blocked: isBlocked,
         userIds: selectedIds,
       }),
-    onSuccess: () => {
-      // Invalidate the query to remove user from UI
-      queryClient.invalidateQueries(["users"]); // Data refresh
+    onSuccess: (_, isBlocked) => {
+      Swal.fire(
+        isBlocked ? "Blocked!" : "Unblocked!",
+        `${selectedIds.length} Users have been ${
+          isBlocked ? "blocked" : "unblocked"
+        }`,
+        "success"
+      );
+      queryClient.invalidateQueries(["users"]);
       setSelectedIds([]);
     },
   });
@@ -113,13 +124,16 @@ const ManageUsers = () => {
   const roleMutation = useMutation({
     mutationFn: (role) =>
       axiosPublic.patch("/users/role", { role: role, userIds: selectedIds }),
-    onSuccess: () => {
+    onSuccess: (_, role) => {
+      Swal.fire(
+        `${role === "admin" ? "Admin" : "User"}`,
+        `${selectedIds.length} Users have been ${("Role", role)}`,
+        "success"
+      );
       queryClient.invalidateQueries(["users"]);
       setSelectedIds([]);
     },
   });
-
-
 
   // Delete selected users
   const handleDelete = () => {
@@ -142,12 +156,39 @@ const ManageUsers = () => {
   };
 
   // Block & unblock handler
-  const handleBlock = () => blockMutation.mutate(true);
-  const handleUnblock = () => blockMutation.mutate(false);
+  const handleBlockUnblock = (isBlocked) => {
+    Swal.fire({
+      title: `${isBlocked ? "Block" : "Unblock"} ${
+        selectedIds.length
+      } user(s)?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#34b233",
+      cancelButtonColor: "#C70000",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        blockMutation.mutate(isBlocked);
+      }
+    });
+  };
 
   // Role changing handler
-  const makeAdmin = () => roleMutation.mutate("admin");
-  const makeUser = () => roleMutation.mutate("user");
+  const handleRoleChange = (role) => {
+    console.log(role);
+
+    if (selectedIds.length === 0) return;
+    Swal.fire({
+      title: `Make ${selectedIds.length} user(s) "${role}"?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#003366",
+      cancelButtonColor: "#CF142B",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        roleMutation.mutate(role);
+      }
+    });
+  };
 
   if (isLoading) {
     return <p className="loading loading-dots loading-xl text-blue-700"></p>;
@@ -161,10 +202,10 @@ const ManageUsers = () => {
     <>
       <Toolbar
         onDelete={handleDelete}
-        onBlock={handleBlock}
-        onUnblock={handleUnblock}
-        onMakeAdmin={makeAdmin}
-        onMakeUser={makeUser}
+        onBlock={() => handleBlockUnblock(true)}
+        onUnblock={() => handleBlockUnblock(false)}
+        onMakeAdmin={() => handleRoleChange("admin")}
+        onMakeUser={() => handleRoleChange("user")}
         actionDisabled={selectedIds.length === 0}
         selectedUsers={users.filter((user) => selectedIds.includes(user.id))}
       />

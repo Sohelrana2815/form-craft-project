@@ -4,7 +4,6 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./db");
 const admin = require("./firebase-admin");
-
 const app = express();
 // middlewares
 app.use(express.json());
@@ -181,6 +180,8 @@ app.patch("/api/users/role", async (req, res) => {
 
 app.patch("/api/login/:email", async (req, res) => {
   const userEmail = req.params.email;
+  console.log(userEmail);
+
   try {
     const checkUser = await db.query(
       "SELECT is_blocked FROM users WHERE email = $1",

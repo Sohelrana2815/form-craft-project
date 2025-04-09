@@ -3,6 +3,7 @@ dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
+const admin = require("./firebase-admin");
 
 const app = express();
 // middlewares
@@ -44,11 +45,11 @@ app.get("/api/users/:id", async (req, res) => {
 });
 
 app.post("/api/signup", async (req, res) => {
-  const { name, email } = req.body;
+  const { name, email, uid } = req.body;
   try {
     const result = await db.query(
-      "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
-      [name, email]
+      "INSERT INTO users (name, email, uid) VALUES ($1, $2, $3) RETURNING *",
+      [name, email, uid]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -138,8 +139,7 @@ app.patch("/api/users/block", async (req, res) => {
 });
 
 app.patch("/api/users/role", async (req, res) => {
-  const { userIds, role } = req.body;
-  console.log(userIds, role);
+  const { role, userIds } = req.body;
 
   try {
     const userResult = await db.query("SELECT * FROM users");
@@ -209,6 +209,31 @@ app.patch("/api/login/:email", async (req, res) => {
 app.delete("/api/users", async (req, res) => {
   const userIds = req.body.ids; // Array of IDs
   try {
+    // Get UIDs from PostgreSQL
+    const uidResult = await db.query(
+      "SELECT uid FROM users WHERE id = ANY($1::int[])",
+      [userIds]
+    );
+    const uIDs = uidResult.rows.map((row) => row.uid);
+    if (uIDs.length === 0) {
+      return res.status(404).json({ error: "No user found" });
+    }
+
+    // Delete from Firebase
+
+    const firebaseResult = await admin.auth().deleteUsers(uIDs);
+
+    if (firebaseResult.failureCount > 0) {
+      const errors = firebaseResult.errors.map((err) => ({
+        uid: err.uid,
+        error: err.error.message,
+      }));
+      return res.status(500).json({
+        error: "Partial deletion failure",
+        details: errors,
+      });
+    }
+
     // SQL query for delete many users
     const result = await db.query(
       // ANY CHECK THAT THE VALUE/IDs IS INSIDE THE ARRAY OR NOT.
@@ -219,7 +244,7 @@ app.delete("/api/users", async (req, res) => {
       return res.status(404).json({ error: "No users found to delete" });
     }
     res.status(200).json({
-      message: `${result.rowCount} user/users deleted successfully!`,
+      message: `${result.rowCount} user(s) deleted successfully!`,
       deletedUsers: result.rows,
     });
   } catch (error) {

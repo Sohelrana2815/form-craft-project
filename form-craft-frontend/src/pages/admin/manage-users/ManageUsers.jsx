@@ -88,11 +88,12 @@ const ManageUsers = () => {
     mutationFn: (userIds) =>
       axiosPublic.delete("/users", { data: { ids: userIds } }), // Send array of IDs
     onSuccess: () => {
-      Swal.fire(
-        "Deleted!",
-        `${selectedIds.length} Users have been deleted.`,
-        "success"
-      );
+      Swal.fire({
+        title: `Deleted ${selectedIds.length} user(s) successfully!`,
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       // Invalidate the query to remove user from the UI
       queryClient.invalidateQueries(["users"]); // Refresh data
       setSelectedIds([]); // Clear selection
@@ -106,14 +107,7 @@ const ManageUsers = () => {
         is_blocked: isBlocked,
         userIds: selectedIds,
       }),
-    onSuccess: (_, isBlocked) => {
-      Swal.fire(
-        isBlocked ? "Blocked!" : "Unblocked!",
-        `${selectedIds.length} Users have been ${
-          isBlocked ? "blocked" : "unblocked"
-        }`,
-        "success"
-      );
+    onSuccess: () => {
       queryClient.invalidateQueries(["users"]);
       setSelectedIds([]);
     },
@@ -124,12 +118,7 @@ const ManageUsers = () => {
   const roleMutation = useMutation({
     mutationFn: (role) =>
       axiosPublic.patch("/users/role", { role: role, userIds: selectedIds }),
-    onSuccess: (_, role) => {
-      Swal.fire(
-        `${role === "admin" ? "Admin" : "User"}`,
-        `${selectedIds.length} Users have been ${("Role", role)}`,
-        "success"
-      );
+    onSuccess: () => {
       queryClient.invalidateQueries(["users"]);
       setSelectedIds([]);
     },
@@ -141,7 +130,7 @@ const ManageUsers = () => {
       return;
     }
     Swal.fire({
-      title: `Delete ${selectedIds.length} users?`,
+      title: `Delete ${selectedIds.length} user(s)?`,
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,

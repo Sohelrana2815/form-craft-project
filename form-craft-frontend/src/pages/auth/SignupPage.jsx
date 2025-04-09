@@ -38,8 +38,8 @@ const SignupPage = () => {
         const response = await axiosPublic.post("/signup", userData);
         if (response.data.id) {
           Swal.fire({
-            title: `${name} registered successfully!`,
-            text: `${name} login please.`,
+            title: "Registered successfully!",
+            text: `Login please ${name}.`,
             icon: "success",
             draggable: true,
           });

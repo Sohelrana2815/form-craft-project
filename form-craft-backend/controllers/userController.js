@@ -1,8 +1,8 @@
 const db = require("../db");
-const admin = require("firebase-admin");
+const admin = require("../firebase-admin");
 
 // GET ALL USERS
-exports.getUser = async (req, res) => {
+exports.getUsers = async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM users");
     res.status(200).json(result.rows);
@@ -36,13 +36,15 @@ exports.getUserById = async (req, res) => {
 
 exports.blockUsers = async (req, res) => {
   const { userIds, is_blocked } = req.body;
+  console.log(userIds, is_blocked, "Block status API");
+
   try {
     const userResult = await db.query("SELECT * FROM users");
     if (userResult.rows.length === 0) {
       return res.status(404).json({ error: "No user found" });
     }
     const result = await db.query(
-      "UPDATE users SET is_blocked = $1 WHERE id = ANY($2::int([])) RETURNING *",
+      "UPDATE users SET is_blocked = $1 WHERE id = ANY($2::int[]) RETURNING *",
       [is_blocked, userIds]
     );
     res

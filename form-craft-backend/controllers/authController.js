@@ -2,12 +2,14 @@ const db = require("../db");
 
 exports.signupUser = async (req, res) => {
   const { name, email, uid } = req.body;
+  console.log(name, email, uid);
+
   try {
     const result = await db.query(
-      "INSERT INTO users (name, email, uid) WHERE VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO users (name, email, uid) VALUES ($1, $2, $3) RETURNING *",
       [name, email, uid]
     );
-    res.status(200).json(result.rows[0]);
+    res.status(201).json(result.rows[0]);
   } catch (error) {
     if (error.code === 23505) {
       // Email unique error code

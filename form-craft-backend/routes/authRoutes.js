@@ -3,7 +3,7 @@ const router = express.Router();
 const authController = require("../controllers/authController");
 
 // Authentication-related routes
-app.post("/signup", authController.signupUser);
-app.patch("/login/:email", authController.updateLogin);
+router.post("/signup", authController.signupUser);
+router.patch("/login/:email", authController.updateLogin);
 
 module.exports = router;

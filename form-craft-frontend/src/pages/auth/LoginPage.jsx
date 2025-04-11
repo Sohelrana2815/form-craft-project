@@ -21,12 +21,15 @@ const LoginPage = () => {
       const { email, password } = data;
       const userCredential = await loginUser(email, password);
       const user = userCredential.user;
-      const response = await axiosPublic.patch(`/login/${user?.email}`);
-      // console.log(response.data);
-      if (response.data.id) {
-        navigate(from, { replace: true });
+      if (user) {
+        const response = await axiosPublic.patch(`/login/${user?.email}`);
+        console.log("login page", response.data.token);
+        if (response.data.token) {
+          // Set token in LC
+          localStorage.setItem("token", response.data.token);
+          navigate(from, { replace: true });
+        }
       }
-      // console.log(userCredential.user);
     } catch (error) {
       console.error("Error login:", error);
     }

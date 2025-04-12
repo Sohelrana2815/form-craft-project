@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import Swal from "sweetalert2";
 
 const LoginPage = () => {
   const { loginUser } = useAuth();
@@ -23,7 +24,7 @@ const LoginPage = () => {
       const user = userCredential.user;
       if (user) {
         const response = await axiosPublic.patch(`/login/${user?.email}`);
-        console.log("login page", response.data.token);
+
         if (response.data.token) {
           // Set token in LC
           localStorage.setItem("token", response.data.token);
@@ -31,6 +32,9 @@ const LoginPage = () => {
         }
       }
     } catch (error) {
+      if (error.status === 403) {
+        Swal.fire("Blocked", "Your account has been blocked.", "error");
+      }
       console.error("Error login:", error);
     }
   };

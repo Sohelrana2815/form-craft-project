@@ -1,10 +1,19 @@
 import axios from "axios";
+import { useNavigate } from "react-router";
+import useAuth from "./useAuth";
 
 const axiosSecure = axios.create({
   baseURL: "http://localhost:3000/api",
 });
 
 const useAxiosSecure = () => {
+  const navigate = useNavigate();
+  const { logOut } = useAuth();
+
+  const logoutUser = async () => {
+    await logOut();
+  };
+
   axiosSecure.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem("token");
@@ -15,14 +24,23 @@ const useAxiosSecure = () => {
       return Promise.reject(error);
     }
   );
+
   axiosSecure.interceptors.response.use(
     (response) => {
+      console.log(response);
       return response;
     },
     async (error) => {
       console.log("AxiosSecure interceptors error:", error);
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        localStorage.removeItem("token");
+        logoutUser();
+        navigate("/login");
+      }
+      return Promise.reject(error);
     }
   );
+  return axiosSecure;
 };
 
 export default useAxiosSecure;

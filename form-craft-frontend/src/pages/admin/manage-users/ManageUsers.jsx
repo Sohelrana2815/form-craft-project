@@ -5,6 +5,7 @@ import Toolbar from "./Toolbar";
 import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const columns = [
   {
@@ -62,6 +63,7 @@ const columns = [
 
 const ManageUsers = () => {
   const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const [selectedIds, setSelectedIds] = useState([]);
   const queryClient = useQueryClient();
 
@@ -69,7 +71,7 @@ const ManageUsers = () => {
 
   // Define the query function to fetch users
   const fetchUsers = async () => {
-    const response = await axiosPublic.get("/users");
+    const response = await axiosSecure.get("/users");
     return response.data;
   };
 

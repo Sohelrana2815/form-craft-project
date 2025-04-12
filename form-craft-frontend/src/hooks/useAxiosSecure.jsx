@@ -27,11 +27,10 @@ const useAxiosSecure = () => {
 
   axiosSecure.interceptors.response.use(
     (response) => {
-      console.log(response);
       return response;
     },
     async (error) => {
-      console.log("AxiosSecure interceptors error:", error);
+      console.log("Axios secure interceptors error:", error);
       if (error.response?.status === 401 || error.response?.status === 403) {
         localStorage.removeItem("token");
         logoutUser();

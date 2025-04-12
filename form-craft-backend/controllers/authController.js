@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const db = require("../db");
 
 exports.signupUser = async (req, res) => {
@@ -26,7 +27,7 @@ exports.updateLogin = async (req, res) => {
 
   try {
     const checkUser = await db.query(
-      "SELECT is_blocked FROM users WHERE email = $1",
+      "SELECT id, uid, is_blocked FROM users WHERE email = $1",
       [userEmail]
     );
     if (checkUser.rowCount === 0) {
@@ -41,7 +42,23 @@ exports.updateLogin = async (req, res) => {
       "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE email = $1 RETURNING *",
       [userEmail]
     );
-    res.status(200).json(result.rows[0]);
+
+    // Generate jwt token
+
+    const token = jwt.sign(
+      {
+        uid: user.uid,
+        email: user.email,
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      token,
+      user: result.rows[0],
+    });
   } catch (error) {
     console.log("Error update last login", error);
     res.status(500).json({ error: "Internal server error" });

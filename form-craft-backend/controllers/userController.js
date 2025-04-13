@@ -34,16 +34,17 @@ exports.getUserById = async (req, res) => {
 
 // GET USER ROLE
 
-exports.getUserRole = async (req, res, next) => {
+exports.getUserRole = async (req, res) => {
   const email = req.params.email;
+
   try {
     const result = await db.query("SELECT role FROM users WHERE email = $1", [
       email,
     ]);
-    res.status(200).json({ result: result.rows[0]?.role || "user" });
+    const userRole = result.rows[0]?.role;
+    res.status(200).json({ userRole });
   } catch (error) {
-    console.log("Fetching role error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.log("Fetching user role error", error);
   }
 };
 

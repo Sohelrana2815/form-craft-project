@@ -1,8 +1,10 @@
 const Unauthorized = () => {
   return (
-    <div>
-      <h1>৪০৩ - অনুমতি নেই!</h1>
-      <p>এই পেজ এক্সেস করতে আপনার অ্যাডমিন প্রিভিলেজ প্রয়োজন</p>
+    <div className="flex flex-col items-center justify-center xl:h-[800px] h-[600px] font-semibold text-center">
+      <h1 className="xl:text-6xl">403 No access!</h1>
+      <p className="xl:text-2xl text-gray-700">
+        To access this page, you need admin privileges.
+      </p>
     </div>
   );
 };

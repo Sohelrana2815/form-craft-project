@@ -18,7 +18,7 @@ const MainRoutes = () => {
           <Route
             path="manage-users"
             element={
-              <PrivateRoute>
+              <PrivateRoute requiredRole="admin">
                 <ManageUsers />
               </PrivateRoute>
             }

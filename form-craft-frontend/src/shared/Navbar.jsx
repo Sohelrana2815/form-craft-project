@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router";
 import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
 const Navbar = () => {
-  const { user, loading: authLoading, logOut } = useAuth();
+  const { user, loading: authLoading, logOut, userRole } = useAuth();
 
   const handleLogout = () => {
     try {
@@ -48,9 +48,11 @@ const Navbar = () => {
           <NavLink to="login">Login</NavLink>
         </li>
       )}
-      <li>
-        <NavLink to="manage-users">Manage users</NavLink>
-      </li>
+      {userRole === "admin" && (
+        <li>
+          <NavLink to="manage-users">Manage users</NavLink>
+        </li>
+      )}
     </>
   );
 

@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useAxiosPublic from "../../../hooks/useAxiosPublic";
 
 import Toolbar from "./Toolbar";
 import { useState } from "react";
@@ -62,7 +61,6 @@ const columns = [
 ];
 
 const ManageUsers = () => {
-  const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
   const [selectedIds, setSelectedIds] = useState([]);
   const queryClient = useQueryClient();
@@ -88,7 +86,7 @@ const ManageUsers = () => {
   // delete mutation function
   const deleteMutation = useMutation({
     mutationFn: (userIds) =>
-      axiosPublic.delete("/users", { data: { ids: userIds } }), // Send array of IDs
+      axiosSecure.delete("/users", { data: { ids: userIds } }), // Send array of IDs
     onSuccess: () => {
       Swal.fire({
         title: `Deleted ${selectedIds.length} user(s) successfully!`,
@@ -105,7 +103,7 @@ const ManageUsers = () => {
 
   const blockMutation = useMutation({
     mutationFn: (isBlocked) =>
-      axiosPublic.patch("/users/block", {
+      axiosSecure.patch("/users/block", {
         is_blocked: isBlocked,
         userIds: selectedIds,
       }),
@@ -119,7 +117,7 @@ const ManageUsers = () => {
 
   const roleMutation = useMutation({
     mutationFn: (role) =>
-      axiosPublic.patch("/users/role", { role: role, userIds: selectedIds }),
+      axiosSecure.patch("/users/role", { role: role, userIds: selectedIds }),
     onSuccess: () => {
       queryClient.invalidateQueries(["users"]);
       setSelectedIds([]);

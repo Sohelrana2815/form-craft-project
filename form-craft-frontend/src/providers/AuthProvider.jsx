@@ -13,6 +13,7 @@ export const AuthContext = createContext(null);
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
   const axiosPublic = useAxiosPublic();
 
   const createUser = (email, password) => {
@@ -35,6 +36,22 @@ const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setLoading(false);
 
+      if (currentUser) {
+        const email = currentUser?.email;
+        try {
+          setLoading(true);
+          const response = await axiosPublic.get(`/users/role/${email}`);
+          console.log(response.data);
+          setUserRole(response.data.userRole);
+          setLoading(false);
+        } catch (error) {
+          console.log("Fetching role error", error);
+        }
+      } else {
+        setUserRole(null);
+        setLoading(false);
+      }
+
       if (!currentUser) {
         // Remove token form LC
         localStorage.removeItem("token");
@@ -50,6 +67,7 @@ const AuthProvider = ({ children }) => {
   const authValue = {
     createUser,
     user,
+    userRole,
     loginUser,
     logOut,
     loading,

@@ -7,6 +7,7 @@ const { verifyAdmin } = require("../middleware/adminMiddleware");
 
 router.get("/", verifyToken, verifyAdmin, userController.getUsers);
 router.get("/:id", userController.getUserById);
+router.get("/role/:email", userController.getUserRole);
 router.patch("/block", userController.blockUsers);
 router.patch("/role", userController.updateUserRole);
 router.delete("/", userController.deleteUsers);

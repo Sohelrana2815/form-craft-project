@@ -5,6 +5,7 @@ import SignupPage from "../pages/auth/SignupPage";
 import LoginPage from "../pages/auth/LoginPage";
 import PrivateRoute from "./PrivateRoute";
 import ManageUsers from "../pages/admin/manage-users/ManageUsers";
+import Unauthorized from "../pages/error/Unauthorized";
 
 const MainRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const MainRoutes = () => {
               </PrivateRoute>
             }
           />
+          <Route path="unauthorized" element={<Unauthorized />} />
         </Route>
       </Routes>
     </>

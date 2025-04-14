@@ -1,2 +1,8 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+  @apply bg-[#121212] text-[#e0e0e0]; /* Base dark styles */
+}

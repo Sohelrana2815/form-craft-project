@@ -77,10 +77,13 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="hero bg-base-200 min-h-screen">
+    <div className="hero bg-base-200 min-h-screen dark:bg-[#121212] dark:text-black">
       <div className="hero-content w-full ">
-        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-          <form onSubmit={handleSubmit(onSubmit)} className="card-body">
+        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl  ">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="card-body "
+          >
             <h2 className="text-center text-2xl font-semibold">Sign up</h2>
             <fieldset className="fieldset">
               <label className="fieldset-label">Name</label>
@@ -114,7 +117,10 @@ const SignupPage = () => {
                 <span className="text-red-600">Password is required</span>
               )}
 
-              <button type="submit" className="btn bg-blue-600 text-white mt-4">
+              <button
+                type="submit"
+                className="btn bg-blue-600 text-white mt-4 border-none"
+              >
                 Sign Up
               </button>
             </fieldset>

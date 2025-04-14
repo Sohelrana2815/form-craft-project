@@ -41,7 +41,6 @@ const AuthProvider = ({ children }) => {
         try {
           setLoading(true);
           const response = await axiosPublic.get(`/users/role/${email}`);
-          console.log(response.data);
           setUserRole(response.data.userRole);
           setLoading(false);
         } catch (error) {

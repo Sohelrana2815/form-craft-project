@@ -22,36 +22,57 @@ const SignupPage = () => {
   const onSubmit = async (data) => {
     try {
       const { name, email, password } = data;
+
+      // Step 1: Check for conflicts in your database
+      const checkResponse = await axiosPublic.post("/check-user", {
+        name,
+        email,
+      });
+      if (checkResponse.data.error) {
+        throw new Error(checkResponse.data.error);
+      }
+
+      // Step 2: Proceed to create Firebase account ONLY if no conflict
       const userCredential = await createUser(email, password);
       const user = userCredential.user;
       await updateProfile(user, { displayName: name });
 
-      // Ready data to send to the backend
-      // Add uid as well in data
+      // Step 3: Save user data to your database
 
       const userData = {
-        ...data,
+        name,
+        email,
         uid: user.uid,
       };
-
-      if (user) {
-        const response = await axiosPublic.post("/signup", userData);
-        if (response.data.id) {
-          Swal.fire({
-            title: "Registered successfully!",
-            text: `Login please ${name}.`,
-            icon: "success",
-            draggable: true,
-          });
-          logOutUser();
-          navigate("/login");
-        }
-        console.log(response.data);
-        console.log("Current user:", userCredential);
-        console.log("User created successfully:", user);
+      // Step 4: Show success and redirect
+      const response = await axiosPublic.post("/signup", userData);
+      if (response.data.id) {
+        Swal.fire({
+          title: "Registered successfully!",
+          text: `Login please ${name}.`,
+          icon: "success",
+          draggable: true,
+        });
+        logOutUser();
+        navigate("/login");
       }
+      // Add uid as well in data
     } catch (error) {
-      console.error("Error creating user:", error);
+      if (error.code === "auth/email-already-in-use") {
+        Swal.fire(
+          "Email already exist",
+          "Use different email address.",
+          "error"
+        );
+        // Backend Errors (Email/Name Conflict)
+      } else if (error.response?.data?.error) {
+        Swal.fire("Error", error.response.data.error, "error");
+      }
+      // Generic error
+      else {
+        Swal.fire("Error", "Something went wrong. Try again.", "error");
+      }
+      console.error("Error creating user:", error.response.data);
     }
   };
 

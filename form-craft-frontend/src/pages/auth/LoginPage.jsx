@@ -24,9 +24,9 @@ const LoginPage = () => {
       const user = userCredential.user;
       if (user) {
         const response = await axiosPublic.patch(`/login/${user?.email}`);
+        console.log("login page:", response.data);
 
         if (response.data.token) {
-          // Set token in LC
           localStorage.setItem("token", response.data.token);
           navigate(from, { replace: true });
         }

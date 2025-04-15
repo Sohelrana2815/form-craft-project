@@ -15,7 +15,7 @@ const Toolbar = ({
   return (
     <>
       {/* Toolbar */}
-      <div className="bg-base-200 p-4 rounded-lg shadow-sm">
+      <div className="bg-base-200 p-4 rounded-lg shadow-sm dark:bg-[#121212] dark:border">
         <div className="flex flex-wrap gap-3">
           {/* Role Controls */}
           <div className="flex gap-2">

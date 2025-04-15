@@ -6,6 +6,7 @@ import LoginPage from "../pages/auth/LoginPage";
 import PrivateRoute from "./PrivateRoute";
 import ManageUsers from "../pages/admin/manage-users/ManageUsers";
 import Unauthorized from "../pages/error/Unauthorized";
+import PersonalPage from "../pages/personalPage/PersonalPage";
 
 const MainRoutes = () => {
   return (
@@ -23,6 +24,7 @@ const MainRoutes = () => {
               </PrivateRoute>
             }
           />
+          <Route path="personal-page" element={<PersonalPage />} />
           <Route path="unauthorized" element={<Unauthorized />} />
         </Route>
       </Routes>

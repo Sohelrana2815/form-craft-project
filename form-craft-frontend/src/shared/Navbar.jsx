@@ -56,6 +56,9 @@ const Navbar = () => {
           <NavLink to="manage-users">Manage users</NavLink>
         </li>
       )}
+      <li>
+        <NavLink to="personal-page">Personal Page</NavLink>
+      </li>
     </>
   );
 
@@ -85,15 +88,21 @@ const Navbar = () => {
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">{navLinks}</ul>
         </div>
-        <div className="navbar-end">
+        <div className="navbar-end space-x-4">
+          <button
+            className="btn btn-xs dark:bg-gray-800 dark:text-white"
+            onClick={toggleTheme}
+          >
+            {isDark ? "🔆 Light" : "🌙 Dark"}
+          </button>
           {user && (
-            <button className="btn" onClick={handleLogout}>
+            <button
+              className="btn dark:bg-primary dark:text-white border-none"
+              onClick={handleLogout}
+            >
               Logout
             </button>
           )}
-          <button className="btn" onClick={toggleTheme}>
-            {isDark ? "🔆 Light" : "🌙 Dark"}
-          </button>
         </div>
       </div>
     </>

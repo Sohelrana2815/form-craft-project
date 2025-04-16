@@ -1,7 +1,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
-import { useState } from "react";
 import TemplateList from "./myTemplates/TemplateList";
 import SubmittedFormsList from "./mySubmittedForms/SubmittedFormsList";
+import { useState } from "react";
 
 const PersonalPage = () => {
   const [value, setValue] = useState(0);
@@ -11,8 +11,8 @@ const PersonalPage = () => {
         <Tab label="My Templates" />
         <Tab label="My Submitted Forms" />
       </Tabs>
-      {value === 0 && <TemplateList />}
-      {value === 1 && <SubmittedFormsList />}
+      {value === 0 && <TemplateList />} {/* DataGrid here  */}
+      {value === 1 && <SubmittedFormsList />} {/* DataGrid here */}
     </Box>
   );
 };

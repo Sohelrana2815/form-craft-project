@@ -7,6 +7,7 @@ import PrivateRoute from "./PrivateRoute";
 import ManageUsers from "../pages/admin/manage-users/ManageUsers";
 import Unauthorized from "../pages/error/Unauthorized";
 import PersonalPage from "../pages/personalPage/PersonalPage";
+import TemplateDetailPage from "../pages/personalPage/myTemplates/templateDetailPage/TemplateDetailPage";
 
 const MainRoutes = () => {
   return (
@@ -26,6 +27,7 @@ const MainRoutes = () => {
           />
           <Route path="personal-page" element={<PersonalPage />} />
           <Route path="unauthorized" element={<Unauthorized />} />
+          <Route path="templateDetails" element={<TemplateDetailPage />} />
         </Route>
       </Routes>
     </>

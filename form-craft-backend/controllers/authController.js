@@ -57,14 +57,57 @@ exports.checkConflict = async (req, res) => {
   }
 };
 
+// exports.updateLogin = async (req, res) => {
+//   const userEmail = req.params.email;
+
+//   try {
+//     const checkUser = await db.query(
+//       "SELECT id, uid, is_blocked FROM users WHERE email = $1",
+//       [userEmail]
+//     );
+//     if (checkUser.rowCount === 0) {
+//       return res.status(404).json({ error: "No user found" });
+//     }
+//     const user = checkUser.rows[0];
+//     if (user.is_blocked) {
+//       return res.status(403).json({ error: "User is blocked" });
+//     }
+
+//     const result = await db.query(
+//       "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE email = $1 RETURNING *",
+//       [userEmail]
+//     );
+
+//     // Generate jwt token
+
+//     const token = jwt.sign(
+//       {
+//         uid: user.uid,
+//         email: user.email,
+//         id: user.id,
+//       },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "1h" }
+//     );
+
+//     res.status(200).json({
+//       token,
+//       user: result.rows[0],
+//     });
+//   } catch (error) {
+//     console.log("Error update last login", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
 exports.updateLogin = async (req, res) => {
   const userEmail = req.params.email;
-
   try {
     const checkUser = await db.query(
       "SELECT id, uid, is_blocked FROM users WHERE email = $1",
       [userEmail]
     );
+
     if (checkUser.rowCount === 0) {
       return res.status(404).json({ error: "No user found" });
     }
@@ -78,7 +121,7 @@ exports.updateLogin = async (req, res) => {
       [userEmail]
     );
 
-    // Generate jwt token
+    // GENERATE JWT TOKEN
 
     const token = jwt.sign(
       {
@@ -95,7 +138,7 @@ exports.updateLogin = async (req, res) => {
       user: result.rows[0],
     });
   } catch (error) {
-    console.log("Error update last login", error);
+    console.error("Error update last login:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

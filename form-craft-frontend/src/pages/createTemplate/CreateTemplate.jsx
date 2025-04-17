@@ -1,6 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import TitleDescriptionSection from "../../components/TitleDescriptionSection";
 import { Button } from "@mui/material";
+import ImageUploader from "../../components/ImageUploader";
 
 const CreateTemplate = () => {
   //   const { handleSubmit, control } = useForm();
@@ -12,8 +13,9 @@ const CreateTemplate = () => {
   };
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)}>
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="p-4">
         <TitleDescriptionSection />
+        <ImageUploader />
         <Button type="submit" variant="contained">
           Save
         </Button>

@@ -118,7 +118,7 @@ exports.updateLogin = async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: { email: userEmail },
-      select: { id: true, uid: true, is_blocked: true, email: true },
+      select: { id: true, uid: true, isBlocked: true, email: true },
     });
     if (!user) {
       return res.status(404).json({ error: "No user found." });
@@ -134,8 +134,13 @@ exports.updateLogin = async (req, res) => {
 
     const updateUser = await prisma.user.update({
       where: { email: userEmail },
-      data: { last_login: new Date() },
-      select: { id: true, email: true, uid: true, last_login: true },
+      data: { lastLogin: new Date() },
+      select: {
+        id: true,
+        email: true,
+        uid: true,
+        lastLogin: true,
+      },
     });
 
     // 4. JWT token generate
@@ -154,5 +159,13 @@ exports.updateLogin = async (req, res) => {
       token,
       user: updateUser,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Failed update last login:", error);
+    // Prisma error
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "No user found" });
+    }
+
+    res.status(500).json({ error: "Internal server error" });
+  }
 };

@@ -15,22 +15,23 @@ exports.getUsers = async (req, res) => {
 };
 
 // GET USER BY ID
-exports.getUserById = async (req, res) => {
-  const userId = req.params.id;
-  try {
-    const result = await db.query("SELECT * FROM users WHERE id = $1", [
-      userId,
-    ]);
 
-    if (result.rows.length > 0) {
-      // User found send user data
-      res.json(result.rows[0]);
-    } else {
-      // No user found.
+exports.getUserById = async (req, res) => {
+  const userId = parseInt(req.params.id, 10);
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) {
+      // If no user 404 return
       return res.status(404).json({ error: "No user found" });
     }
+    // if success
+
+    res.status(200).json(user);
   } catch (error) {
-    console.error("Error fetching user", error);
+    console.error("Error fetching user by Id:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -41,13 +42,21 @@ exports.getUserRole = async (req, res) => {
   const email = req.params.email;
 
   try {
-    const result = await db.query("SELECT role FROM users WHERE email = $1", [
-      email,
-    ]);
-    const userRole = result.rows[0]?.role;
-    res.status(200).json({ userRole });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { role: true },
+    });
+
+    if (!user) {
+      // No user
+      return res.status(404).json({ error: "No user found" });
+    }
+    // If success send user role
+
+    res.status(200).json({ userRole: user.role });
   } catch (error) {
-    console.log("Fetching user role error", error);
+    console.error("Error fetching user role:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -55,22 +64,28 @@ exports.getUserRole = async (req, res) => {
 
 exports.blockUsers = async (req, res) => {
   const { userIds, is_blocked } = req.body;
-  console.log(userIds, is_blocked, "Block status API");
 
   try {
-    const userResult = await db.query("SELECT * FROM users");
-    if (userResult.rows.length === 0) {
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true },
+    });
+
+    if (users.length === 0) {
       return res.status(404).json({ error: "No user found" });
     }
-    const result = await db.query(
-      "UPDATE users SET is_blocked = $1 WHERE id = ANY($2::int[]) RETURNING *",
-      [is_blocked, userIds]
-    );
-    res
-      .status(200)
-      .json({ message: "Block status updated.", results: result.rows });
+
+    const updated = await prisma.user.updateMany({
+      where: { id: { in: userIds } },
+      data: { isBlocked: is_blocked },
+    });
+
+    res.status(200).json({
+      message: "Block status updated",
+      results: updated,
+    });
   } catch (error) {
-    console.log("Error update block status");
+    console.error("Error update block status:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -1,16 +1,19 @@
-const db = require("../db");
+const prisma = require("../db");
 const admin = require("../firebase-admin");
 
 // GET ALL USERS
+
 exports.getUsers = async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM users");
-    res.status(200).json(result.rows);
+    const users = await prisma.user.findMany();
+
+    res.status(200).json(users);
   } catch (error) {
-    console.log("Error fetching users:", error);
-    res.status(200).json({ error: "Internal server error" });
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
+
 // GET USER BY ID
 exports.getUserById = async (req, res) => {
   const userId = req.params.id;

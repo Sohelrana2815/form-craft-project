@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const db = require("../db");
+const prisma = require("../db");
 const admin = require("firebase-admin");
 
 exports.signupUser = async (req, res) => {
@@ -7,18 +7,23 @@ exports.signupUser = async (req, res) => {
   console.log(name, email, uid);
 
   try {
-    // 1. Insert into database first
-    const result = await db.query(
-      "INSERT INTO users (name, email, uid) VALUES ($1, $2, $3) RETURNING *",
-      [name, email, uid]
-    );
-    res.status(201).json(result.rows[0]);
+    const newUser = await prisma.user.create({
+      data: { name, email, uid },
+    });
+    res.status(201).json(newUser);
   } catch (error) {
-    if (error.code === "23505") {
+    if (error.code === "P2002") {
       try {
+        // Delete user form firebase
         await admin.auth().deleteUser(uid);
+        res.status(409).json({
+          error: "Email already exist. Firebase!",
+        });
       } catch (firebaseError) {
-        console.error("Firebase Error", firebaseError);
+        console.error("Firebase deletion failed.", firebaseError);
+        res.status(500).json({
+          error: "Email conflict failed to delete firebase user",
+        });
       }
     } else {
       res.status(500).json({ error: "Internal server error" });
@@ -28,32 +33,37 @@ exports.signupUser = async (req, res) => {
 
 exports.checkConflict = async (req, res) => {
   const { name, email } = req.body;
-  console.log(name, email);
 
   try {
     // Check for existing email
-    const emailCheck = await db.query(
-      "SELECT email FROM users WHERE email = $1",
-      [email]
-    );
+    const existingEmail = await prisma.user.findUnique({
+      where: { email },
+      select: { email: true },
+    });
 
     // Check for existing name
 
-    const nameCheck = await db.query("SELECT name FROM users WHERE name = $1", [
-      name,
-    ]);
+    const existingName = await prisma.user.findUnique({
+      where: { name },
+      select: { name: true },
+    });
 
-    if (emailCheck.rows.length > 0) {
-      return res.status(409).json({ error: "Email already exists!" });
+    // Conflict handling
+
+    if (existingEmail) {
+      return res.status(409).json({ error: "This email already used" });
     }
 
-    if (nameCheck.rows.length > 0) {
-      return res.status(409).json({ error: "Name already taken!" });
+    if (existingName) {
+      return res.status(409).json({ error: "This name is already taken" });
     }
-    // No conflict found
+
+    // No conflict
+
     res.status(200).json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Conflict check error", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -102,26 +112,33 @@ exports.checkConflict = async (req, res) => {
 
 exports.updateLogin = async (req, res) => {
   const userEmail = req.params.email;
+
   try {
-    const checkUser = await db.query(
-      "SELECT id, uid, is_blocked FROM users WHERE email = $1",
-      [userEmail]
-    );
+    // 1. Find user
 
-    if (checkUser.rowCount === 0) {
-      return res.status(404).json({ error: "No user found" });
-    }
-    const user = checkUser.rows[0];
-    if (user.is_blocked) {
-      return res.status(403).json({ error: "User is blocked" });
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+      select: { id: true, uid: true, is_blocked: true, email: true },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "No user found." });
     }
 
-    const result = await db.query(
-      "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE email = $1 RETURNING *",
-      [userEmail]
-    );
+    // 2. Block check
 
-    // GENERATE JWT TOKEN
+    if (user.isBlocked) {
+      return res.status(403).json({ error: "User is blocked!" });
+    }
+
+    // 3. Last login update
+
+    const updateUser = await prisma.user.update({
+      where: { email: userEmail },
+      data: { last_login: new Date() },
+      select: { id: true, email: true, uid: true, last_login: true },
+    });
+
+    // 4. JWT token generate
 
     const token = jwt.sign(
       {
@@ -135,10 +152,7 @@ exports.updateLogin = async (req, res) => {
 
     res.status(200).json({
       token,
-      user: result.rows[0],
+      user: updateUser,
     });
-  } catch (error) {
-    console.error("Error update last login:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
+  } catch (error) {}
 };

@@ -93,62 +93,54 @@ exports.blockUsers = async (req, res) => {
 // PATCH ROLE CHANGE
 
 exports.updateUserRole = async (req, res) => {
-  const { role, userIds } = req.body;
+  const { role, userIds } = req.body; // get role and userIds form client
+
   try {
-    const userResult = await db.query("SELECT * FROM users");
-    if (userResult.rows.length === 0) {
+    // Check user is available for this received ids form client side
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true },
+    });
+    if (users.length === 0) {
       return res.status(404).json({ error: "No user found" });
     }
-    const result = await db.query(
-      "UPDATE users SET role = $1 WHERE id = ANY($2::int[]) RETURNING *",
-      [role, userIds]
-    );
-    res
-      .status(200)
-      .json({ message: "User role changed.", results: result.rows });
+    const updated = await prisma.user.updateMany({
+      where: { id: { in: userIds } },
+      data: { role },
+    });
+
+    res.status(200).json({
+      message: "User role updated!",
+      results: updated,
+    });
   } catch (error) {
-    console.log("Error changing role", error);
+    console.error("Error update role:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
 // DELETE USER(S)
 exports.deleteUsers = async (req, res) => {
-  const userIds = req.body.ids; // ARRAY OF IDs
+  const userIds = req.body.ids;
+
   try {
-    // Get uid's from PostgreSQL DB.
-    const uidResult = await db.query(
-      "SELECT uid FROM users WHERE id = ANY($1::int[])",
-      [userIds]
-    );
-    const uIDs = uidResult.rows.map((row) => row.uid);
-    if (uIDs.length === 0) {
+    const usersToDelete = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, uid: true },
+    });
+
+    if (usersToDelete.length === 0) {
       return res.status(404).json({ error: "No user found" });
-    }
-    // Delete user from FIREBASE
-    const firebaseResult = await admin.auth().deleteUsers(uIDs);
-    if (firebaseResult.failureCount > 0) {
-      const errors = firebaseResult.errors.map((err) => ({
-        uid: err.uid,
-        error: err.error.message,
-      }));
-      return rs.status(500).json({
-        error: "Partial deletion failure",
-        details: errors,
-      });
     }
 
-    // SQL query for delete from DB
-    const result = await db.query(
-      "DELETE FROM users WHERE id = ANY($1::int[]) RETURNING *",
-      [userIds]
-    );
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "No user found" });
-    }
-    res.status(200).json({ message: "User(s) deleted.", results: result.rows });
-  } catch (error) {
-    console.log("Error deleting users:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
+    const uIds = usersToDelete.map((u) => u.uid);
+
+    const firebaseResult = await admin.auth().deleteUsers(uIds);
+
+     
+
+
+
+
+  } catch (error) {}
 };

@@ -63,7 +63,7 @@ exports.getUserRole = async (req, res) => {
 // PATCH BLOCK/UNBLOCK
 
 exports.blockUsers = async (req, res) => {
-  const { userIds, is_blocked } = req.body;
+  const { userIds, isBlocked } = req.body;
 
   try {
     const users = await prisma.user.findMany({
@@ -77,7 +77,7 @@ exports.blockUsers = async (req, res) => {
 
     const updated = await prisma.user.updateMany({
       where: { id: { in: userIds } },
-      data: { isBlocked: is_blocked },
+      data: { isBlocked: isBlocked },
     });
 
     res.status(200).json({
@@ -137,10 +137,32 @@ exports.deleteUsers = async (req, res) => {
 
     const firebaseResult = await admin.auth().deleteUsers(uIds);
 
-     
+    if (firebaseResult.failureCount > 0) {
+      const errors = firebaseResult.errors.map((err) => ({
+        uid: err.uid,
+        error: err.error.message,
+      }));
 
+      return res.status(500).json({
+        error: "Partial deletion failure",
+        details: usersToDelete,
+      });
+    }
 
+    // Delete for DB
 
+    await prisma.user.deleteMany({
+      where: { id: { in: userIds } },
+    });
 
-  } catch (error) {}
+    // Send deleted result response
+
+    res.status(200).json({
+      message: "User(s) deleted.",
+      results: usersToDelete,
+    });
+  } catch (error) {
+    console.error("Error deleting users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };

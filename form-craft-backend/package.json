@@ -22,8 +22,9 @@
     "firebase-admin": "^13.2.0",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.14.1",
-    "punycode": "^2.3.1",
-    "prisma": "^6.6.0"
+    "punycode": "^2.3.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "prisma": "^6.6.0"
+  }
 }

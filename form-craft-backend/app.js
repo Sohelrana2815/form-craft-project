@@ -26,6 +26,10 @@ app.use(
 app.use("/api/users", userRoutes);
 app.use("/api", authRoutes);
 
+app.get("/", (req, res) => {
+  console.log("Server is ok!");
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {

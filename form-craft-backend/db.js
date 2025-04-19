@@ -1,21 +1,20 @@
 const { PrismaClient } = require("@prisma/client");
 
-// Prisma client instance
 const prisma = new PrismaClient();
 
-// Connection test (Optional)
-
-async function testConnection() {
+async function testDatabase() {
   try {
-    await prisma.$connect();
-    console.log("✅ Prisma connected.");
+    await prisma.$queryRaw`SELECT 1`;
+    console.log("✅ Database connection successful.");
+
+    const userCount = await prisma.user.count();
+    console.log(`Total users: ${userCount}`);
   } catch (error) {
-    console.error("❌ Failed to connect", error.message);
-  } finally {
-    await prisma.$disconnect();
+    console.error("❌ Database test failed:", error.message);
+    process.exit(1);
   }
 }
 
-testConnection();
+testDatabase();
 
 module.exports = prisma;

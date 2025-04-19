@@ -6,8 +6,8 @@ const app = express();
 
 // Import routes
 
-const userRoutes = require("../routes/userRoutes");
-const authRoutes = require("../routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 // Middlewares
 app.use(express.json());
@@ -26,4 +26,6 @@ app.use(
 app.use("/api/users", userRoutes);
 app.use("/api", authRoutes);
 
-module.exports = app;
+app.listen(3000, () => {
+  console.log(`server running`);
+});

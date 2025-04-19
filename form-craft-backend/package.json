@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "prisma generate",
-    "build": "prisma migrate deploy",
+    "build": "prisma generate && prisma migrate deploy",
     "start": "node app.js",
     "dev": "nodemon app.js",
     "migrate:deploy": "prisma migrate deploy",
@@ -24,8 +24,6 @@
     "pg": "^8.14.1",
     "punycode": "^2.3.1",
     "prisma": "^6.6.0"
-
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }

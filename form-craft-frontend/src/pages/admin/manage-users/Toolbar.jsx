@@ -10,7 +10,7 @@ const Toolbar = ({
   selectedUsers,
 }) => {
   const hasAdmin = selectedUsers.some((user) => user.role === "admin");
-  const allBlocked = selectedUsers.every((user) => user.is_blocked);
+  const allBlocked = selectedUsers.every((user) => user.isBlocked);
 
   return (
     <>

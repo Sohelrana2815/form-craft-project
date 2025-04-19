@@ -23,12 +23,12 @@ const columns = [
     width: 250,
   },
   {
-    field: "created_at",
+    field: "createdAt",
     headerName: "User Since",
     width: 250,
   },
   {
-    field: "last_login",
+    field: "lastLogin",
     headerName: "Last seen",
     width: 250,
   },
@@ -47,7 +47,7 @@ const columns = [
     ),
   },
   {
-    field: "is_blocked",
+    field: "isBlocked",
     headerName: "Blok status",
     width: 200,
     renderCell: (params) => (
@@ -104,7 +104,7 @@ const ManageUsers = () => {
   const blockMutation = useMutation({
     mutationFn: (isBlocked) =>
       axiosSecure.patch("/users/block", {
-        is_blocked: isBlocked,
+        isBlocked: isBlocked,
         userIds: selectedIds,
       }),
     onSuccess: () => {

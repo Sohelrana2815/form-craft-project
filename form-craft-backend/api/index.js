@@ -6,8 +6,8 @@ const app = express();
 
 // Import routes
 
-const userRoutes = require("./routes/userRoutes");
-const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("../routes/userRoutes");
+const authRoutes = require("../routes/authRoutes");
 
 // Middlewares
 app.use(express.json());
@@ -17,6 +17,7 @@ app.use(
       "http://localhost:5173",
       "http://localhost:5174",
       "https://form-craft-152302.web.app",
+      "vercel", // new frontend url
     ],
   })
 );
@@ -25,6 +26,4 @@ app.use(
 app.use("/api/users", userRoutes);
 app.use("/api", authRoutes);
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-});
+module.exports = app;

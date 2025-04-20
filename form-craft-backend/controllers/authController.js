@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const prisma = require("../db");
-const admin = require("../firebase-admin");
+const admin = require("firebase-admin");
 
 exports.signupUser = async (req, res) => {
   const { name, email, uid } = req.body;

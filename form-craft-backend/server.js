@@ -26,11 +26,11 @@ app.use("/api/users", userRoutes);
 app.use("/api", authRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Jump!");
+  res.send("Hello server!");
 });
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Form craft running...${PORT}`);
+  console.log(`🚀Form craft running on port...${PORT}`);
 });

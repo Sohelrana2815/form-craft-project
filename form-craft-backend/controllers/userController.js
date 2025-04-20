@@ -1,5 +1,5 @@
 const prisma = require("../db");
-const admin = require("firebase-admin");
+const admin = require("../firebase-admin/firebase-admin-config");
 
 // GET ALL USERS
 

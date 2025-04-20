@@ -122,6 +122,7 @@ exports.updateUserRole = async (req, res) => {
 // DELETE USER(S)
 exports.deleteUsers = async (req, res) => {
   const userIds = req.body.ids;
+  console.log("Delete APi:", userIds);
 
   try {
     const usersToDelete = await prisma.user.findMany({
@@ -151,7 +152,11 @@ exports.deleteUsers = async (req, res) => {
 
     // Delete for DB
 
-    await prisma.user.deleteMany({
+    // await prisma.user.deleteMany({
+    //   where: { id: { in: userIds } },
+    // });
+
+    const deleteResult = await prisma.user.deleteMany({
       where: { id: { in: userIds } },
     });
 
@@ -159,7 +164,7 @@ exports.deleteUsers = async (req, res) => {
 
     res.status(200).json({
       message: "User(s) deleted.",
-      results: usersToDelete,
+      results: deleteResult,
     });
   } catch (error) {
     console.error("Error deleting users:", error);

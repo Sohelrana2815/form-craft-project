@@ -1,26 +1,30 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 
-const TopicSelector = () => {
+const TagsInput = () => {
   const { control } = useFormContext();
-  const predefinedTopics = ["Education", "Quiz", "Job", "Other"];
+  // Pre-define tags fetch form DB
+
+  const predefinedTags = ["Survey", "Feedback", "JavaScript", "React"];
 
   return (
     <div className="my-4">
       <Controller
-        name="topic"
+        name="tags"
         control={control}
-        defaultValue=""
+        defaultValue={[]}
         render={({ field }) => (
           <Autocomplete
             {...field}
-            options={predefinedTopics}
+            multiple
+            freeSolo
+            options={predefinedTags}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label={<span className="dark:text-gray-300">Topic</span>}
+                label={<span className="dark:text-gray-300">Tag(s)</span>}
                 variant="outlined"
-                required
+                placeholder="Select tag(s)"
               />
             )}
             onChange={(_, data) => field.onChange(data)}
@@ -31,4 +35,4 @@ const TopicSelector = () => {
   );
 };
 
-export default TopicSelector;
+export default TagsInput;

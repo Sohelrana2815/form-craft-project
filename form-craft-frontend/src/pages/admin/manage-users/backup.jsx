@@ -48,7 +48,7 @@ const columns = [
   },
   {
     field: "isBlocked",
-    headerName: "Block Status",
+    headerName: "Blok status",
     width: 200,
     renderCell: (params) => (
       <span
@@ -61,16 +61,17 @@ const columns = [
 ];
 
 const ManageUsers = () => {
-  // // Define the query function to fetch users
-
   const axiosSecure = useAxiosSecure();
   const [selectedIds, setSelectedIds] = useState([]);
   const queryClient = useQueryClient();
+
+  console.log(selectedIds);
+
+  // Define the query function to fetch users
   const fetchUsers = async () => {
     const response = await axiosSecure.get("/users");
     return response.data;
   };
-  console.log(selectedIds);
 
   const {
     isLoading,

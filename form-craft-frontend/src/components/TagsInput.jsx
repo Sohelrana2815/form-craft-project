@@ -2,7 +2,10 @@ import { Autocomplete, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 
 const TagsInput = () => {
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
   // Pre-define tags fetch form DB
 
   const predefinedTags = ["Survey", "Feedback", "JavaScript", "React"];
@@ -13,6 +16,7 @@ const TagsInput = () => {
         name="tags"
         control={control}
         defaultValue={[]}
+        rules={{ required: "Tags is required" }}
         render={({ field }) => (
           <Autocomplete
             {...field}
@@ -31,6 +35,9 @@ const TagsInput = () => {
           />
         )}
       />
+      {errors.tags && (
+        <span className="text-red-600">{errors.tags.message}</span>
+      )}
     </div>
   );
 };

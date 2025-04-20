@@ -10,6 +10,8 @@ const CreateTemplate = () => {
   const onSubmit = async (data) => {
     try {
       console.log("Form Data:", data);
+      // ফাইল অবজেক্ট দেখুন
+      console.log("Selected Image File:", data.image ? data.image[0] : null);
     } catch (error) {
       console.error("Submission failed:", error);
     }

@@ -1,15 +1,17 @@
 import { FaLock, FaRegUser, FaTrash, FaUnlock } from "react-icons/fa";
 import { RiAdminLine } from "react-icons/ri";
+
 const Toolbar = ({
   onDelete,
   onBlock,
   onUnblock,
-  actionDisabled,
   onMakeAdmin,
   onMakeUser,
+  actionDisabled,
   selectedUsers,
 }) => {
   const hasAdmin = selectedUsers.some((user) => user.role === "admin");
+
   const allBlocked = selectedUsers.every((user) => user.isBlocked);
 
   return (
@@ -48,9 +50,9 @@ const Toolbar = ({
               Block
             </button>
             <button
+              title="Unblock"
               onClick={onUnblock}
               disabled={actionDisabled || !allBlocked}
-              title="Unblock"
               className="btn btn-sm bg-green-600 text-white"
             >
               <FaUnlock />
@@ -59,9 +61,9 @@ const Toolbar = ({
 
           {/* Delete */}
           <button
+            title="Delete"
             onClick={onDelete}
             disabled={actionDisabled}
-            title="Delete"
             className="btn btn-sm bg-gray-700 text-white"
           >
             <FaTrash />

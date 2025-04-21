@@ -101,7 +101,6 @@ const ManageUsers = () => {
   });
 
   // block mutation function
-
   const blockMutation = useMutation({
     mutationFn: (isBlocked) =>
       axiosSecure.patch("/users/block", {
@@ -121,16 +120,12 @@ const ManageUsers = () => {
       axiosSecure.patch("/users/role", { role: role, userIds: selectedIds }),
     onSuccess: () => {
       queryClient.invalidateQueries(["users"]);
-      selectedIds([]);
+      setSelectedIds([]);
     },
   });
 
   // Delete selected users
   const handleDelete = () => {
-    if (selectedIds.length === 0) {
-      return;
-    }
-
     Swal.fire({
       title: `Delete ${selectedIds.length} user(s)?`,
       text: "You won't be able to revert this!",
@@ -147,11 +142,12 @@ const ManageUsers = () => {
   };
 
   // Block & unblock handler
+
   const handleBlockUnblock = (isBlocked) => {
     Swal.fire({
       title: `${isBlocked ? "Block" : "Unblock"} ${
         selectedIds.length
-      } user(s)?`,
+      } user(s) `,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#34b233",
@@ -162,16 +158,11 @@ const ManageUsers = () => {
       }
     });
   };
-
   // Role changing handler
 
   const handleRoleChange = (role) => {
-    if (selectedIds.length === 0) {
-      return;
-    }
-
     Swal.fire({
-      title: `Change ${selectedIds.length} person(s) role to ${role}`,
+      title: `Make ${selectedIds.length} person(s) ${role}?`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#003366",

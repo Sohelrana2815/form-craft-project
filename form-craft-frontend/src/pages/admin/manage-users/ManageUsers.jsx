@@ -83,9 +83,10 @@ const ManageUsers = () => {
   });
 
   // delete mutation function
+
   const deleteMutation = useMutation({
     mutationFn: (userIds) =>
-      axiosSecure.delete("/users", { data: { ids: userIds } }), // Send array of IDs
+      axiosSecure.delete("/users", { data: { userIds } }),
     onSuccess: () => {
       Swal.fire({
         title: `Deleted ${selectedIds.length} user(s) successfully!`,
@@ -93,11 +94,12 @@ const ManageUsers = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      // Invalidate the query to remove user from the UI
-      queryClient.invalidateQueries(["users"]); // Refresh data
-      setSelectedIds([]); // Clear selection
+      // Invalidate the old query and fetch users data again
+      queryClient.invalidateQueries(["users"]);
+      setSelectedIds([]);
     },
   });
+
   // block mutation function
 
   const blockMutation = useMutation({
@@ -119,7 +121,7 @@ const ManageUsers = () => {
       axiosSecure.patch("/users/role", { role: role, userIds: selectedIds }),
     onSuccess: () => {
       queryClient.invalidateQueries(["users"]);
-      setSelectedIds([]);
+      selectedIds([]);
     },
   });
 
@@ -128,6 +130,7 @@ const ManageUsers = () => {
     if (selectedIds.length === 0) {
       return;
     }
+
     Swal.fire({
       title: `Delete ${selectedIds.length} user(s)?`,
       text: "You won't be able to revert this!",
@@ -161,12 +164,14 @@ const ManageUsers = () => {
   };
 
   // Role changing handler
-  const handleRoleChange = (role) => {
-    console.log(role);
 
-    if (selectedIds.length === 0) return;
+  const handleRoleChange = (role) => {
+    if (selectedIds.length === 0) {
+      return;
+    }
+
     Swal.fire({
-      title: `Make ${selectedIds.length} user(s) "${role}"?`,
+      title: `Change ${selectedIds.length} person(s) role to ${role}`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#003366",

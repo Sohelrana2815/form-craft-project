@@ -1,25 +1,26 @@
 import { Box, Button } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+// import { useFormContext } from "react-hook-form";
 import { useFormContext } from "react-hook-form";
+// import { useEffect, useState } from "react";
 import { useEffect, useState } from "react";
 const ImageUploader = () => {
   const { register, watch } = useFormContext();
   const [previewUrl, setPreviewUrl] = useState(null);
-
-  // Watch image file capture
   const imageFiles = watch("image");
-  // ফাইল বদলালে প্রিভিউ URL তৈরি করা
+
   useEffect(() => {
     if (imageFiles && imageFiles.length > 0) {
       const file = imageFiles[0];
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
-      // cleanup
+      // Cleanup
       return () => URL.revokeObjectURL(url);
     } else {
       setPreviewUrl(null);
     }
   }, [imageFiles]);
+
   return (
     <Box className="my-4">
       <input
@@ -50,7 +51,7 @@ const ImageUploader = () => {
             style={{ maxWidth: "100%", maxHeight: 200 }}
           />
         ) : (
-          <p className="text-gray-500">Image will appear here</p>
+          <p className="text-gray-500">Image will appear hare</p>
         )}
       </Box>
     </Box>

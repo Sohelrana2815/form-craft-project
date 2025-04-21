@@ -6,7 +6,8 @@ const TagsInput = () => {
     control,
     formState: { errors },
   } = useFormContext();
-  // Pre-define tags fetch form DB
+
+  // Some predefine tags but fetch form DB
 
   const predefinedTags = ["Survey", "Feedback", "JavaScript", "React"];
 

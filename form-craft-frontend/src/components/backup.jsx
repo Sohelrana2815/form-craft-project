@@ -1,61 +1,45 @@
-import { Box, Button } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-// import { useFormContext } from "react-hook-form";
-import { useFormContext } from "react-hook-form";
-// import { useEffect, useState } from "react";
-import { useEffect, useState } from "react";
-const ImageUploader = () => {
-  const { register, watch } = useFormContext();
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const imageFiles = watch("image");
+import { Autocomplete, TextField } from "@mui/material";
+import { Controller, useFormContext } from "react-hook-form";
 
-  useEffect(() => {
-    if (imageFiles && imageFiles.length > 0) {
-      const file = imageFiles[0];
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      // Cleanup
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(null);
-    }
-  }, [imageFiles]);
+const TagsInput = () => {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
+  // Pre-define tags fetch form DB
+
+  const predefinedTags = ["Survey", "Feedback", "JavaScript", "React"];
 
   return (
-    <Box className="my-4">
-      <input
-        type="file"
-        accept="image/*"
-        id="image-upload"
-        hidden
-        {...register("image", { required: true })}
-      />
-
-      <label htmlFor="image-upload">
-        <Button
-          variant="outlined"
-          component="span"
-          startIcon={<CloudUploadIcon />}
-        >
-          Upload image
-        </Button>
-      </label>
-
-      {/* Preview */}
-
-      <Box className="border p-8 rounded-md text-center my-4">
-        {previewUrl ? (
-          <img
-            src={previewUrl}
-            alt="Preview"
-            style={{ maxWidth: "100%", maxHeight: 200 }}
+    <div className="my-4">
+      <Controller
+        name="tags"
+        control={control}
+        defaultValue={[]}
+        rules={{ required: "Tags is required" }}
+        render={({ field }) => (
+          <Autocomplete
+            {...field}
+            multiple
+            freeSolo
+            options={predefinedTags}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={<span className="dark:text-gray-300">Tag(s)</span>}
+                variant="outlined"
+                placeholder="Select tag(s)"
+              />
+            )}
+            onChange={(_, data) => field.onChange(data)}
           />
-        ) : (
-          <p className="text-gray-500">Image will appear hare</p>
         )}
-      </Box>
-    </Box>
+      />
+      {errors.tags && (
+        <span className="text-red-600">{errors.tags.message}</span>
+      )}
+    </div>
   );
 };
 
-export default ImageUploader;
+export default TagsInput;

@@ -1,59 +1,17 @@
-import { Box, Button } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-// import { useFormContext } from "react-hook-form";
+import { Box } from "@mui/material";
 import { useFormContext } from "react-hook-form";
-// import { useEffect, useState } from "react";
-import { useEffect, useState } from "react";
-const ImageUploader = () => {
-  const { register, watch } = useFormContext();
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const imageFiles = watch("image");
 
-  useEffect(() => {
-    if (imageFiles && imageFiles.length > 0) {
-      const file = imageFiles[0];
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      // Cleanup
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(null);
-    }
-  }, [imageFiles]);
+const ImageUploader = () => {
+  const { register } = useFormContext();
 
   return (
     <Box className="my-4">
       <input
         type="file"
+        className="file-input file-input-primary"
         accept="image/*"
-        id="image-upload"
-        hidden
-        {...register("image", { required: true })}
+        {...register("image")}
       />
-
-      <label htmlFor="image-upload">
-        <Button
-          variant="outlined"
-          component="span"
-          startIcon={<CloudUploadIcon />}
-        >
-          Upload image
-        </Button>
-      </label>
-
-      {/* Preview */}
-
-      <Box className="border p-8 rounded-md text-center my-4">
-        {previewUrl ? (
-          <img
-            src={previewUrl}
-            alt="Preview"
-            style={{ maxWidth: "100%", maxHeight: 200 }}
-          />
-        ) : (
-          <p className="text-gray-500">Image will appear hare</p>
-        )}
-      </Box>
     </Box>
   );
 };

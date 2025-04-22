@@ -4,6 +4,7 @@ import ImageUploader from "../../components/ImageUploader";
 import { Button } from "@mui/material";
 import TopicSelector from "../../components/TopicSelector";
 import TagsInput from "../../components/TagsInput";
+import QuestionFields from "../../components/QuestionFields";
 
 const CreateTemplate = () => {
   const methods = useForm();
@@ -23,6 +24,7 @@ const CreateTemplate = () => {
         <ImageUploader />
         <TopicSelector />
         <TagsInput />
+        <QuestionFields />
         <Button type="submit" variant="contained">
           Save
         </Button>

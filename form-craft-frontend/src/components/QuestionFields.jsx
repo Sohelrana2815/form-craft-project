@@ -1,17 +1,13 @@
-import { FormControlLabel, Grid } from "@mui/material";
-import { useFormContext } from "react-hook-form";
+import { Box, Checkbox, TextField } from "@mui/material";
+
 const QuestionFields = () => {
-  const { register } = useFormContext();
-
-  const questionTypes = [
-    { type: "singleLine", label: "Short answer" },
-    { type: "multiLine", label: "Paragraph" },
-    { type: "integer", label: "integer" },
-    { type: "checkbox", label: "Checkbox" },
-  ];
-
   return (
-      
+    <Box>
+      <TextField label="Short answer"  />
+      <TextField label="Paragraph"  />
+      <TextField label="Positive integer"  />
+      <Checkbox label="Checkbox"  />
+    </Box>
   );
 };
 

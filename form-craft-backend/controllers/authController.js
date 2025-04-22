@@ -4,7 +4,6 @@ const admin = require("../firebase-admin/firebase-admin-config");
 
 exports.signupUser = async (req, res) => {
   const { name, email, uid } = req.body;
-  console.log(name, email, uid);
 
   try {
     const newUser = await prisma.user.create({
@@ -14,16 +13,15 @@ exports.signupUser = async (req, res) => {
   } catch (error) {
     if (error.code === "P2002") {
       try {
-        // Delete user form firebase
         await admin.auth().deleteUser(uid);
-        res.status(409).json({
-          error: "Email already exist. Firebase!",
-        });
+        return res.status(409).json({ error: "This Email already exist!" });
       } catch (firebaseError) {
-        console.error("Firebase deletion failed.", firebaseError);
+        console.error("Firebase user delete failed.", firebaseError);
         res.status(500).json({
-          error: "Email conflict failed to delete firebase user",
+          error: "Email conflict failed to delete firebase error",
         });
+
+        res.status(500).json({ error: "Internal server error" });
       }
     } else {
       res.status(500).json({ error: "Internal server error" });
@@ -67,49 +65,6 @@ exports.checkConflict = async (req, res) => {
   }
 };
 
-// exports.updateLogin = async (req, res) => {
-//   const userEmail = req.params.email;
-
-//   try {
-//     const checkUser = await db.query(
-//       "SELECT id, uid, is_blocked FROM users WHERE email = $1",
-//       [userEmail]
-//     );
-//     if (checkUser.rowCount === 0) {
-//       return res.status(404).json({ error: "No user found" });
-//     }
-//     const user = checkUser.rows[0];
-//     if (user.is_blocked) {
-//       return res.status(403).json({ error: "User is blocked" });
-//     }
-
-//     const result = await db.query(
-//       "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE email = $1 RETURNING *",
-//       [userEmail]
-//     );
-
-//     // Generate jwt token
-
-//     const token = jwt.sign(
-//       {
-//         uid: user.uid,
-//         email: user.email,
-//         id: user.id,
-//       },
-//       process.env.JWT_SECRET,
-//       { expiresIn: "1h" }
-//     );
-
-//     res.status(200).json({
-//       token,
-//       user: result.rows[0],
-//     });
-//   } catch (error) {
-//     console.log("Error update last login", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
-
 exports.updateLogin = async (req, res) => {
   const userEmail = req.params.email;
 
@@ -120,6 +75,7 @@ exports.updateLogin = async (req, res) => {
       where: { email: userEmail },
       select: { id: true, uid: true, isBlocked: true, email: true },
     });
+    
     if (!user) {
       return res.status(404).json({ error: "No user found." });
     }

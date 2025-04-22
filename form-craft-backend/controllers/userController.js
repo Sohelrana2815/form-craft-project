@@ -94,6 +94,7 @@ exports.blockUsers = async (req, res) => {
 
 exports.updateUserRole = async (req, res) => {
   const { role, userIds } = req.body; // get role and userIds form client
+  // console.log(`role:${role}, ids:${userIds}`);
 
   try {
     // Check user is available for this received ids form client side
@@ -121,8 +122,8 @@ exports.updateUserRole = async (req, res) => {
 
 // DELETE USER(S)
 exports.deleteUsers = async (req, res) => {
-  const userIds = req.body.ids;
-  console.log("Delete APi:", userIds);
+  const { userIds } = req.body;
+  // console.log("Delete Ids:", userIds);
 
   try {
     const usersToDelete = await prisma.user.findMany({

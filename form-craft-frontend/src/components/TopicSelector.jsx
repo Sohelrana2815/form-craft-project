@@ -18,6 +18,7 @@ const TopicSelector = () => {
         render={({ field }) => (
           <Autocomplete
             {...field}
+            className="w-full md:w-1/4"
             options={predefinedTopics}
             renderInput={(params) => (
               <TextField

@@ -4,6 +4,7 @@ import ImageUploader from "../../components/ImageUploader";
 import { Button } from "@mui/material";
 import TopicSelector from "../../components/TopicSelector";
 import TagsInput from "../../components/TagsInput";
+import QuestionSets from "../../components/questions/QuestionSets";
 
 const CreateTemplate = () => {
   const methods = useForm();
@@ -16,11 +17,12 @@ const CreateTemplate = () => {
   };
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="p-4">
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="md:p-10 p-4">
         <TitleDescriptionSection />
         <ImageUploader />
         <TopicSelector />
         <TagsInput />
+        <QuestionSets />
         <Button type="submit" variant="contained">
           Save
         </Button>

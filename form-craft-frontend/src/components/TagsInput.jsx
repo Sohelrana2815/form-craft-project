@@ -9,7 +9,7 @@ const TagsInput = () => {
 
   // Some predefine tags but fetch form DB
 
-  const predefinedTags = ["Survey", "Feedback", "JavaScript", "React"];
+  const predefinedTags = ["Survey", "Feedback", "JavaScript", "React", "C#","Graphic"];
 
   return (
     <div className="my-4">
@@ -24,6 +24,7 @@ const TagsInput = () => {
             multiple
             freeSolo
             options={predefinedTags}
+            className="w-full md:w-1/4"
             renderInput={(params) => (
               <TextField
                 {...params}

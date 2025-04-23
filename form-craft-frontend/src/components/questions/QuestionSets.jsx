@@ -1,11 +1,12 @@
-import { Box, TextField } from "@mui/material";
+import { Box } from "@mui/material";
+import ShortQuestion from "./typeOfQuestions/ShortQuestion";
 
-const QuestionFields = () => {
+const QuestionSets = () => {
   return (
     <Box>
-      <TextField />
+      <ShortQuestion />
     </Box>
   );
 };
 
-export default QuestionFields;
+export default QuestionSets;

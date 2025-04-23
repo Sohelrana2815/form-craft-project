@@ -10,9 +10,14 @@ const CreateTemplate = () => {
   const methods = useForm();
   const onSubmit = async (data) => {
     try {
-      console.log("Form Data:", data);
-      // ফাইল অবজেক্ট দেখুন
-      console.log("Selected Image File:", data.image ? data.image[0] : null);
+      console.log("Form Data:", {
+        title: data.title,
+        description: data.description,
+        topic: data.topic,
+        tags: data.tags,
+        image: data.image ? data.image[0] : null,
+      });
+      console.log("Question Fields Data:", data);
     } catch (error) {
       console.error("Submission failed:", error);
     }

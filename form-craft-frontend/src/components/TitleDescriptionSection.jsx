@@ -25,7 +25,7 @@ const TitleDescriptionSection = () => {
         render={({ field }) => (
           <TextField
             {...field}
-            className="w-full md:w-1/4"
+            fullWidth
             label={<span className="dark:text-gray-300">Template title</span>}
             variant="standard"
             InputProps={{
@@ -51,7 +51,7 @@ const TitleDescriptionSection = () => {
           defaultValue=""
           rules={{ required: "Description is required" }}
           render={({ field }) => (
-            <MDEditor className="w-full md:w-1/4" data-color-mode={isDark ? "dark" : "light"} {...field} />
+            <MDEditor data-color-mode={isDark ? "dark" : "light"} {...field} />
           )}
         />
       </div>

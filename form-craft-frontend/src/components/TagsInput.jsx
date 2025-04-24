@@ -24,7 +24,6 @@ const TagsInput = () => {
             multiple
             freeSolo
             options={predefinedTags}
-            className="w-full md:w-1/4"
             renderInput={(params) => (
               <TextField
                 {...params}

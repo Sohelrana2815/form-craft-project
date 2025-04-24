@@ -1,10 +1,10 @@
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 const ShortQuestion = () => {
   const { register } = useFormContext();
-  const [questionCount, setQuestionCount] = useState(1);
+  const [questionCount, setQuestionCount] = useState(0);
   const maxQuestions = 4;
 
   const handleAddShortQ = () => {
@@ -20,20 +20,21 @@ const ShortQuestion = () => {
           <TextField
             {...register(`shortQ${index + 1}`)}
             label={`Short question ${index + 1}`}
+            defaultValue=""
             margin="normal"
           />
         </div>
       ))}
 
       {questionCount < maxQuestions && (
-        <button
+        <Button
           title="Add short question"
+          variant="contained"
           type="button"
-          className="btn btn-sm rounded-full btn-neutral"
           onClick={handleAddShortQ}
         >
-          +
-        </button>
+          Add short question
+        </Button>
       )}
 
       {questionCount >= maxQuestions && (

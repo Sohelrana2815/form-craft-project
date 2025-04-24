@@ -1,66 +1,87 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id        Int        @id @default(autoincrement())
-  uid       String     @unique @db.VarChar(255)
-  name      String     @unique @db.VarChar(100)
-  email     String     @unique @db.VarChar(100)
-  createdAt DateTime   @default(now()) @map("created_at")
-  lastLogin DateTime?  @map("last_login")
-  role      String     @default("user") @db.VarChar(10)
-  isBlocked Boolean    @default(false) @map("is_blocked")
-  templates Template[]
-
-  @@map("users")
-}
 
 model Template {
   id          Int      @id @default(autoincrement())
   title       String
   description String
   imageUrl    String?  @map("image_url")
-  user        User     @relation(fields: [userId], references: [id])
-  userId      Int      @map("user_id")
-  topic       String
-  tags        String[] // e.g. ["news", "tech", "prisma"]
+  topic       String   @unique
+  tags        String[]
 
-  // === Single-line questions ===
-  shortQ1 String?
-  shortQ2 String?
-  shortQ3 String?
-  shortQ4 String?
+  // Single-line questions
 
-  // === Multi-line questions ===
-  desQ1 String?
-  desQ2 String?
-  desQ3 String?
-  desQ4 String?
+  shortQ1     String?
+  showShortQ1 Boolean @default(false)
+  shortQ2     String?
+  showShortQ2 Boolean @default(false)
+  shortQ3     String?
+  showShortQ3 Boolean @default(false)
+  shortQ4     String?
+  showShortQ4 Boolean @default(false)
 
-  // === Numeric questions ===
-  positiveInt1 String?
-  positiveInt2 String?
-  positiveInt3 String?
-  positiveInt4 String?
+  // Multi-line question
 
-  // === Checkbox questions ===
-  checkboxQ1        String?
-  checkboxQ1Options String[]
+  desQ1     String?
+  showDesQ1 Boolean @default(false)
+  desQ2     String?
+  showDesQ2 Boolean @default(false)
+  desQ3     String?
+  showDesQ3 Boolean @default(false)
+  desQ4     String?
+  showDesQ4 Boolean @default(false)
 
-  checkboxQ2        String?
-  checkboxQ2Options String[]
+  // Numeric question
 
-  checkboxQ3        String?
-  checkboxQ3Options String[]
+  positiveInt1     String?
+  showPositiveInt1 Boolean @default(false)
+  positiveInt2     String?
+  showPositiveInt2 Boolean @default(false)
+  positiveInt3     String?
+  showPositiveInt3 Boolean @default(false)
+  positiveInt4     String?
+  showPositiveInt4 Boolean @default(false)
 
-  checkboxQ4        String?
-  checkboxQ4Options String[]
+  // Checkbox question 1
+
+  checkboxQ1Question String?
+
+  // Checkbox q1 options
+  checkboxQ1Option1 String?
+  checkboxQ1Option2 String?
+  checkboxQ1Option3 String?
+  checkboxQ1Option4 String?
+
+  // Checkbox question 2
+
+  checkboxQ2Question String?
+
+  // Checkbox q2 options
+
+  checkboxQ2Option1 String?
+  checkboxQ2Option2 String?
+  checkboxQ2Option3 String?
+  checkboxQ2Option4 String?
+
+  // Checkbox question 3
+
+  checkboxQ3Question String?
+
+  // Checkbox q3 options
+
+  checkboxQ3Option1 String?
+  checkboxQ3Option2 String?
+  checkboxQ3Option3 String?
+  checkboxQ3Option4 String?
+
+  // Checkbox question 4
+
+  checkboxQ4Question String?
+
+  // Checkbox q4 options
+
+  checkboxQ4Option1 String?
+  checkboxQ4Option2 String?
+  checkboxQ4Option3 String?
+  checkboxQ4Option4 String?
 
   @@map("templates")
 }

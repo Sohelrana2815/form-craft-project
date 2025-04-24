@@ -6,7 +6,6 @@ const admin = require("../firebase-admin/firebase-admin-config");
 exports.getUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany();
-
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -18,16 +17,15 @@ exports.getUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   const userId = parseInt(req.params.id, 10);
-
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
+
     if (!user) {
       // If no user 404 return
       return res.status(404).json({ error: "No user found" });
     }
-    // if success
 
     res.status(200).json(user);
   } catch (error) {
@@ -35,8 +33,6 @@ exports.getUserById = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-// GET USER ROLE
 
 exports.getUserRole = async (req, res) => {
   const email = req.params.email;

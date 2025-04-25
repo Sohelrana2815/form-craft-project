@@ -1,29 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import useAxiosPublic from "../../../hooks/useAxiosPublic";
-import TemplateForm from "./TemplateForm";
+import { Link } from "react-router";
+import useTemplates from "../../../hooks/useTemplates";
 
 const GalleryTemplate = () => {
-  const axiosPublic = useAxiosPublic();
-
-  const fetchTemplates = async () => {
-    const response = await axiosPublic.get("/templates");
-    return response.data;
-  };
-
-  const {
-    data: templates = [],
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["templates"],
-    queryFn: fetchTemplates,
-  });
-
-  const publicTemplates = templates.filter(
-    (pTemplate) => pTemplate.accessType === "PUBLIC"
-  );
-  // show loading
+  const { data: templates, isLoading, isError, error } = useTemplates();
 
   if (isLoading) {
     return <p className="loading loading-dots loading-xl text-blue-700"></p>;
@@ -33,22 +12,28 @@ const GalleryTemplate = () => {
     return <p>Error Loading users: {error.message}</p>;
   }
 
+  const publicTemplates = templates.filter(
+    (pTemplate) => pTemplate.accessType === "PUBLIC"
+  );
+
   return (
     <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {publicTemplates.map((template) => (
-        <div key={template.id} className="card bg-base-100 w-96 shadow-sm">
-          <figure className="px-10 pt-10">
-            <img
-              src={template?.imageUrl}
-              alt={template.title}
-              className="rounded-xl"
-            />
-          </figure>
-          <div className="card-body items-center text-center">
-            <h2 className="card-title">{template.title}</h2>
-            <p className="font-medium">Topic: {template.topic}</p>
+        <Link key={template.id} to={`/templateForm/${template.id}`}>
+          <div className="card bg-base-100 w-96 shadow-sm">
+            <figure className="px-10 pt-10">
+              <img
+                src={template?.imageUrl}
+                alt={template.title}
+                className="rounded-xl"
+              />
+            </figure>
+            <div className="card-body items-center text-center">
+              <h2 className="card-title">{template.title}</h2>
+              <p className="font-medium">Topic: {template.topic}</p>
+            </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

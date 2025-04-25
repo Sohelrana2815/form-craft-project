@@ -4,6 +4,7 @@ import { useFormContext } from "react-hook-form";
 const ImageUploader = () => {
   const { register } = useFormContext();
 
+
   return (
     <Box className="my-4">
       <input

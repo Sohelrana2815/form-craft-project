@@ -9,6 +9,7 @@ import Unauthorized from "../pages/error/Unauthorized";
 import PersonalPage from "../pages/personalPage/PersonalPage";
 import TemplateDetailPage from "../pages/personalPage/myTemplates/templateDetailPage/TemplateDetailPage";
 import CreateTemplate from "../pages/createTemplate/CreateTemplate";
+import TemplateForm from "../pages/home/gallery/TemplateForm";
 
 const MainRoutes = () => {
   return (
@@ -26,6 +27,7 @@ const MainRoutes = () => {
               </PrivateRoute>
             }
           />
+          <Route path="templateForm/:id" element={<TemplateForm />} />
           <Route path="personal-page" element={<PersonalPage />} />
           <Route path="unauthorized" element={<Unauthorized />} />
           <Route path="templateDetails" element={<TemplateDetailPage />} />

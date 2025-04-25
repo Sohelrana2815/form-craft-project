@@ -10,14 +10,15 @@ datasource db {
 // USER MODEL (users table)
 
 model User {
-  id        Int       @id @default(autoincrement())
-  uid       String    @unique @db.VarChar(255)
-  name      String    @unique @db.VarChar(100)
-  email     String    @unique @db.VarChar(100)
-  createdAt DateTime  @default(now()) @map("created_at")
-  lastLogin DateTime? @map("last_login")
-  role      String    @default("user") @db.VarChar(10)
-  isBlocked Boolean   @default(false) @map("is_blocked")
+  id               Int        @id @default(autoincrement())
+  uid              String     @unique @db.VarChar(255)
+  name             String     @unique @db.VarChar(100)
+  email            String     @unique @db.VarChar(100)
+  createdAt        DateTime   @default(now()) @map("created_at")
+  lastLogin        DateTime?  @map("last_login")
+  role             String     @default("user") @db.VarChar(10)
+  isBlocked        Boolean    @default(false) @map("is_blocked")
+  allowedTemplates Template[] @relation("TemplateAllowedUsers")
 
   @@map("users")
 }
@@ -38,6 +39,11 @@ model Tag {
   @@map("tags")
 }
 
+enum AccessType {
+  PUBLIC
+  RESTRICTED
+}
+
 // TEMPLATE MODEL (templates table)
 
 model Template {
@@ -47,6 +53,11 @@ model Template {
   imageUrl    String?  @map("image_url")
   topic       String
   tags        String[] @default([])
+
+  // Access setting
+  accessType   AccessType @default(PUBLIC)
+  allowedUsers User[]     @relation("TemplateAllowedUsers") // many to many relation
+
   // Single-line questions
 
   shortQ1     String?

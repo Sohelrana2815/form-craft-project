@@ -19,6 +19,7 @@ model User {
   role             String     @default("user") @db.VarChar(10)
   isBlocked        Boolean    @default(false) @map("is_blocked")
   allowedTemplates Template[] @relation("TemplateAllowedUsers")
+  Template         Template[]
 
   @@map("users")
 }
@@ -58,6 +59,8 @@ model Template {
   accessType   AccessType @default(PUBLIC)
   allowedUsers User[]     @relation("TemplateAllowedUsers") // many to many relation
 
+  createdBy   User @relation(fields: [createdById], references: [id])
+  createdById Int
   // Single-line questions
 
   shortQ1     String?

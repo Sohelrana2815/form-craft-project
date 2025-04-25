@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "AccessType" AS ENUM ('PUBLIC', 'RESTRICTED');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -36,6 +39,8 @@ CREATE TABLE "templates" (
     "image_url" TEXT,
     "topic" TEXT NOT NULL,
     "tags" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "accessType" "AccessType" NOT NULL DEFAULT 'PUBLIC',
+    "createdById" INTEGER NOT NULL,
     "shortQ1" TEXT,
     "showShortQ1" BOOLEAN NOT NULL DEFAULT false,
     "shortQ2" TEXT,
@@ -84,6 +89,14 @@ CREATE TABLE "templates" (
     CONSTRAINT "templates_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_TemplateAllowedUsers" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_TemplateAllowedUsers_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_uid_key" ON "users"("uid");
 
@@ -98,3 +111,15 @@ CREATE UNIQUE INDEX "topics_name_key" ON "topics"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tags_name_key" ON "tags"("name");
+
+-- CreateIndex
+CREATE INDEX "_TemplateAllowedUsers_B_index" ON "_TemplateAllowedUsers"("B");
+
+-- AddForeignKey
+ALTER TABLE "templates" ADD CONSTRAINT "templates_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_TemplateAllowedUsers" ADD CONSTRAINT "_TemplateAllowedUsers_A_fkey" FOREIGN KEY ("A") REFERENCES "templates"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_TemplateAllowedUsers" ADD CONSTRAINT "_TemplateAllowedUsers_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

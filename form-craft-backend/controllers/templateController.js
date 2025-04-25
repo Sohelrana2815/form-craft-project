@@ -2,7 +2,8 @@ const prisma = require("../db");
 
 exports.createTemplate = async (req, res) => {
   const postData = req.body;
-  console.log(postData);
+  const userId = req?.user?.id;
+  console.log(postData, userId);
 
   try {
     // Insert Data
@@ -14,6 +15,9 @@ exports.createTemplate = async (req, res) => {
         title: postData.title,
         description: postData.description,
         imageUrl: postData.imageUrl,
+        accessType: postData.accessType || "PUBLIC",
+        createdById: userId,
+
         // Short questions
         shortQ1: postData.shortQ1,
         showShortQ1: postData.showShortQ1,
@@ -67,7 +71,7 @@ exports.createTemplate = async (req, res) => {
         checkboxQ4Option4: postData.checkboxQ4Option4,
       },
     });
-
+    console.log(newTemplate);
     res.status(201).json(newTemplate);
   } catch (error) {
     console.error("Error catching template:", error);

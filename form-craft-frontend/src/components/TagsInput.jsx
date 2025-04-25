@@ -1,29 +1,53 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
+import useAxiosPublic from "../hooks/useAxiosPublic";
+import { useQuery } from "@tanstack/react-query";
 
 const TagsInput = () => {
+  const axiosPublic = useAxiosPublic();
   const {
     control,
-    formState: { errors },
+    // formState: { errors },
   } = useFormContext();
 
-  // Some predefine tags but fetch form DB
+  const fetchTags = async () => {
+    const response = await axiosPublic.get("/tags");
+    return response.data;
+  };
 
-  const predefinedTags = ["Survey", "Feedback", "JavaScript", "React", "C#","Graphic"];
+  const {
+    isLoading,
+    isError,
+    data: tags = [],
+    error,
+  } = useQuery({
+    queryKey: ["tags"],
+    queryFn: fetchTags,
+  });
 
+  const tag = tags.map((tagName) => tagName.name);
+
+  // Add tag event handler
+
+  if (isLoading) {
+    return <p className="loading loading-dots loading-xl text-blue-700"></p>;
+  }
+  if (isError) {
+    return <p>Error Loading users: {error.message}</p>;
+  }
   return (
     <div className="my-4">
       <Controller
         name="tags"
         control={control}
         defaultValue={[]}
-        rules={{ required: "Tags is required" }}
+        // rules={{ required: "Tags is required" }}
         render={({ field }) => (
           <Autocomplete
             {...field}
             multiple
             freeSolo
-            options={predefinedTags}
+            options={tag}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -36,9 +60,9 @@ const TagsInput = () => {
           />
         )}
       />
-      {errors.tags && (
+      {/* {errors.tags && (
         <span className="text-red-600">{errors.tags.message}</span>
-      )}
+      )} */}
     </div>
   );
 };

@@ -1,15 +1,21 @@
-import { Button, TextField } from "@mui/material";
+import { TextField, Checkbox, FormControlLabel } from "@mui/material";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-
+import { FaRegTrashAlt } from "react-icons/fa";
 const ShortQuestion = () => {
   const { register } = useFormContext();
   const [questionCount, setQuestionCount] = useState(0);
   const maxQuestions = 4;
 
-  const handleAddShortQ = () => {
+  const addQuestion = () => {
     if (questionCount < maxQuestions) {
-      setQuestionCount((prevCount) => prevCount + 1);
+      setQuestionCount((prev) => prev + 1);
+    }
+  };
+
+  const removeQuestion = () => {
+    if (questionCount <= maxQuestions) {
+      setQuestionCount((prev) => prev - 1);
     }
   };
 
@@ -23,25 +29,39 @@ const ShortQuestion = () => {
             defaultValue=""
             margin="normal"
           />
+          <br />
+          <FormControlLabel
+            control={
+              <Checkbox
+                {...register(`showShortQ${index + 1}`)}
+                defaultChecked={true}
+              />
+            }
+            label="Show in results"
+          />
         </div>
       ))}
 
-      {questionCount < maxQuestions && (
-        <Button
-          title="Add short question"
-          variant="contained"
-          type="button"
-          onClick={handleAddShortQ}
-        >
-          Add short question
-        </Button>
-      )}
-
-      {questionCount >= maxQuestions && (
-        <p className="text-red-600 text-sm">
-          You have reached the maximum number of short questions (4).
-        </p>
-      )}
+      <div className="flex items-center gap-x-4">
+        {questionCount < maxQuestions && (
+          <button
+            className="btn rounded-full"
+            type="button"
+            onClick={addQuestion}
+          >
+            + Add short Q .
+          </button>
+        )}
+        {questionCount > 0 && (
+          <button
+            className="text-red-600"
+            type="button"
+            onClick={removeQuestion}
+          >
+            <FaRegTrashAlt />
+          </button>
+        )}
+      </div>
     </div>
   );
 };

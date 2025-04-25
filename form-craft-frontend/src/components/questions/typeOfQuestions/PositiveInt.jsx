@@ -1,6 +1,7 @@
-import { Button, TextField } from "@mui/material";
+import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const PositiveInt = () => {
   const { register } = useFormContext();
@@ -8,9 +9,14 @@ const PositiveInt = () => {
   const [questionCount, setQuestionCount] = useState(0);
   const maxQuestions = 4;
 
-  const handleAddPositiveInt = () => {
+  const addQuestion = () => {
     if (questionCount < maxQuestions) {
       setQuestionCount((prevCount) => prevCount + 1);
+    }
+  };
+  const removeQuestion = () => {
+    if (questionCount <= maxQuestions) {
+      setQuestionCount((prev) => prev - 1);
     }
   };
 
@@ -19,29 +25,44 @@ const PositiveInt = () => {
       {Array.from({ length: questionCount }, (_, index) => (
         <div key={index}>
           <TextField
-            {...register(`positiveInt${index + 1}`, { valueAsNumber: true })}
-            label={`Numeric value${index + 1}`}
+            {...register(`positiveInt${index + 1}`)}
+            label={`Number type Q${index + 1}`}
             defaultValue=""
-            type="number"
-            inputProps={{
-              min: 1,
-              step: 1,
-            }}
             margin="normal"
+          />
+          <br />
+          <FormControlLabel
+            control={
+              <Checkbox
+                {...register(`showPositiveIntQ${index + 1}`)}
+                defaultChecked={true}
+              />
+            }
+            label="Show in results"
           />
         </div>
       ))}
 
-      {questionCount < maxQuestions && (
-        <Button
-          title="Add numeric value question"
-          variant="contained"
-          type="button"
-          onClick={handleAddPositiveInt}
-        >
-          Add numeric question
-        </Button>
-      )}
+      <div className="flex items-center gap-x-4">
+        {questionCount < maxQuestions && (
+          <button
+            className="btn rounded-full"
+            type="button"
+            onClick={addQuestion}
+          >
+            + Numeric value Q .
+          </button>
+        )}
+        {questionCount > 0 && (
+          <button
+            className="text-red-600"
+            type="button"
+            onClick={removeQuestion}
+          >
+            <FaRegTrashAlt />
+          </button>
+        )}
+      </div>
     </div>
   );
 };

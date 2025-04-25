@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, IconButton } from "@mui/material";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const CheckBoxQuestion = () => {
   const { register } = useFormContext();
@@ -24,49 +25,74 @@ const CheckBoxQuestion = () => {
     }
   };
 
+  // প্রশ্ন ডিলিট করুন
+  const removeQuestion = (qIndex) => {
+    const filteredQuestions = questions.filter((_, index) => index !== qIndex);
+    setQuestions(filteredQuestions);
+  };
+
+  // অপশন ডিলিট করুন
+  const removeOption = (qIndex, oIndex) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[qIndex].options = updatedQuestions[qIndex].options.filter(
+      (_, index) => index !== oIndex
+    );
+    setQuestions(updatedQuestions);
+  };
+
   return (
     <div className="my-4 space-y-6">
       {questions.map((question, qIndex) => (
-        <div key={qIndex} className="space-y-4">
-          {/* প্রশ্নের ইনপুট ফিল্ড */}
-          <TextField
-            {...register(`checkboxQ${qIndex + 1}.question`)}
-            label={`Checkbox Question ${qIndex + 1}`}
-            fullWidth
-            margin="normal"
-          />
+        <div key={qIndex} className="space-y-4 border p-3 rounded-md">
+          <div className="flex items-center gap-2">
+            <TextField
+              {...register(`checkboxQ${qIndex + 1}.question`)}
+              label={`Checkbox Question ${qIndex + 1}`}
+            />
 
-          {/* অপশনগুলোর জন্য ফিল্ড */}
+            <IconButton
+              size="medium"
+              color="error"
+              type="button"
+              onClick={() => removeQuestion(qIndex)}
+            >
+              <FaRegTrashAlt />
+            </IconButton>
+          </div>
+
           {question.options.map((_, oIndex) => (
-            <div key={oIndex} className="ml-4">
+            <div key={oIndex} className="ml-4 flex items-center gap-2">
               <TextField
                 {...register(`checkboxQ${qIndex + 1}.option${oIndex + 1}`)}
                 label={`Option ${oIndex + 1}`}
-                fullWidth
-                margin="normal"
               />
+              <IconButton
+                size="small"
+                type="button"
+                color="error"
+                onClick={() => removeOption(qIndex, oIndex)}
+              >
+                <FaRegTrashAlt />
+              </IconButton>
             </div>
           ))}
 
-          {/* অপশন যোগ বাটন (সর্বোচ্চ ৪টি) */}
           {question.options.length < maxOptions && (
-            <Button
-              variant="contained"
-              color="secondary"
+            <button
+              type="button"
               onClick={() => addOption(qIndex)}
-              className="ml-4"
+              className="bg-purple-600 btn btn-sm text-white"
             >
-              Add Option
-            </Button>
+              + Add option
+            </button>
           )}
         </div>
       ))}
 
-      {/* নতুন প্রশ্ন যোগ বাটন (সর্বোচ্চ ৪টি) */}
       {questions.length < maxQuestions && (
-        <Button variant="contained" color="primary" onClick={addQuestion}>
-          Add Checkbox Question
-        </Button>
+        <button className="btn btn-outline" type="button" onClick={addQuestion}>
+          + Add checkbox Q.
+        </button>
       )}
     </div>
   );

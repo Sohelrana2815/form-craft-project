@@ -1,4 +1,4 @@
-import { Link, Navigate, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import { updateProfile } from "firebase/auth";
@@ -80,10 +80,7 @@ const SignupPage = () => {
     <div className="hero bg-base-200 min-h-screen dark:bg-[#121212] dark:text-black">
       <div className="hero-content w-full ">
         <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl  ">
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="card-body"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="card-body">
             <h2 className="text-center text-2xl font-semibold">Sign up</h2>
             <fieldset className="fieldset">
               <label className="fieldset-label">Name</label>

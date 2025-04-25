@@ -1,6 +1,7 @@
-import { Button, TextField } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const DesQuestion = () => {
   const { register } = useFormContext();
@@ -9,9 +10,15 @@ const DesQuestion = () => {
   const [questionCount, setQuestionCount] = useState(0);
   const maxQuestions = 4;
 
-  const handleAddDesQ = () => {
+  const addQuestion = () => {
     if (questionCount < maxQuestions) {
       setQuestionCount((prev) => prev + 1);
+    }
+  };
+
+  const removeQuestion = () => {
+    if (questionCount <= maxQuestions) {
+      setQuestionCount((prev) => prev - 1);
     }
   };
 
@@ -23,21 +30,42 @@ const DesQuestion = () => {
           <TextField
             {...register(`desQ${index + 1}`)}
             label={`Paragraph ${index + 1}`}
-            multiline
-            rows={4}
             defaultValue=""
-            className="w-full md:w-[400px]"
             margin="normal"
+          />
+          <br />
+          <FormControlLabel
+            control={
+              <Checkbox
+                {...register(`showDesQ${index + 1}`)}
+                defaultChecked={true}
+              />
+            }
+            label="Show in results"
           />
         </div>
       ))}
 
-      {/* ৪ টার কম হলে বাটন দেখাবে */}
-      {questionCount < maxQuestions && (
-        <Button variant="contained" type="button" onClick={handleAddDesQ}>
-          Add describable question
-        </Button>
-      )}
+      <div className="flex items-center gap-x-4">
+        {questionCount < maxQuestions && (
+          <button
+            className="btn rounded-full"
+            type="button"
+            onClick={addQuestion}
+          >
+            + Paragraph Q .
+          </button>
+        )}
+        {questionCount > 0 && (
+          <button
+            className="text-red-600"
+            type="button"
+            onClick={removeQuestion}
+          >
+            <FaRegTrashAlt />
+          </button>
+        )}
+      </div>
     </div>
   );
 };

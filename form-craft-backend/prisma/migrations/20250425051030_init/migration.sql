@@ -21,11 +21,21 @@ CREATE TABLE "topics" (
 );
 
 -- CreateTable
+CREATE TABLE "tags" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "tags_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "templates" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "image_url" TEXT,
+    "topic" TEXT NOT NULL,
+    "tags" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "shortQ1" TEXT,
     "showShortQ1" BOOLEAN NOT NULL DEFAULT false,
     "shortQ2" TEXT,
@@ -42,13 +52,13 @@ CREATE TABLE "templates" (
     "showDesQ3" BOOLEAN NOT NULL DEFAULT false,
     "desQ4" TEXT,
     "showDesQ4" BOOLEAN NOT NULL DEFAULT false,
-    "positiveInt1" INTEGER,
+    "positiveInt1" TEXT,
     "showPositiveInt1" BOOLEAN NOT NULL DEFAULT false,
-    "positiveInt2" INTEGER,
+    "positiveInt2" TEXT,
     "showPositiveInt2" BOOLEAN NOT NULL DEFAULT false,
-    "positiveInt3" INTEGER,
+    "positiveInt3" TEXT,
     "showPositiveInt3" BOOLEAN NOT NULL DEFAULT false,
-    "positiveInt4" INTEGER,
+    "positiveInt4" TEXT,
     "showPositiveInt4" BOOLEAN NOT NULL DEFAULT false,
     "checkboxQ1Question" TEXT,
     "checkboxQ1Option1" TEXT,
@@ -85,3 +95,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "topics_name_key" ON "topics"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tags_name_key" ON "tags"("name");

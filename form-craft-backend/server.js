@@ -10,6 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const topicRoutes = require("./routes/topicRoutes");
+const tagRoutes = require("./routes/tagRoutes");
 // Middlewares
 app.use(express.json());
 app.use(
@@ -27,6 +28,9 @@ app.use("/api/users", userRoutes);
 app.use("/api", authRoutes);
 app.use("/api", templateRoutes);
 app.use("/api", topicRoutes);
+app.use("/api", tagRoutes);
+
+// Default /
 app.get("/", (req, res) => {
   res.send("Hello server!");
 });

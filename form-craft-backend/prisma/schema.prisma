@@ -31,14 +31,22 @@ model Topic {
   @@map("topics")
 }
 
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  @@map("tags")
+}
+
 // TEMPLATE MODEL (templates table)
 
 model Template {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String
-  imageUrl    String? @map("image_url")
-
+  imageUrl    String?  @map("image_url")
+  topic       String
+  tags        String[] @default([])
   // Single-line questions
 
   shortQ1     String?
@@ -63,13 +71,13 @@ model Template {
 
   // Numeric question
 
-  positiveInt1     Int?
+  positiveInt1     String?
   showPositiveInt1 Boolean @default(false)
-  positiveInt2     Int?
+  positiveInt2     String?
   showPositiveInt2 Boolean @default(false)
-  positiveInt3     Int?
+  positiveInt3     String?
   showPositiveInt3 Boolean @default(false)
-  positiveInt4     Int?
+  positiveInt4     String?
   showPositiveInt4 Boolean @default(false)
 
   // Checkbox question 1

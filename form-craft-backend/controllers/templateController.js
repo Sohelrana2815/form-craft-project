@@ -9,6 +9,8 @@ exports.createTemplate = async (req, res) => {
 
     const newTemplate = await prisma.template.create({
       data: {
+        topic: postData.topic,
+        tags: postData.tags,
         title: postData.title,
         description: postData.description,
         imageUrl: postData.imageUrl,

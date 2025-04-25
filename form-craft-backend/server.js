@@ -8,7 +8,7 @@ const app = express();
 
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
-
+const templateRoutes = require("./routes/templateRoutes");
 // Middlewares
 app.use(express.json());
 app.use(
@@ -24,7 +24,7 @@ app.use(
 // Routes handlers
 app.use("/api/users", userRoutes);
 app.use("/api", authRoutes);
-
+app.use("/api", templateRoutes);
 app.get("/", (req, res) => {
   res.send("Hello server!");
 });

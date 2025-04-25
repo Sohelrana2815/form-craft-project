@@ -54,13 +54,13 @@ model Template {
 
   // Numeric question
 
-  positiveInt1     String?
+  positiveInt1     Int?
   showPositiveInt1 Boolean @default(false)
-  positiveInt2     String?
+  positiveInt2     Int?
   showPositiveInt2 Boolean @default(false)
-  positiveInt3     String?
+  positiveInt3     Int?
   showPositiveInt3 Boolean @default(false)
-  positiveInt4     String?
+  positiveInt4     Int?
   showPositiveInt4 Boolean @default(false)
 
   // Checkbox question 1

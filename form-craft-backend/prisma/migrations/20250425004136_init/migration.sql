@@ -13,6 +13,14 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
+CREATE TABLE "topics" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "topics_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "templates" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
@@ -74,3 +82,6 @@ CREATE UNIQUE INDEX "users_name_key" ON "users"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "topics_name_key" ON "topics"("name");

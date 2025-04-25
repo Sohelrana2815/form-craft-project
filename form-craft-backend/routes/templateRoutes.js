@@ -5,7 +5,7 @@ const router = express.Router();
 const templateController = require("../controllers/templateController");
 const { verifyToken } = require("../middleware/authMiddleware");
 
-router.post("/templates",verifyToken, templateController.createTemplate);
+router.post("/templates", verifyToken, templateController.createTemplate);
 router.get("/templates", templateController.getTemplates);
-
+router.get("/templates/:id", templateController.getTemplateById);
 module.exports = router;

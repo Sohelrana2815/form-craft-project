@@ -88,3 +88,26 @@ exports.getTemplates = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.getTemplateById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "Template ID is required" });
+    }
+
+    const template = await prisma.template.findUnique({
+      where: { id: parseInt(id, 10) },
+    });
+
+    if (!template) {
+      return res.status(404).json({ error: "Template not found" });
+    }
+
+    res.status(200).json(template);
+  } catch (error) {
+    console.error("Error fetching single template", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

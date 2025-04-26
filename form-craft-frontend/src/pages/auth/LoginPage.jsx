@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { useForm } from "react-hook-form";
@@ -55,23 +55,23 @@ const LoginPage = () => {
             <fieldset className="fieldset">
               <label className="fieldset-label">Email</label>
               <input
-                {...register("email", { required: true })}
+                {...register("email", { required: "Password is required" })}
                 type="email"
                 className="input w-full focus:outline-none focus:border-blue-500"
                 placeholder="Email"
               />
               {errors.email && (
-                <span className="text-red-600">Email is required</span>
+                <span className="text-red-600">{errors.email.message}</span>
               )}
               <label className="fieldset-label">Password</label>
               <input
-                {...register("password", { required: true })}
+                {...register("password", { required: "Password is required" })}
                 type="password"
                 className="input w-full focus:outline-none focus:border-blue-500"
                 placeholder="Password"
               />
               {errors.password && (
-                <span className="text-red-600">Password is required</span>
+                <span className="text-red-600">{errors.password.message}</span>
               )}
               <button type="submit" className="btn bg-blue-600 text-white mt-4">
                 Login

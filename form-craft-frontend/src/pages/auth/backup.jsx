@@ -1,7 +1,7 @@
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
-import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { useForm } from "react-hook-form";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 
 const LoginPage = () => {
@@ -9,12 +9,8 @@ const LoginPage = () => {
   const axiosPublic = useAxiosPublic();
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Navigate user to the desire page
-
+  // console.log("location in login page", location);
   const from = location.state?.from?.pathname || "/";
-
-  // React hook form
   const {
     register,
     handleSubmit,
@@ -23,15 +19,12 @@ const LoginPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Destructured
       const { email, password } = data;
       const userCredential = await loginUser(email, password);
       const user = userCredential.user;
-
-      // if login success & got user (update lastLogin)
       if (user) {
         const response = await axiosPublic.patch(`/login/${user?.email}`);
-        console.log("login page:", response.data.updateUser);
+        console.log("login page:", response.data);
 
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);

@@ -46,24 +46,23 @@ exports.checkConflict = async (req, res) => {
       select: { name: true },
     });
 
-    // Conflict handling
-
+    // If already exist user name & email in DB, then return the user
     if (existingEmail) {
-      return res.status(409).json({ error: "This email already used" });
+      return res.status(409).json({ error: "This email already exist!" });
     }
-
     if (existingName) {
-      return res.status(409).json({ error: "This name is already taken" });
+      return res.status(409).json({ error: "This name is already taken." });
     }
 
     // No conflict
 
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error("Conflict check error", error);
+    console.error("Conflict check error:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.updateLogin = async (req, res) => {
   const userEmail = req.params.email;
@@ -75,7 +74,7 @@ exports.updateLogin = async (req, res) => {
       where: { email: userEmail },
       select: { id: true, uid: true, isBlocked: true, email: true },
     });
-    
+
     if (!user) {
       return res.status(404).json({ error: "No user found." });
     }

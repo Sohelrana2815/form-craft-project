@@ -48,13 +48,13 @@ enum AccessType {
 // TEMPLATE MODEL (templates table)
 
 model Template {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  imageUrl    String?  @map("image_url")
-  topic       String
-  tags        String[] @default([])
-
+  id           Int        @id @default(autoincrement())
+  title        String
+  description  String
+  imageUrl     String?    @map("image_url")
+  topic        String
+  tags         String[]   @default([])
+  createdAt    DateTime   @default(now())
   // Access setting
   accessType   AccessType @default(PUBLIC)
   allowedUsers User[]     @relation("TemplateAllowedUsers") // many to many relation

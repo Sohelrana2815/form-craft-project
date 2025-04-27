@@ -6,12 +6,11 @@ const { verifyToken } = require("../middleware/authMiddleware");
 
 router.get("/templates", templateController.getTemplates);
 router.post("/templates", verifyToken, templateController.createTemplate);
-router.get("/templates/:id", templateController.getTemplateById);
-
 router.get(
   "/templates/my-templates",
   verifyToken,
   templateController.getMyTemplates
 );
+router.get("/templates/:id", templateController.getTemplateById);
 
 module.exports = router;

@@ -31,7 +31,14 @@ const MainRoutes = () => {
           <Route path="personal-page" element={<PersonalPage />} />
           <Route path="unauthorized" element={<Unauthorized />} />
           <Route path="templateDetails" element={<TemplateDetailPage />} />
-          <Route path="create-template" element={<CreateTemplate />} />
+          <Route
+            path="create-template"
+            element={
+              <PrivateRoute>
+                <CreateTemplate />
+              </PrivateRoute>
+            }
+          />
         </Route>
       </Routes>
     </>

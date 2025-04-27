@@ -3,21 +3,28 @@ import ReactMarkdown from "react-markdown";
 import { useParams } from "react-router";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
-import { TextField, Checkbox, FormControlLabel, Button } from "@mui/material";
+import {
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  Button,
+  Box,
+} from "@mui/material";
 import Swal from "sweetalert2";
+import useAuth from "../../../hooks/useAuth";
 
 const TemplateForm = () => {
   const { id } = useParams();
   const axiosPublic = useAxiosPublic();
   const { register, handleSubmit } = useForm();
-
-  // Fetch single template data
-
+  const { user } = useAuth();
+  // Fetch single template
   const fetchTemplate = async () => {
-    const response = await axiosPublic.get(`/template/${id}`);
+    const response = await axiosPublic.get(`/templates/${id}`);
     return response.data;
   };
-  // Tanstack query
+
+  // React tanstack query to load template data
   const {
     data: template,
     isLoading,
@@ -27,27 +34,153 @@ const TemplateForm = () => {
     queryKey: ["template", id],
     queryFn: fetchTemplate,
   });
-  // Template form data collect and submit form
+
+  // React main onsubmit handler to submit template form
+
   const onSubmit = async (data) => {
     try {
-      const response = axiosPublic.post(`/form/${id}`, data);
-      Swal.fire("Form submitted successfully!", "", "success");
+      // await axiosPublic.post(`/forms/${id}`, data);
+      console.log(data);
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Failed to submit form", "error");
+      Swal.fire("Error", "Failed to submit the form", "error");
     }
   };
 
-  // Loading & error state
+  // Show loading & error
+
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>{error.message}</p>;
   if (!template) return <p>No template found.</p>;
 
-  const renderQuestion = (question, show, label, type = "text") => {
-    if (!show || !question) return null;
+  const renderQuestions = (qPrefix, type = "text") => {
+    return Array.from({ length: 4 }, (_, i) => {
+      const questionNumber = i + 1;
+      // question property
+      const questionKey = `${qPrefix}${questionNumber}`;
+      // Actual question value
+      const question = template[questionKey];
+      // Remove white spaces and try to get the question it self
+      if (!question?.trim()) return null;
 
-    return <TextField />;
+      return (
+        <TextField
+          disabled={!user}
+          key={questionKey}
+          fullWidth
+          label={question}
+          type={type}
+          margin="normal"
+          InputProps={{
+            inputProps: {
+              min: type === "number" ? 0 : undefined,
+            },
+          }}
+          {...register(questionKey)}
+        />
+      );
+    });
   };
+
+  const renderCheckboxQuestions = () => {
+    return Array.from({ length: 4 }, (_, i) => {
+      const questionNumber = i + 1;
+      const questionKey = `checkboxQ${questionNumber}Question`;
+      const question = template[questionKey];
+
+      if (!question?.trim()) return null;
+
+      const options = Array.from({ length: 4 }, (_, j) => {
+        const optionNumber = j + 1;
+        return template[`checkboxQ${questionNumber}Option${optionNumber}`];
+      }).filter((opt) => opt?.trim());
+
+      return (
+        <Box key={questionKey} sx={{ mb: 3 }}>
+          <p className="mb-2 font-medium">{question}</p>
+          {options.map((option, index) => (
+            <FormControlLabel
+              key={index}
+              control={
+                <Checkbox
+                  disabled={!user}
+                  value={option}
+                  {...register(`checkboxQ${questionNumber}`)}
+                />
+              }
+              label={option}
+            />
+          ))}
+        </Box>
+      );
+    });
+  };
+
+  return (
+    <>
+      <div className="p-4 max-w-5xl mx-auto">
+        {!user && (
+          <div className="text-red-500 text-center my-4">
+            Please login to fill out this template.
+          </div>
+        )}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Common Fields */}
+          <div className="mb-8">
+            {template.imageUrl && (
+              <img
+                src={template.imageUrl}
+                alt={template.title}
+                className="mb-4 rounded-lg max-h-64 object-cover"
+              />
+            )}
+            <h1 className="text-2xl font-bold mb-2">{template.title}</h1>
+
+            <div className="prose mb-4">
+              <ReactMarkdown>{template.description}</ReactMarkdown>
+            </div>
+
+            <div className="flex gap-2 mb-4">
+              <span className="bg-gray-200 px-2 py-1 rounded">
+                {template.topic}
+              </span>
+              {template.tags.map((tag, index) => (
+                <span key={index} className="bg-blue-100 px-2 py-1 rounded">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Questions */}
+
+          <div className="space-y-4">
+            {/* Short Questions */}
+            {renderQuestions("shortQ", "text")}
+
+            {/* Paragraph Questions */}
+            {renderQuestions("desQ", "textarea")}
+
+            {/* Numeric Questions */}
+            {renderQuestions("positiveInt", "number")}
+
+            {/* Checkbox Questions */}
+            {renderCheckboxQuestions()}
+          </div>
+
+          <Button
+            type="submit"
+            disabled={!user}
+            variant="contained"
+            color="primary"
+            sx={{ mt: 3 }}
+          >
+            Submit Form
+          </Button>
+        </form>
+      </div>
+    </>
+  );
 };
 
 export default TemplateForm;

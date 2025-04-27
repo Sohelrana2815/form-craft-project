@@ -1,16 +1,23 @@
+import { useForm } from "react-hook-form";
+import ReactMarkdown from "react-markdown";
 import { useParams } from "react-router";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
+import { TextField, Checkbox, FormControlLabel, Button } from "@mui/material";
+import Swal from "sweetalert2";
 
 const TemplateForm = () => {
   const { id } = useParams();
   const axiosPublic = useAxiosPublic();
+  const { register, handleSubmit } = useForm();
+
+  // Fetch single template data
 
   const fetchTemplate = async () => {
-    const response = await axiosPublic.get(`/templates/${id}`);
+    const response = await axiosPublic.get(`/template/${id}`);
     return response.data;
   };
-
+  // Tanstack query
   const {
     data: template,
     isLoading,
@@ -20,67 +27,27 @@ const TemplateForm = () => {
     queryKey: ["template", id],
     queryFn: fetchTemplate,
   });
+  // Template form data collect and submit form
+  const onSubmit = async (data) => {
+    try {
+      const response = axiosPublic.post(`/form/${id}`, data);
+      Swal.fire("Form submitted successfully!", "", "success");
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to submit form", "error");
+    }
+  };
+
+  // Loading & error state
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>{error.message}</p>;
   if (!template) return <p>No template found.</p>;
 
-  return (
-    <>
+  const renderQuestion = (question, show, label, type = "text") => {
+    if (!show || !question) return null;
 
-
-    
-      <div className="hero bg-base-200">
-        <div className="hero-content flex-col w-full">
-          <form className="card bg-base-100 w-full md:w-2/3 shrink-0 shadow-2xl">
-            <div className="card-body">
-              <fieldset className="fieldset">
-                <label className="label">Email</label>
-                <input type="email" className="input" placeholder="Email" />
-                <label className="label">Password</label>
-                <input
-                  type="password"
-                  className="input"
-                  placeholder="Password"
-                />
-                <div>
-                  <a className="link link-hover">Forgot password?</a>
-                </div>
-                <button className="btn btn-neutral mt-4">Login</button>
-              </fieldset>
-            </div>
-          </form>
-        </div>
-      </div>
-    </>
-  );
+    return <TextField />;
+  };
 };
 
 export default TemplateForm;
-
-// Template Form : {id}
-// <div>
-//   {/* Common fields */}
-//   image, title, description, topic, tags,
-// </div>
-// <div>
-//   {/* Custom question part */}
-//   Short q1
-//   Short q2
-//   Short q3
-//   Short q4
-//   {/* des */}
-//   long q1
-//   long q2
-//   long q3
-//   long q4
-//   {/* num */}
-//   num q1
-//   num q2
-//   num q3
-//   num q4
-//   {/* checkbox */}
-//   num q1
-//   num q2
-//   num q3
-//   num q4
-// </div>

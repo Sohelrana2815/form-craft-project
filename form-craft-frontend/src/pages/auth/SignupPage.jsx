@@ -13,6 +13,7 @@ const SignupPage = () => {
   const logOutUser = async () => {
     await logOut();
   };
+  // React hook form
   const {
     register,
     handleSubmit,
@@ -32,7 +33,7 @@ const SignupPage = () => {
         throw new Error(checkResponse.data.error);
       }
 
-      // Step 2: Proceed to create Firebase account ONLY if no conflict
+      // Step 2: Proceed to create Firebase account if no existing user in DB.
       const userCredential = await createUser(email, password);
       const user = userCredential.user;
       await updateProfile(user, { displayName: name });

@@ -166,7 +166,7 @@ const ManageUsers = () => {
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#003366",
-      cancelButtonColor: "#CF142B",
+      cancelButtonColor: "#CF142B", 
     }).then((result) => {
       if (result.isConfirmed) {
         roleMutation.mutate(role);

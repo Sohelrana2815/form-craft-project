@@ -111,3 +111,35 @@ exports.getTemplateById = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.getMyTemplates = async (req, res) => {
+  try {
+    const templates = await prisma.template.findMany({
+      where: {
+        createdById: req.user?.id,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        topic: true,
+        createdAt: true,
+        accessType: true,
+        createdBy: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.json(templates);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json("Internal server error");
+  }
+};

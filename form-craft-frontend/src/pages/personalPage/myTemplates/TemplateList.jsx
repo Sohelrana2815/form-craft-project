@@ -1,34 +1,33 @@
-import { useQuery } from "@tanstack/react-query";
-
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { Link } from "react-router";
+import { useNavigate } from "react-router";
 
 import { Box, Typography } from "@mui/material";
-import useAuth from "../../../hooks/useAuth";
 import { DataGrid } from "@mui/x-data-grid";
+import useMyTemplates from "../../../hooks/useMyTemplates";
 
 const TemplateList = () => {
-  const axiosSecure = useAxiosSecure();
-  const { user } = useAuth();
-
-  const fetchTemplates = async () => {
-    const response = await axiosSecure.get("/templates/my-templates");
-    return response.data;
-  };
-
-  const {
-    data: templates,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["userTemplates"],
-    queryFn: fetchTemplates,
-    enabled: !!user,
-  });
+  const navigate = useNavigate();
+  const { templates, isLoading, isError, error } = useMyTemplates();
 
   const columns = [
     { field: "id", headerName: "ID", width: 100 },
-    { field: "title", headerName: "Title", width: 200 },
+    {
+      field: "title",
+      headerName: "Title",
+      width: 200,
+      renderCell: (params) => {
+        <Link
+          to={`/templates/${params.row.id}`}
+          style={{
+            textDecoration: "underline",
+            color: "#1976d2",
+            cursor: "pointer",
+          }}
+        >
+          {params.value}
+        </Link>;
+      },
+    },
     { field: "tags", headerName: "Tags", width: 200 },
     { field: "topic", headerName: "Topic", width: 200 },
     { field: "accessType", headerName: "Access", width: 200 },
@@ -45,6 +44,7 @@ const TemplateList = () => {
         rows={templates || []}
         columns={columns}
         getRowId={(row) => row.id}
+        onRowClick={(params) => navigate(`/templates/${params.row.id}`)}
         sx={{
           "& .MuiDataGrid-cell": {
             borderRight: "1px solid rgba(224, 224, 224, 0.5)",

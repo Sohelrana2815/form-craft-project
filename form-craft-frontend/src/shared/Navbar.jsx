@@ -57,7 +57,7 @@ const Navbar = () => {
         </li>
       )}
       <li>
-        <NavLink to="personal-page">Personal Page</NavLink>
+        <NavLink to="personal">Personal Page</NavLink>
       </li>
     </>
   );

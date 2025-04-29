@@ -35,7 +35,7 @@ const CreateTemplate = () => {
       // 2) Build postData using the *image* response
       const postData = {
         ...restOfData,
-        imageUrl: imgRes.data.data.display_url,
+        imageUrl: imgRes.data.data.display_url ?? null,
       };
       console.log(postData);
 

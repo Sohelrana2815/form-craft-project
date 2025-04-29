@@ -5,7 +5,9 @@ import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-
+// date-fns
+import { formatDistanceToNow } from "date-fns";
+//--------------------------------------------------------//
 const columns = [
   {
     field: "id",
@@ -26,6 +28,13 @@ const columns = [
     field: "createdAt",
     headerName: "User Since",
     width: 250,
+    renderCell: (params) => {
+      if (!params.value) {
+        return "N/A";
+      }
+      const date = new Date(params.value);
+      return formatDistanceToNow(date, { addSuffix: true });
+    },
   },
   {
     field: "lastLogin",
@@ -166,7 +175,7 @@ const ManageUsers = () => {
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#003366",
-      cancelButtonColor: "#CF142B", 
+      cancelButtonColor: "#CF142B",
     }).then((result) => {
       if (result.isConfirmed) {
         roleMutation.mutate(role);

@@ -4,7 +4,8 @@ import { useNavigate } from "react-router";
 import { Box, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import useMyTemplates from "../../../hooks/useMyTemplates";
-
+import { formatDistanceToNow } from "date-fns";
+//------------------------------------------------//
 const TemplateList = () => {
   const navigate = useNavigate();
   const { templates, isLoading, isError, error } = useMyTemplates();
@@ -31,7 +32,18 @@ const TemplateList = () => {
     { field: "tags", headerName: "Tags", width: 200 },
     { field: "topic", headerName: "Topic", width: 200 },
     { field: "accessType", headerName: "Access", width: 200 },
-    { field: "createdAt", headerName: "Created at", width: 200 },
+    {
+      field: "createdAt",
+      headerName: "Created at",
+      width: 200,
+      renderCell: (params) => {
+        if (!params.value) {
+          return "N/A";
+        }
+        const date = new Date(params.value);
+        return formatDistanceToNow(date, { addSuffix: true });
+      },
+    },
   ];
   if (isLoading) return <Typography>Loading templates...</Typography>;
 

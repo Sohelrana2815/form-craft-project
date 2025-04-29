@@ -17,7 +17,7 @@ const SignupPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -119,7 +119,7 @@ const SignupPage = () => {
                 type="submit"
                 className="btn bg-blue-600 text-white mt-4 border-none"
               >
-                Sign Up
+                {isSubmitting ? "Singing up..." : "Sign up"}
               </button>
             </fieldset>
             <p className="text-center text-[14px]">

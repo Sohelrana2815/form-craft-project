@@ -18,7 +18,7 @@ const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -74,7 +74,7 @@ const LoginPage = () => {
                 <span className="text-red-600">{errors.password.message}</span>
               )}
               <button type="submit" className="btn bg-blue-600 text-white mt-4">
-                Login
+                {isSubmitting ? "Login..." : "Login"}
               </button>
             </fieldset>
             <p className="text-center text-[14px]">

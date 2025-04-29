@@ -1,6 +1,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import GeneralSettings from "./templateSettings/GeneralSettings";
+import EditTemplate from "./templateSettings/EditTemplate";
 
 const TemplatePage = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -19,7 +20,7 @@ const TemplatePage = () => {
         </Tabs>
 
         {tabValue === 0 && <GeneralSettings />}
-        {tabValue === 1 && <p>Edit template</p>}
+        {tabValue === 1 && <EditTemplate />}
         {tabValue === 2 && <p>Results</p>}
         {tabValue === 3 && <p>Aggregation</p>}
       </Box>

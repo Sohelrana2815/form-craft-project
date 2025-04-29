@@ -17,7 +17,7 @@ const GalleryTemplate = () => {
   );
 
   return (
-    <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-5">
       {publicTemplates.map((template) => (
         <Link key={template.id} to={`/templateForm/${template.id}`}>
           <div className="card bg-base-100 w-96 shadow-sm">

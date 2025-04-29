@@ -13,4 +13,6 @@ router.get(
 );
 router.get("/templates/:id", templateController.getTemplateById);
 
+router.patch("/templates/:id", templateController.updateTemplate);
+
 module.exports = router;

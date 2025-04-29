@@ -4,7 +4,6 @@ exports.createTemplate = async (req, res) => {
   const postData = req.body;
   const userId = req?.user?.id;
   console.log(postData, userId);
-
   try {
     // Insert Data
 
@@ -141,6 +140,25 @@ exports.getTemplateById = async (req, res) => {
     res.status(200).json(template);
   } catch (error) {
     console.error("Error fetching single template", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.updateTemplate = async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  console.log(data);
+
+  console.log(id);
+
+  try {
+    const updatedTemplate = await prisma.template.update({
+      where: { id: Number(id) },
+      data: data,
+    });
+    res.status(200).json(updatedTemplate);
+  } catch (error) {
+    console.error("Error updating template", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

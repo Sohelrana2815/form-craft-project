@@ -20,6 +20,7 @@ model User {
   isBlocked        Boolean    @default(false) @map("is_blocked")
   allowedTemplates Template[] @relation("TemplateAllowedUsers")
   Template         Template[]
+  Comment          Comment[]
 
   @@map("users")
 }
@@ -43,6 +44,23 @@ model Tag {
 enum AccessType {
   PUBLIC
   RESTRICTED
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String   @db.Text // @db.text for long comments
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt // Automatically update on edit (Stamp)
+  // Relationships
+
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade) // Delete comments when that template is delete 
+  templateId Int
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId   Int
+
+  @@index([templateId]) // For efficient querying
+  @@index([authorId]) // For efficient querying
+  @@map("comments")
 }
 
 // TEMPLATE MODEL (templates table)
@@ -136,6 +154,7 @@ model Template {
   checkboxQ4Option2 String?
   checkboxQ4Option3 String?
   checkboxQ4Option4 String?
+  Comment           Comment[]
 
   @@map("templates")
 }

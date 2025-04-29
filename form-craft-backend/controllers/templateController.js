@@ -100,7 +100,8 @@ exports.getMyTemplates = async (req, res) => {
         title: true,
         description: true,
         topic: true,
-        createdBy: true,
+        tags: true,
+        createdAt: true,
         accessType: true,
         createdBy: {
           select: {
@@ -110,7 +111,7 @@ exports.getMyTemplates = async (req, res) => {
         },
       },
       orderBy: {
-        id: "desc",
+        createdAt: "desc",
       },
     });
 

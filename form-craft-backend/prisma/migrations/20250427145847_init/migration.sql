@@ -39,6 +39,7 @@ CREATE TABLE "templates" (
     "image_url" TEXT,
     "topic" TEXT NOT NULL,
     "tags" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "accessType" "AccessType" NOT NULL DEFAULT 'PUBLIC',
     "createdById" INTEGER NOT NULL,
     "shortQ1" TEXT,

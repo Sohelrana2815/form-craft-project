@@ -161,3 +161,96 @@ exports.updateTemplate = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// Add Comment
+
+exports.addComment = async (req, res) => {
+  try {
+    // Get text object from client side
+    const { text } = req.body;
+    const { templateId } = req.params;
+    const authorId = req.user.id;
+
+    // Validate input
+    if (!text) {
+      return res.status(400).json({ error: "Comment text is required" });
+    }
+
+    const template = await prisma.comment.findUnique({
+      where: { id: parseInt(templateId, 10) },
+    });
+
+    // // If i don't find any template using findUnique then
+    if (!template) {
+      return res.status(404).json({ error: "Template not found" });
+    }
+
+    // Create comment
+
+    const newComment = await prisma.comment.create({
+      data: {
+        text,
+        templateId: parseInt(templateId, 10),
+        authorId: authorId,
+      },
+    });
+    res.status(201).json(newComment);
+  } catch (error) {
+    console.error("Error adding comments:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// GET COMMENTS by template id
+
+exports.getCommentsByTemplateId = async (req, res) => {
+  try {
+    const { templateId } = req.params;
+    const comments = await prisma.comment.findMany({
+      where: { templateId: parseInt(templateId, 10) },
+      include: {
+        author: true,
+      },
+    });
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.addLike = async (req, res) => {
+  try {
+    const { templateId } = req.params;
+    const userId = req.user.id; // FROM JWT TOKEN
+    const existingLike = await prisma.like.findUnique({
+      where: {
+        userId_templateId: {
+          userId: userId,
+          templateId: templateId,
+        },
+      },
+    });
+
+    if (existingLike) {
+      return res
+        .status(409)
+        .json({ error: "User already liked this template" });
+    }
+
+    // Create a new like
+
+    const newLike = await prisma.like.create({
+      data: {
+        userId: userId,
+        templateId: templateId,
+      },
+    });
+
+    res.status(201).json(newLike);
+  } catch (error) {
+    console.error("Error handling like:", error);
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

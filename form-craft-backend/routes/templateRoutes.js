@@ -15,4 +15,21 @@ router.get("/templates/:id", templateController.getTemplateById);
 
 router.patch("/templates/:id", templateController.updateTemplate);
 
+router.post(
+  "/templates/:templateId/comments",
+  verifyToken,
+  templateController.addComment
+);
+
+router.get(
+  "/templates/:templateId/comments",
+  templateController.getCommentsByTemplateId
+);
+
+router.post(
+  "/templates/:templateId/likes",
+  verifyToken,
+  templateController.addLike
+);
+
 module.exports = router;

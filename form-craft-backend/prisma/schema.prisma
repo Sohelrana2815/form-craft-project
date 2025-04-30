@@ -21,6 +21,7 @@ model User {
   allowedTemplates Template[] @relation("TemplateAllowedUsers")
   Template         Template[]
   Comment          Comment[]
+  Like             Like[]
 
   @@map("users")
 }
@@ -44,6 +45,16 @@ model Tag {
 enum AccessType {
   PUBLIC
   RESTRICTED
+}
+
+model Like {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  templateId Int
+  template   Template @relation(fields: [templateId], references: [id])
+
+  @@unique([userId, templateId])
 }
 
 model Comment {
@@ -155,6 +166,7 @@ model Template {
   checkboxQ4Option3 String?
   checkboxQ4Option4 String?
   Comment           Comment[]
+  Like              Like[]
 
   @@map("templates")
 }

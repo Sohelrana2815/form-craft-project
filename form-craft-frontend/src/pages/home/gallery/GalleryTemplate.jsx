@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import useTemplates from "../../../hooks/useTemplates";
-
+import svg from "../../../assets/no-template.webp";
 const GalleryTemplate = () => {
   const { data: templates, isLoading, isError, error } = useTemplates();
 
@@ -10,6 +10,17 @@ const GalleryTemplate = () => {
 
   if (isError) {
     return <p>Error Loading users: {error.message}</p>;
+  }
+
+  if (!templates.length) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-10">
+        <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+          No template Found
+        </p>
+        <img src={svg} alt="No template" className="max-w-xs h-auto mx-auto" />
+      </div>
+    );
   }
 
   const publicTemplates = templates.filter(

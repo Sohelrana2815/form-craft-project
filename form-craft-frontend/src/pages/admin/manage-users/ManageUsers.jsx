@@ -40,6 +40,13 @@ const columns = [
     field: "lastLogin",
     headerName: "Last seen",
     width: 250,
+    renderCell: (params) => {
+      if (!params.value) {
+        return "N/A";
+      }
+      const date = new Date(params.value);
+      return formatDistanceToNow(date, { addSuffix: true });
+    },
   },
   {
     field: "role",

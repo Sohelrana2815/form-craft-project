@@ -25,6 +25,7 @@ const EditTemplate = () => {
   }, [template, reset]);
 
   const onSubmit = async (data) => {
+    console.log("Edit template page:", data);
     try {
       const response = await axiosPublic.patch(`/templates/${id}`, data);
       console.log(response.data);

@@ -34,8 +34,8 @@ const LoginPage = () => {
         console.log("login page:", response.data.updateUser);
 
         if (response.data.token) {
-          localStorage.setItem("token", response.data.token);
           navigate(from, { replace: true });
+          localStorage.setItem("token", response.data.token);
         }
       }
     } catch (error) {

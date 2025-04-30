@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
+import CommentsForm from "../../../components/commentsForm/CommentsForm";
 
 const TemplateForm = () => {
   const { id } = useParams();
@@ -170,14 +171,17 @@ const TemplateForm = () => {
 
           <Button
             type="submit"
-            disabled={!user}
+            disabled
             variant="contained"
             color="primary"
             sx={{ mt: 3 }}
           >
             Submit Form
           </Button>
+          <p className="text-red-600">Not build yet. soon it be functional</p>
         </form>
+
+        <CommentsForm />
       </div>
     </>
   );

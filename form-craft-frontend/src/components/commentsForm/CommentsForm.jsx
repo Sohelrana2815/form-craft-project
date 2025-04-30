@@ -1,0 +1,78 @@
+import { Box, Button, TextField } from "@mui/material";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { useParams } from "react-router";
+import CommentLists from "./CommentLists";
+
+const CommentsForm = () => {
+  const [commentText, setCommentText] = useState("");
+  const { id } = useParams();
+  const templateId = parseInt(id);
+  const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient(); // Get the query client
+
+  const {
+    mutate: addComment,
+    isLoading,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: (text) =>
+      axiosSecure.post(`/templates/${templateId}/comments`, { text }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["comments", templateId]);
+      setCommentText("");
+      alert("Posted");
+    },
+    onError: (err) => {
+      console.error("Error adding comment:", err);
+    },
+  });
+
+  const handleCommentChange = (e) => {
+    setCommentText(e.target.value);
+  };
+
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+    if (commentText.trim()) {
+      addComment(commentText);
+    }
+  };
+
+  return (
+    <>
+      <form onSubmit={handleCommentSubmit}>
+        <Box>
+          <TextField
+            multiline
+            rows={3}
+            value={commentText}
+            onChange={handleCommentChange}
+            label="Comments"
+            placeholder="Type something to enable this comment button."
+            fullWidth
+            margin="normal"
+          />
+          <Box className="flex justify-end">
+            <Button
+              disabled={!commentText.trim() || isLoading}
+              type="submit"
+              variant="contained"
+              color="success"
+              className="justify-end"
+            >
+              {isLoading ? "Posting..." : `Comment`}
+            </Button>
+          </Box>
+          {isError && <div>{error.message}</div>}
+        </Box>
+      </form>
+      {/* Comments */}
+      <CommentLists templateId={templateId} />
+    </>
+  );
+};
+
+export default CommentsForm;

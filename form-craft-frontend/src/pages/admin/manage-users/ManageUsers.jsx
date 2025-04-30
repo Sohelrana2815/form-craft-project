@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 // date-fns
 import { formatDistanceToNow } from "date-fns";
+import { useTheme } from "../../../providers/ThemeProvider";
 // ------------------------------ IMPORT ----------------------------------//
 const columns = [
   {
@@ -78,7 +79,8 @@ const columns = [
 
 const ManageUsers = () => {
   // // Define the query function to fetch users
-
+  // Theme
+  const { isDark } = useTheme();
   const axiosSecure = useAxiosSecure();
   const [selectedIds, setSelectedIds] = useState([]);
   const queryClient = useQueryClient();
@@ -221,6 +223,36 @@ const ManageUsers = () => {
           rowSelectionModel={selectedIds}
           onRowSelectionModelChange={(newSelection) => {
             setSelectedIds(newSelection);
+          }}
+          sx={{
+            "& .MuiDataGrid-columnHeaderTitle": {
+              color: isDark ? "#fff !important" : "#000 !important",
+            },
+            "& .MuiDataGrid-columnHeader": {
+              backgroundColor: isDark ? "#1e1e1e" : "#f5f5f5",
+              "&:hover, &:focus": {
+                backgroundColor: isDark ? "#383838" : "#e0e0e0",
+              },
+            },
+            "& .MuiDataGrid-menuIcon": {
+              color: isDark ? "#fff" : "#000",
+            },
+            "& .MuiDataGrid-sortIcon": {
+              color: isDark ? "#fff" : "#000",
+            },
+            "& .MuiDataGrid-columnSeparator": {
+              color: isDark ? "#666" : "#e0e0e0",
+            },
+            color: isDark ? "#fff" : "#000",
+            backgroundColor: isDark ? "#121212" : "#fff",
+            borderColor: isDark ? "rgba(255, 255, 255, 0.12)" : "#e0e0e0",
+            "& .MuiDataGrid-row": {
+              "&:hover": {
+                backgroundColor: isDark
+                  ? "rgba(255, 255, 255, 0.08)"
+                  : "rgba(0, 0, 0, 0.04)",
+              },
+            },
           }}
         />
       </div>

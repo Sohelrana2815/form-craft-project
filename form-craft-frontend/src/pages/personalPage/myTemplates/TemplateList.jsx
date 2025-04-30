@@ -1,4 +1,3 @@
-import { Link } from "react-router";
 import { useNavigate } from "react-router";
 
 import { Box, Typography } from "@mui/material";
@@ -10,6 +9,8 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { useTheme } from "../../../providers/ThemeProvider";
+
 //------------------------------------------------//
 const columns = [
   { field: "id", headerName: "ID", width: 100 },
@@ -36,6 +37,7 @@ const columns = [
 ];
 //----------------------------------//
 const TemplateList = () => {
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
   const { templates, isLoading, isError, error } = useMyTemplates();
@@ -85,7 +87,7 @@ const TemplateList = () => {
         onDelete={handleDelete}
         actionDisabled={selectedIds.length === 0}
       />
-      <Box sx={{ height: 600, width: "100%", p: 4 }}>
+      <Box className="p-4 max-w-6xl mx-auto" sx={{ height: 600 }}>
         <DataGrid
           rows={templates || []}
           columns={columns}
@@ -97,8 +99,33 @@ const TemplateList = () => {
           }}
           onRowClick={(params) => navigate(`/templates/${params.row.id}`)}
           sx={{
-            "& .MuiDataGrid-cell": {
-              borderRight: "1px solid rgba(224, 224, 224, 0.5)",
+            "& .MuiDataGrid-columnHeaderTitle": {
+              color: isDark ? "#fff !important" : "#000 !important",
+            },
+            "& .MuiDataGrid-columnHeader": {
+              backgroundColor: isDark ? "#1e1e1e" : "#f5f5f5",
+              "&:hover, &:focus": {
+                backgroundColor: isDark ? "#383838" : "#e0e0e0",
+              },
+            },
+            "& .MuiDataGrid-menuIcon": {
+              color: isDark ? "#fff" : "#000",
+            },
+            "& .MuiDataGrid-sortIcon": {
+              color: isDark ? "#fff" : "#000",
+            },
+            "& .MuiDataGrid-columnSeparator": {
+              color: isDark ? "#666" : "#e0e0e0",
+            },
+            color: isDark ? "#fff" : "#000",
+            backgroundColor: isDark ? "#121212" : "#fff",
+            borderColor: isDark ? "rgba(255, 255, 255, 0.12)" : "#e0e0e0",
+            "& .MuiDataGrid-row": {
+              "&:hover": {
+                backgroundColor: isDark
+                  ? "rgba(255, 255, 255, 0.08)"
+                  : "rgba(0, 0, 0, 0.04)",
+              },
             },
           }}
         />

@@ -24,7 +24,9 @@ const Toolbar = ({
             <button
               onClick={onMakeAdmin}
               disabled={actionDisabled || hasAdmin}
-              className="btn btn-sm bg-purple-600 text-white"
+              className="btn btn-sm
+              dark:border-primary
+              bg-purple-600 text-white"
             >
               <RiAdminLine />
               Make Admin
@@ -33,7 +35,8 @@ const Toolbar = ({
               onClick={onMakeUser}
               disabled={actionDisabled || !hasAdmin}
               title="Remove admin role and make normal user"
-              className="btn btn-sm bg-blue-600 text-white"
+              className="btn btn-sm bg-blue-600 text-white dark:border-primary
+              "
             >
               <FaRegUser />
             </button>
@@ -44,7 +47,9 @@ const Toolbar = ({
             <button
               onClick={onBlock}
               disabled={actionDisabled || allBlocked}
-              className="btn btn-sm bg-red-600 text-white"
+              className="btn btn-sm bg-red-600
+               dark:border-primary
+              text-white"
             >
               <FaLock />
               Block
@@ -53,7 +58,7 @@ const Toolbar = ({
               title="Unblock"
               onClick={onUnblock}
               disabled={actionDisabled || !allBlocked}
-              className="btn btn-sm bg-green-600 text-white"
+              className="btn btn-sm bg-green-600 text-white  dark:border-primary"
             >
               <FaUnlock />
             </button>
@@ -64,7 +69,7 @@ const Toolbar = ({
             title="Delete"
             onClick={onDelete}
             disabled={actionDisabled}
-            className="btn btn-sm bg-gray-700 text-white"
+            className="btn  dark:border-primary btn-sm bg-gray-700 text-white"
           >
             <FaTrash />
           </button>

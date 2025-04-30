@@ -15,12 +15,12 @@ import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
 import CommentsForm from "../../../components/commentsForm/CommentsForm";
 import LikeButton from "../../../components/likesStatus/LikeButton";
+import { useTheme } from "../../../providers/ThemeProvider";
 // ------------------------------ IMPORT ----------------------------------//
-
-
 
 const TemplateForm = () => {
   const { id } = useParams();
+  const { isDark } = useTheme();
   const axiosPublic = useAxiosPublic();
   const { register, handleSubmit } = useForm();
   const { user } = useAuth();
@@ -77,6 +77,25 @@ const TemplateForm = () => {
           label={question}
           type={type}
           margin="normal"
+          sx={{
+            input: {
+              color: isDark ? "white" : "black",
+            },
+            label: {
+              color: isDark ? "white" : "black",
+            },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&:hover fieldset": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: isDark ? "white" : "black",
+              },
+            },
+          }}
           InputProps={{
             inputProps: {
               min: type === "number" ? 0 : undefined,
@@ -124,7 +143,7 @@ const TemplateForm = () => {
 
   return (
     <>
-      <div className="p-4 max-w-5xl mx-auto">
+      <div className="p-8 max-w-5xl mx-auto">
         {!user && (
           <div className="text-red-500 text-center my-4">
             Please login to fill out this template.
@@ -147,11 +166,14 @@ const TemplateForm = () => {
             </div>
 
             <div className="flex gap-2 mb-4">
-              <span className="bg-gray-200 px-2 py-1 rounded">
+              <span className="bg-gray-200 px-2 py-1 rounded dark:text-gray-800">
                 {template.topic}
               </span>
               {template.tags.map((tag, index) => (
-                <span key={index} className="bg-blue-100 px-2 py-1 rounded">
+                <span
+                  key={index}
+                  className="bg-blue-100 px-2 py-1 rounded dark:text-gray-800"
+                >
                   #{tag}
                 </span>
               ))}

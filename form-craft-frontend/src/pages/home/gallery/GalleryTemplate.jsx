@@ -28,10 +28,10 @@ const GalleryTemplate = () => {
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-5">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-5 mt-10 max-w-6xl mx-auto p-4">
       {publicTemplates.map((template) => (
         <Link key={template.id} to={`/templateForm/${template.id}`}>
-          <div className="card bg-base-100 w-96 shadow-sm">
+          <div className="card bg-base-100 dark:bg-gray-800 max-w-xs h-64 shadow-sm border border-primary">
             <figure className="px-10 pt-10">
               <img
                 src={template?.imageUrl}

@@ -4,8 +4,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useParams } from "react-router";
 import CommentLists from "./CommentLists";
+import useAuth from "../../hooks/useAuth";
 
 const CommentsForm = () => {
+  const { user } = useAuth();
   const [commentText, setCommentText] = useState("");
   const { id } = useParams();
   const templateId = parseInt(id);
@@ -46,6 +48,7 @@ const CommentsForm = () => {
       <form onSubmit={handleCommentSubmit}>
         <Box>
           <TextField
+            disabled={!user}
             multiline
             rows={3}
             value={commentText}

@@ -28,8 +28,11 @@ const CreateTemplate = () => {
       if (!imgRes.data.success) {
         throw new Error("Failed to upload image");
       }
-
-      const templateRes = await axiosSecure.post("/templates", data);
+      const imageUrl = imgRes.data?.data?.display_url ?? null;
+      const templateRes = await axiosSecure.post("/templates", {
+        data,
+        imageUrl: imageUrl,
+      });
       console.log(data);
 
       if (templateRes.data) {

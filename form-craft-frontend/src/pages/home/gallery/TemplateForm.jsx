@@ -13,6 +13,7 @@ import {
 import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
 import CommentsForm from "../../../components/commentsForm/CommentsForm";
+import LikeButton from "../../../components/likesStatus/LikeButton";
 
 const TemplateForm = () => {
   const { id } = useParams();
@@ -180,7 +181,8 @@ const TemplateForm = () => {
           </Button>
           <p className="text-red-600">Not build yet. soon it be functional</p>
         </form>
-
+        {/* Likes and comments section */}
+        <LikeButton />
         <CommentsForm />
       </div>
     </>

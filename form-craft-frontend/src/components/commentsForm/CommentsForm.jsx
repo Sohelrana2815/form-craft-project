@@ -66,7 +66,7 @@ const CommentsForm = () => {
               color="success"
               className="justify-end"
             >
-              {isLoading ? "Posting..." : `Comment ${templateId}`}
+              {isLoading ? "Posting..." : `Comment`}
             </Button>
           </Box>
           {isError && <div>{error.message}</div>}

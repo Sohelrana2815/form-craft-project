@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 // date-fns
 import { formatDistanceToNow } from "date-fns";
-//--------------------------------------------------------//
+// ------------------------------ IMPORT ----------------------------------//
 const columns = [
   {
     field: "id",

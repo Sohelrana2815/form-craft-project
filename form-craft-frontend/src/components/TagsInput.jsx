@@ -41,7 +41,6 @@ const TagsInput = () => {
         name="tags"
         control={control}
         defaultValue={[]}
-        // rules={{ required: "Tags is required" }}
         render={({ field }) => (
           <Autocomplete
             {...field}
@@ -60,9 +59,6 @@ const TagsInput = () => {
           />
         )}
       />
-      {/* {errors.tags && (
-        <span className="text-red-600">{errors.tags.message}</span>
-      )} */}
     </div>
   );
 };

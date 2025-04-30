@@ -5,12 +5,12 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useParams } from "react-router";
 import CommentLists from "./CommentLists";
 import useAuth from "../../hooks/useAuth";
-
+// ------------------------------ IMPORT ----------------------------------//
 const CommentsForm = () => {
   const { user } = useAuth();
   const [commentText, setCommentText] = useState("");
   const { id } = useParams();
-  const templateId = parseInt(id);
+  const templateId = parseInt(id, 10);
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient(); // Get the query client
 

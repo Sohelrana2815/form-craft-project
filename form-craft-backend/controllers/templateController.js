@@ -1,10 +1,10 @@
 const prisma = require("../db");
 
 exports.createTemplate = async (req, res) => {
-  const data = req.body;
+  // const data = req.body;
+  // const imageUrl = data.imgRes?.data?.data?.display_url ?? null;
+  const { data, imageUrl } = req.body;
   const userId = req?.user?.id;
-  const imageUrl = data.imgRes?.data?.data?.display_url ?? null;
-
   console.log(data, userId, imageUrl);
 
   try {
@@ -13,7 +13,7 @@ exports.createTemplate = async (req, res) => {
       data: {
         title: data.title,
         description: data.description,
-        imageUrl: data.imageUrl,
+        imageUrl: imageUrl,
         topic: data.topic,
         tags: data.tags,
         accessType: data.accessType || "PUBLIC",
@@ -169,14 +169,14 @@ exports.addComment = async (req, res) => {
     // Get text object from client side
     const { text } = req.body;
     const { templateId } = req.params;
-    const authorId = req.user.id;
+    const authorId = req.user?.id;
 
     // Validate input
     if (!text) {
       return res.status(400).json({ error: "Comment text is required" });
     }
-
-    const template = await prisma.comment.findUnique({
+    // Searching for template if not template then comment will not work
+    const template = await prisma.template.findUnique({
       where: { id: parseInt(templateId, 10) },
     });
 
@@ -219,6 +219,7 @@ exports.getCommentsByTemplateId = async (req, res) => {
   }
 };
 
+// POST LIKE
 exports.addLike = async (req, res) => {
   try {
     const { templateId } = req.params;
@@ -227,7 +228,7 @@ exports.addLike = async (req, res) => {
       where: {
         userId_templateId: {
           userId: userId,
-          templateId: templateId,
+          templateId: parseInt(templateId, 10),
         },
       },
     });
@@ -243,7 +244,7 @@ exports.addLike = async (req, res) => {
     const newLike = await prisma.like.create({
       data: {
         userId: userId,
-        templateId: templateId,
+        templateId: parseInt(templateId, 10),
       },
     });
 
@@ -251,6 +252,31 @@ exports.addLike = async (req, res) => {
   } catch (error) {
     console.error("Error handling like:", error);
 
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getLikesCount = async (req, res) => {
+  try {
+    const { templateId } = req.params;
+    const parsedTemplatedId = parseInt(templateId, 10);
+
+    if (isNaN(parsedTemplatedId)) {
+      return res.status(400).json({ error: "Invalid template ID provided" });
+    }
+
+    const likeCount = await prisma.like.count({
+      where: {
+        templateId: parsedTemplatedId,
+      },
+    });
+
+    res.status(200).json({
+      templateId: parsedTemplatedId,
+      likeCount: likeCount,
+    });
+  } catch (error) {
+    console.error("Error fetching like count:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -26,10 +26,16 @@ router.get(
   templateController.getCommentsByTemplateId
 );
 
+// Post likes
+
 router.post(
   "/templates/:templateId/likes",
   verifyToken,
   templateController.addLike
 );
+
+// Get the likes count
+
+router.get("/templates/:templateId/likes", templateController.getLikesCount);
 
 module.exports = router;

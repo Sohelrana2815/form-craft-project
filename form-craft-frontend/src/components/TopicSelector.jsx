@@ -38,7 +38,7 @@ const TopicSelector = () => {
         name="topic"
         control={control}
         defaultValue=""
-        // rules={{ required: "Topic is required" }}
+        rules={{ required: "Topic is required" }}
         render={({ field }) => (
           <Autocomplete
             {...field}
@@ -54,9 +54,6 @@ const TopicSelector = () => {
           />
         )}
       />
-      {/* {errors.topic && (
-        <span className="text-red-600">{errors.topic.message}</span>
-      )} */}
     </div>
   );
 };

@@ -97,7 +97,7 @@ const Navbar = () => {
           </button>
           {user && (
             <button
-              className="btn dark:bg-primary dark:text-white border-none"
+              className="btn dark:bg-primary btn-sm btn-neutral dark:btn-primary dark:text-white border-none"
               onClick={handleLogout}
             >
               Logout

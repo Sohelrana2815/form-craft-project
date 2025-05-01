@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import CommentLists from "./CommentLists";
 import useAuth from "../../hooks/useAuth";
 import { useTheme } from "../../providers/ThemeProvider";
+import { toast } from "react-toastify";
 // ------------------------------ IMPORT ----------------------------------//
 const CommentsForm = () => {
   const { user } = useAuth();
@@ -26,10 +27,17 @@ const CommentsForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(["comments", templateId]);
       setCommentText("");
-      alert("Posted");
+      toast.success("Thanks for comment", {
+        theme: "dark",
+        autoClose: "1500",
+      });
     },
     onError: (err) => {
       console.error("Error adding comment:", err);
+      const message = err.response?.data?.error;
+      toast.error(message, {
+        theme: "dark",
+      });
     },
   });
 

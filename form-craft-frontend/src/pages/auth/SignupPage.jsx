@@ -3,9 +3,15 @@ import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import { updateProfile } from "firebase/auth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { useState } from "react";
 import Swal from "sweetalert2";
+import { LuEyeClosed } from "react-icons/lu";
+import { FaRegEye } from "react-icons/fa6";
+
+// ----------------------IMPORT--------------------------//
 
 const SignupPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const { createUser, logOut } = useAuth();
@@ -77,6 +83,12 @@ const SignupPage = () => {
     }
   };
 
+  // Password visibility handler
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="hero bg-base-200 min-h-screen dark:bg-[#121212] dark:text-black">
       <div className="hero-content w-full ">
@@ -107,10 +119,21 @@ const SignupPage = () => {
               <label className="fieldset-label">Password</label>
               <input
                 {...register("password", { required: true })}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="input w-full focus:outline-none focus:border-blue-500"
                 placeholder="Password"
               />
+              <button
+                onClick={togglePasswordVisibility}
+                className="cursor-pointer relative bottom-[34px] left-72"
+                type="button"
+              >
+                {showPassword ? (
+                  <FaRegEye className="text-lg" />
+                ) : (
+                  <LuEyeClosed className="text-lg" />
+                )}
+              </button>
               {errors.password && (
                 <span className="text-red-600">Password is required</span>
               )}

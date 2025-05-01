@@ -3,8 +3,12 @@ import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+import { useState } from "react";
+import { FaRegEye } from "react-icons/fa6";
+import { LuEyeClosed } from "react-icons/lu";
 
 const LoginPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const { loginUser } = useAuth();
   const axiosPublic = useAxiosPublic();
   const location = useLocation();
@@ -46,6 +50,12 @@ const LoginPage = () => {
     }
   };
 
+  // Password visibility handler
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="hero bg-base-200 min-h-screen dark:bg-[#121212] dark:text-black">
       <div className="hero-content w-full ">
@@ -66,10 +76,21 @@ const LoginPage = () => {
               <label className="fieldset-label">Password</label>
               <input
                 {...register("password", { required: "Password is required" })}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="input w-full focus:outline-none focus:border-blue-500"
                 placeholder="Password"
               />
+              <button
+                onClick={togglePasswordVisibility}
+                className="cursor-pointer relative bottom-[34px] left-72"
+                type="button"
+              >
+                {showPassword ? (
+                  <FaRegEye className="text-lg" />
+                ) : (
+                  <LuEyeClosed className="text-lg" />
+                )}
+              </button>
               {errors.password && (
                 <span className="text-red-600">{errors.password.message}</span>
               )}

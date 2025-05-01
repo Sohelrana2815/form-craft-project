@@ -39,7 +39,6 @@ const AuthProvider = ({ children }) => {
       if (currentUser) {
         const email = currentUser?.email;
         try {
-          setLoading(true);
           const response = await axiosPublic.get(`/users/role/${email}`);
           setUserRole(response.data.userRole);
           setLoading(false);

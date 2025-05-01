@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import useAuth from "./useAuth";
 
 const axiosSecure = axios.create({
-  baseURL: "https://form-craft-backend.onrender.com/api",
+  baseURL: "http://localhost:3000/api",
 });
 
 const useAxiosSecure = () => {

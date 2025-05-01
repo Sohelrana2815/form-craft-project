@@ -50,9 +50,9 @@ enum AccessType {
 model Like {
   id         Int      @id @default(autoincrement())
   userId     Int
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   templateId Int
-  template   Template @relation(fields: [templateId], references: [id])
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   @@unique([userId, templateId])
 }
@@ -88,7 +88,7 @@ model Template {
   accessType   AccessType @default(PUBLIC)
   allowedUsers User[]     @relation("TemplateAllowedUsers") // many to many relation
 
-  createdBy   User @relation(fields: [createdById], references: [id])
+  createdBy   User @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById Int
   // Single-line questions
 

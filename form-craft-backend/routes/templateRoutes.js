@@ -5,6 +5,7 @@ const templateController = require("../controllers/templateController");
 const { verifyToken } = require("../middleware/authMiddleware");
 
 router.get("/templates", templateController.getTemplates);
+
 router.post("/templates", verifyToken, templateController.createTemplate);
 router.get(
   "/templates/my-templates",

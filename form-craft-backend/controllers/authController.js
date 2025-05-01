@@ -63,7 +63,6 @@ exports.checkConflict = async (req, res) => {
   }
 };
 
-
 exports.updateLogin = async (req, res) => {
   const userEmail = req.params.email;
 

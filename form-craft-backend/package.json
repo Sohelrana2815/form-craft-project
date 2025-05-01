@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "test-db": "node scripts/test-db.js",
     "build": "npx prisma generate",
+    "postinstall": "npm run build",
     "start": "node server.js",
     "seed": "node seed.js",
     "dev": "nodemon server.js",

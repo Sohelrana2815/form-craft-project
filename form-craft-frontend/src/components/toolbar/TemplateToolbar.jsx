@@ -3,9 +3,7 @@ import { MdAddCircleOutline } from "react-icons/md";
 import { Link } from "react-router";
 // ------------------------------ IMPORT ----------------------------------//
 
-
-
-const TemplateToolbar = ({ onDelete, actionDisabled }) => {
+const TemplateToolbar = () => {
   return (
     <>
       {/* Toolbar */}
@@ -27,8 +25,6 @@ const TemplateToolbar = ({ onDelete, actionDisabled }) => {
           <button
             title="Delete Template(s)"
             className="btn btn-sm bg-red-600 text-white"
-            onClick={onDelete}
-            disabled={actionDisabled}
           >
             <FaTrash />
           </button>

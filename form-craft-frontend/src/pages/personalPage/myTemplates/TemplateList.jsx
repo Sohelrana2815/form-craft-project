@@ -5,10 +5,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import useMyTemplates from "../../../hooks/useMyTemplates";
 import { formatDistanceToNow } from "date-fns";
 import TemplateToolbar from "../../../components/toolbar/TemplateToolbar";
-import Swal from "sweetalert2";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useTheme } from "../../../providers/ThemeProvider";
 
 //------------------------------------------------//
@@ -39,43 +36,10 @@ const columns = [
 const TemplateList = () => {
   const { isDark } = useTheme();
   const navigate = useNavigate();
-  const axiosSecure = useAxiosSecure();
   const { templates, isLoading, isError, error } = useMyTemplates();
   const [selectedIds, setSelectedIds] = useState([]);
-  const queryClient = useQueryClient();
 
-  const deleteMutation = useMutation({
-    mutationFn: (userIds) =>
-      axiosSecure.delete("/templates", { data: { userIds } }),
-    onSuccess: () => {
-      Swal.fire({
-        title: `Deleted ${selectedIds.length} template(s) successfully!`,
-        icon: "success",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
-      queryClient.invalidateQueries(["templates"]);
-      selectedIds([]);
-    },
-  });
-
-  const handleDelete = () => {
-    Swal.fire({
-      title: `Delete ${selectedIds.length} user(s?)`,
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteMutation.mutate(selectedIds);
-      }
-    });
-  };
-
+  console.log(selectedIds);
   if (isLoading) return <Typography>Loading templates...</Typography>;
 
   if (isError)
@@ -83,10 +47,7 @@ const TemplateList = () => {
 
   return (
     <>
-      <TemplateToolbar
-        onDelete={handleDelete}
-        actionDisabled={selectedIds.length === 0}
-      />
+      <TemplateToolbar />
       <Box className="p-4 max-w-6xl mx-auto" sx={{ height: 600 }}>
         <DataGrid
           rows={templates || []}

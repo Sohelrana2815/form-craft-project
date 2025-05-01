@@ -16,7 +16,7 @@ const GalleryTemplate = () => {
     return (
       <div className="flex flex-col items-center justify-center text-center py-10">
         <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          No template Found
+          No template created yet.
         </p>
         <img src={svg} alt="No template" className="max-w-xs h-auto mx-auto" />
       </div>

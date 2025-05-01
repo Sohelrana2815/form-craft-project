@@ -2,7 +2,16 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 const predefinedTopics = ["Education", "Quiz", "Job", "Other"];
-const predefinedTags = ["react", "nodejs", "database", "api", 'JavaScript','C#','java','graphic design'];
+const predefinedTags = [
+  "react",
+  "nodejs",
+  "database",
+  "api",
+  "JavaScript",
+  "C#",
+  "java",
+  "graphic design",
+];
 const seedAll = async () => {
   try {
     // Topic seed

@@ -1,7 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
-
 const testDatabase = async () => {
   try {
     // Asking one raw & one column from database
@@ -19,3 +18,5 @@ const testDatabase = async () => {
 };
 
 testDatabase();
+
+module.exports = prisma;

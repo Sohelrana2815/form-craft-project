@@ -1,4 +1,4 @@
-const prisma = require('../db')
+const prisma = require("../db");
 exports.createTemplate = async (req, res) => {
   // const data = req.body;
   // const imageUrl = data.imgRes?.data?.data?.display_url ?? null;
@@ -79,19 +79,10 @@ exports.createTemplate = async (req, res) => {
   }
 };
 
-// exports.getTemplates = async (req, res) => {
-//   try {
-//     const templates = await prisma.template.findMany();
-//     res.status(200).json(templates);
-//   } catch (error) {
-//     console.error("Error getting templates", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
-
 exports.getTemplates = async (req, res) => {
   try {
-    const templates = a
+    const templates = await prisma.template.findMany();
+    res.status(200).json(templates);
   } catch (error) {
     console.error("Error getting templates", error);
     res.status(500).json({ error: "Internal server error" });

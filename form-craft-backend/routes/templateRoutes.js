@@ -12,6 +12,11 @@ router.get(
   verifyToken,
   templateController.getMyTemplates
 );
+
+// Delete templates
+
+router.delete("/templates", verifyToken, templateController.deleteTemplates);
+
 router.get("/templates/:id", templateController.getTemplateById);
 
 router.patch("/templates/:id", templateController.updateTemplate);

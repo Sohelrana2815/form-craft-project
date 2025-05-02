@@ -163,9 +163,32 @@ exports.updateTemplate = async (req, res) => {
 
 // Delete templates
 
-exports.deletedTemplates = async (req, res) => {
+exports.deleteTemplates = async (req, res) => {
   const { templateIds } = req.body;
   console.log("Template Ids from client side:", templateIds);
+  try {
+    const templates = await prisma.template.findMany({
+      where: { id: { in: templateIds } },
+      select: { id: true },
+    });
+
+    if (templates.length === 0) {
+      return res.status(404).json({ error: "No template found" });
+    }
+
+    const deleteTemplates = await prisma.template.deleteMany({
+      where: { id: { in: templateIds } },
+    });
+
+    // Send deleted result
+    res.status(200).json({
+      message: "Template(s) deleted.",
+      result: deleteTemplates,
+    });
+  } catch (error) {
+    console.error("Error delete user(s):", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 // Add Comment

@@ -194,63 +194,58 @@ const EditTemplate = () => {
           </Typography>
 
           {maxQuestionCounts.map((num) => (
-            <Box
-              key={`checkbox-${num}`}
-              sx={{
-                mb: 4,
-                p: 2,
-                borderRadius: 2,
-                bgcolor: isDark ? "#333333" : "#f5f5f5", // ← dynamic bg here
-              }}
-            >
-              {/* Checkbox Question */}
-              <TextField
-                {...register(`checkboxQ${num}Question`)}
-                fullWidth
-                margin="normal"
-                label={`Checkbox Question ${num}`}
-                defaultValue={template?.[`checkboxQ${num}Question`] || ""}
-                sx={{
-                  // keep text visible
-                  "& .MuiInputBase-input": {
-                    color: isDark ? "white" : "black",
-                  },
-                  "& .MuiFormLabel-root": {
-                    color: isDark ? "rgba(255,255,255,0.7)" : undefined,
-                  },
-                }}
-              />
-
-              {/* Checkbox Options */}
-              <Grid container spacing={2} sx={{ mt: 1 }}>
-                {maxOptions.map((optionNum) => (
-                  <Grid
-                    key={`checkbox-${num}-option-${optionNum}`}
-                    item
-                    xs={12}
-                    sm={6}
-                  >
-                    <TextField
-                      {...register(`checkboxQ${num}Option${optionNum}`)}
-                      fullWidth
-                      margin="normal"
-                      label={`Option ${optionNum}`}
-                      defaultValue={
-                        template?.[`checkboxQ${num}Option${optionNum}`] || ""
-                      }
-                      sx={{
-                        "& .MuiInputBase-input": {
-                          color: isDark ? "white" : "black",
-                        },
-                        "& .MuiFormLabel-root": {
-                          color: isDark ? "rgba(255,255,255,0.7)" : undefined,
-                        },
-                      }}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
+           <Box
+           key={`checkbox-${num}`}
+           sx={{
+             mb: 4,
+             p: 2,
+             borderRadius: 2,
+             bgcolor: isDark ? "#333333" : "#f5f5f5",    // ← dynamic bg here
+           }}
+         >
+           {/* Checkbox Question */}
+           <TextField
+             {...register(`checkboxQ${num}Question`)}
+             fullWidth
+             margin="normal"
+             label={`Checkbox Question ${num}`}
+             defaultValue={template?.[`checkboxQ${num}Question`] || ""}
+             sx={{
+               // keep text visible
+               "& .MuiInputBase-input": {
+                 color: isDark ? "white" : "black",
+               },
+               "& .MuiFormLabel-root": {
+                 color: isDark ? "rgba(255,255,255,0.7)" : undefined,
+               },
+             }}
+           />
+         
+           {/* Checkbox Options */}
+           <Grid container spacing={2} sx={{ mt: 1 }}>
+             {maxOptions.map((optionNum) => (
+               <Grid key={`checkbox-${num}-option-${optionNum}`} item xs={12} sm={6}>
+                 <TextField
+                   {...register(`checkboxQ${num}Option${optionNum}`)}
+                   fullWidth
+                   margin="normal"
+                   label={`Option ${optionNum}`}
+                   defaultValue={
+                     template?.[`checkboxQ${num}Option${optionNum}`] || ""
+                   }
+                   sx={{
+                     "& .MuiInputBase-input": {
+                       color: isDark ? "white" : "black",
+                     },
+                     "& .MuiFormLabel-root": {
+                       color: isDark ? "rgba(255,255,255,0.7)" : undefined,
+                     },
+                   }}
+                 />
+               </Grid>
+             ))}
+           </Grid>
+         </Box>
           ))}
           <ToastContainer />
         </Box>

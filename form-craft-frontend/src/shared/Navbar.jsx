@@ -57,9 +57,11 @@ const Navbar = () => {
           <NavLink to="manage-users">Manage users</NavLink>
         </li>
       )}
-      <li>
-        <NavLink to="personal">Personal Page</NavLink>
-      </li>
+      {user && (
+        <li>
+          <NavLink to="personal">Personal Page</NavLink>
+        </li>
+      )}
     </>
   );
 

@@ -5,8 +5,10 @@ import useAxiosPublic from "../../../../../hooks/useAxiosPublic";
 import { useForm } from "react-hook-form";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
+import { useTheme } from "../../../../../providers/ThemeProvider";
 //--------------------------------------------------//
 const EditTemplate = () => {
+  const { isDark } = useTheme();
   const { id } = useParams();
   const axiosPublic = useAxiosPublic();
   const { data: template, isLoading, isError, error } = useTemplate(id);
@@ -82,6 +84,31 @@ const EditTemplate = () => {
             margin="normal"
             label={`Short Q ${num}`}
             defaultValue={template?.[`shortQ${num}`] || ""}
+            sx={{
+              /* label */
+              "& .MuiInputLabel-root": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the textarea text */
+              "& .MuiOutlinedInput-input": {
+                color: isDark ? "white" : "black",
+              },
+              "& .MuiOutlinedInput-inputMultiline": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the outline itself */
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+            }}
           />
         ))}
 
@@ -96,6 +123,31 @@ const EditTemplate = () => {
             rows={2}
             label={`Descriptive Q ${num}`}
             defaultValue={template?.[`desQ${num}`] || ""}
+            sx={{
+              /* label */
+              "& .MuiInputLabel-root": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the textarea text */
+              "& .MuiOutlinedInput-input": {
+                color: isDark ? "white" : "black",
+              },
+              "& .MuiOutlinedInput-inputMultiline": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the outline itself */
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+            }}
           />
         ))}
 
@@ -108,6 +160,31 @@ const EditTemplate = () => {
             margin="normal"
             label={`Numeric type Q ${num}`}
             defaultValue={template?.[`positiveInt${num}`] || ""}
+            sx={{
+              /* label */
+              "& .MuiInputLabel-root": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the textarea text */
+              "& .MuiOutlinedInput-input": {
+                color: isDark ? "white" : "black",
+              },
+              "& .MuiOutlinedInput-inputMultiline": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the outline itself */
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+            }}
           />
         ))}
 
@@ -119,7 +196,12 @@ const EditTemplate = () => {
           {maxQuestionCounts.map((num) => (
             <Box
               key={`checkbox-${num}`}
-              sx={{ mb: 4, p: 2, bgcolor: "#f5f5f5", borderRadius: 2 }}
+              sx={{
+                mb: 4,
+                p: 2,
+                borderRadius: 2,
+                bgcolor: isDark ? "#333333" : "#f5f5f5", // ← dynamic bg here
+              }}
             >
               {/* Checkbox Question */}
               <TextField
@@ -128,12 +210,26 @@ const EditTemplate = () => {
                 margin="normal"
                 label={`Checkbox Question ${num}`}
                 defaultValue={template?.[`checkboxQ${num}Question`] || ""}
+                sx={{
+                  // keep text visible
+                  "& .MuiInputBase-input": {
+                    color: isDark ? "white" : "black",
+                  },
+                  "& .MuiFormLabel-root": {
+                    color: isDark ? "rgba(255,255,255,0.7)" : undefined,
+                  },
+                }}
               />
 
               {/* Checkbox Options */}
               <Grid container spacing={2} sx={{ mt: 1 }}>
                 {maxOptions.map((optionNum) => (
-                  <Grid key={`checkbox-${num}-option-${optionNum}`}>
+                  <Grid
+                    key={`checkbox-${num}-option-${optionNum}`}
+                    item
+                    xs={12}
+                    sm={6}
+                  >
                     <TextField
                       {...register(`checkboxQ${num}Option${optionNum}`)}
                       fullWidth
@@ -142,6 +238,14 @@ const EditTemplate = () => {
                       defaultValue={
                         template?.[`checkboxQ${num}Option${optionNum}`] || ""
                       }
+                      sx={{
+                        "& .MuiInputBase-input": {
+                          color: isDark ? "white" : "black",
+                        },
+                        "& .MuiFormLabel-root": {
+                          color: isDark ? "rgba(255,255,255,0.7)" : undefined,
+                        },
+                      }}
                     />
                   </Grid>
                 ))}

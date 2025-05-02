@@ -78,12 +78,15 @@ const TemplateForm = () => {
           type={type}
           margin="normal"
           sx={{
+            // normal text + label color
             input: {
               color: isDark ? "white" : "black",
             },
             label: {
               color: isDark ? "white" : "black",
             },
+
+            // outline color on normal / hover / focus
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: isDark ? "white" : "black",
@@ -94,6 +97,29 @@ const TemplateForm = () => {
               "&.Mui-focused fieldset": {
                 borderColor: isDark ? "white" : "black",
               },
+            },
+
+            // ---- New: overrides for DISABLED state ----
+
+            // change the background of a disabled input so you can actually see the box
+            "& .MuiOutlinedInput-root.Mui-disabled": {
+              backgroundColor: isDark ? "#333333" : undefined,
+            },
+
+            // make the disabled text & placeholder visible
+            "& .MuiOutlinedInput-input.Mui-disabled": {
+              WebkitTextFillColor: isDark ? "rgba(255,255,255,0.7)" : undefined,
+              // WebkitTextFillColor is needed because MUI uses it for disabled text
+            },
+
+            // make the disabled label visible
+            "& .MuiFormLabel-root.Mui-disabled": {
+              color: isDark ? "rgba(255,255,255,0.7)" : undefined,
+            },
+
+            // make the disabled outline border visible
+            "& .MuiOutlinedInput-notchedOutline.Mui-disabled": {
+              borderColor: isDark ? "rgba(255,255,255,0.7)" : undefined,
             },
           }}
           InputProps={{

@@ -38,8 +38,8 @@ const TemplateList = () => {
   const navigate = useNavigate();
   const { templates, isLoading, isError, error } = useMyTemplates();
   const [selectedIds, setSelectedIds] = useState([]);
+  console.log("My selected ids:", selectedIds);
 
-  console.log(selectedIds);
   if (isLoading) return <Typography>Loading templates...</Typography>;
 
   if (isError)

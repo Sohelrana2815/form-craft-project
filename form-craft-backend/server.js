@@ -19,6 +19,7 @@ app.use(
       "http://localhost:5173",
       "http://localhost:5174",
       "https://form-craft-152302.web.app",
+      "https://form-craft-152302.firebaseapp.com",
     ],
   })
 );

@@ -85,10 +85,6 @@ const TemplateList = () => {
       <TemplateToolbar
         onDelete={deleteTemplate}
         actionDisabled={selectedIds.length === 0}
-        // Get selected templates only
-        // selectedTemplates={templates.filter((template) =>
-        //   selectedIds.includes(template.id)
-        // )}
       />
       <Box className="p-4 max-w-6xl mx-auto" sx={{ height: 600 }}>
         <DataGrid

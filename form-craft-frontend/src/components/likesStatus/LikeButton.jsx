@@ -57,7 +57,7 @@ const LikeButton = () => {
       const message =
         error.response?.data?.error ||
         (error.response?.status === 409
-          ? "You've already liked this template"
+          ? error.response?.data?.error
           : "Failed to like template");
 
       toast.error(message, {

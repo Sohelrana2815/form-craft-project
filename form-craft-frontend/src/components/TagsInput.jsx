@@ -43,7 +43,8 @@ const TagsInput = () => {
         name="tags"
         control={control}
         defaultValue={[]}
-        render={({ field }) => (
+        rules={{ required: "Tag(s) is required" }}
+        render={({ field, fieldState: { error } }) => (
           <Autocomplete
             {...field}
             multiple
@@ -67,6 +68,8 @@ const TagsInput = () => {
                 label={<span className="dark:text-gray-300">Tag(s)</span>}
                 variant="outlined"
                 placeholder="Select tag(s)"
+                error={!!error}
+                helperText={error?.message}
                 sx={{
                   input: {
                     color: isDark ? "white" : "black",

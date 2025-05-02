@@ -2,10 +2,11 @@ import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useTheme } from "../../../providers/ThemeProvider";
 
 const PositiveInt = () => {
   const { register } = useFormContext();
-
+  const { isDark } = useTheme();
   const [questionCount, setQuestionCount] = useState(0);
   const maxQuestions = 4;
 
@@ -29,6 +30,24 @@ const PositiveInt = () => {
             label={`Number type Q${index + 1}`}
             defaultValue=""
             margin="normal"
+            sx={{
+              /* label */
+              "& .MuiInputLabel-root": {
+                color: isDark ? "white" : "black",
+              },
+              /* the textarea*/
+              "& .MuiOutlinedInput-input": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the outline itself */
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+            }}
           />
           <br />
           <FormControlLabel
@@ -46,7 +65,7 @@ const PositiveInt = () => {
       <div className="flex items-center gap-x-4">
         {questionCount < maxQuestions && (
           <button
-            className="btn rounded-full"
+            className="btn rounded-full dark:btn-primary"
             type="button"
             onClick={addQuestion}
           >

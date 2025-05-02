@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { TextField, Button, IconButton } from "@mui/material";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useTheme } from "../../../providers/ThemeProvider";
 
 const CheckBoxQuestion = () => {
   const { register } = useFormContext();
+  const { isDark } = useTheme();
   const [questions, setQuestions] = useState([]);
   const maxQuestions = 4;
   const maxOptions = 4;
@@ -48,6 +50,24 @@ const CheckBoxQuestion = () => {
             <TextField
               {...register(`checkboxQ${qIndex + 1}.question`)}
               label={`Checkbox Question ${qIndex + 1}`}
+              sx={{
+                /* label */
+                "& .MuiInputLabel-root": {
+                  color: isDark ? "white" : "black",
+                },
+                /* the textarea*/
+                "& .MuiOutlinedInput-input": {
+                  color: isDark ? "white" : "black",
+                },
+
+                /* the outline itself */
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: isDark ? "white" : "black",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: isDark ? "white" : "black",
+                },
+              }}
             />
 
             <IconButton
@@ -65,6 +85,24 @@ const CheckBoxQuestion = () => {
               <TextField
                 {...register(`checkboxQ${qIndex + 1}.option${oIndex + 1}`)}
                 label={`Option ${oIndex + 1}`}
+                sx={{
+                  /* label */
+                  "& .MuiInputLabel-root": {
+                    color: isDark ? "white" : "black",
+                  },
+                  /* the textarea*/
+                  "& .MuiOutlinedInput-input": {
+                    color: isDark ? "white" : "black",
+                  },
+
+                  /* the outline itself */
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: isDark ? "white" : "black",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: isDark ? "white" : "black",
+                  },
+                }}
               />
               <IconButton
                 size="small"
@@ -90,7 +128,11 @@ const CheckBoxQuestion = () => {
       ))}
 
       {questions.length < maxQuestions && (
-        <button className="btn btn-outline" type="button" onClick={addQuestion}>
+        <button
+          className="btn rounded-full dark:btn-primary"
+          type="button"
+          onClick={addQuestion}
+        >
           + Add checkbox Q.
         </button>
       )}

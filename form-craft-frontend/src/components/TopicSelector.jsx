@@ -41,7 +41,7 @@ const TopicSelector = () => {
         control={control}
         defaultValue=""
         rules={{ required: "Topic is required" }}
-        render={({ field }) => (
+        render={({ field, fieldState: { error } }) => (
           <Autocomplete
             {...field}
             options={topic}
@@ -51,6 +51,8 @@ const TopicSelector = () => {
                 {...params}
                 label={<span className="dark:text-gray-300">Topic</span>}
                 variant="outlined"
+                error={!!error}
+                helperText={error?.message}
                 sx={{
                   input: {
                     color: isDark ? "white" : "black",

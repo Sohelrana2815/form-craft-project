@@ -5,7 +5,10 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { useTheme } from "../../../providers/ThemeProvider";
 const ShortQuestion = () => {
   const { isDark } = useTheme();
-  const { register } = useFormContext();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
   const [questionCount, setQuestionCount] = useState(1);
   const maxQuestions = 4;
 
@@ -26,15 +29,37 @@ const ShortQuestion = () => {
       {Array.from({ length: questionCount }, (_, index) => (
         <div key={index}>
           <TextField
-            {...register(`shortQ${index + 1}`)}
+            {...register(`shortQ${index + 1}`, {
+              required: "At least one short question is required.",
+            })}
             label={`Short question ${index + 1}`}
             defaultValue=""
             margin="normal"
-            focused={isDark}
             sx={{
-              
+              /* label */
+              "& .MuiInputLabel-root": {
+                color: isDark ? "white" : "black",
+              },
+              /* the textarea*/
+              "& .MuiOutlinedInput-input": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the outline itself */
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
             }}
           />
+          <br />
+          {errors.shortQ1 && (
+            <span className="text-sm text-red-600">
+              {errors.shortQ1.message}
+            </span>
+          )}
           <br />
           <FormControlLabel
             control={

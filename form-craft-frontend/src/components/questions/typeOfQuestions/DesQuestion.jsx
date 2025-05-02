@@ -2,9 +2,11 @@ import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useTheme } from "../../../providers/ThemeProvider";
 
 const DesQuestion = () => {
   const { register } = useFormContext();
+  const { isDark } = useTheme();
 
   // শুরুতেই কোনো ফিল্ড দেখাবে না
   const [questionCount, setQuestionCount] = useState(0);
@@ -32,6 +34,24 @@ const DesQuestion = () => {
             label={`Paragraph ${index + 1}`}
             defaultValue=""
             margin="normal"
+            sx={{
+              /* label */
+              "& .MuiInputLabel-root": {
+                color: isDark ? "white" : "black",
+              },
+              /* the textarea*/
+              "& .MuiOutlinedInput-input": {
+                color: isDark ? "white" : "black",
+              },
+
+              /* the outline itself */
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "white" : "black",
+              },
+            }}
           />
           <br />
           <FormControlLabel
@@ -49,7 +69,7 @@ const DesQuestion = () => {
       <div className="flex items-center gap-x-4">
         {questionCount < maxQuestions && (
           <button
-            className="btn rounded-full"
+            className="btn rounded-full dark:btn-primary"
             type="button"
             onClick={addQuestion}
           >

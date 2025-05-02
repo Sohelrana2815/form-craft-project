@@ -3,10 +3,15 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { createContext, useState, useEffect } from "react";
 import auth from "../../firebase/firebase.config";
 import useAxiosPublic from "../hooks/useAxiosPublic";
+
+// Google Provider
+const googleProvider = new GoogleAuthProvider();
 
 export const AuthContext = createContext(null);
 
@@ -15,6 +20,13 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const axiosPublic = useAxiosPublic();
+
+  // Google sign in option
+
+  const googleSignin = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
 
   const createUser = (email, password) => {
     setLoading(true);
@@ -66,6 +78,7 @@ const AuthProvider = ({ children }) => {
   const authValue = {
     createUser,
     user,
+    googleSignin,
     userRole,
     loginUser,
     logOut,

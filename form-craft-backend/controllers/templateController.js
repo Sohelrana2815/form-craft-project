@@ -265,7 +265,7 @@ exports.addLike = async (req, res) => {
     if (existingLike) {
       return res
         .status(409)
-        .json({ error: "User already liked this template" });
+        .json({ error: "You've already liked this template" });
     }
 
     // Create a new like

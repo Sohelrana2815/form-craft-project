@@ -11,12 +11,14 @@ const ImageUploader = () => {
     <Box className="my-4">
       <input
         type="file"
-        className="file-input file-input-primary"
+        className="file-input file-input-primary dark:bg-neutral"
         accept="image/*"
         {...register("image", { required: "Image is required" })}
       />
       {errors.image && (
-        <span className="text-sm text-red-600 block my-2">{errors.image.message}</span>
+        <span className="text-sm text-red-600 block my-2">
+          {errors.image.message}
+        </span>
       )}
     </Box>
   );

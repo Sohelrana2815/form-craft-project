@@ -205,7 +205,9 @@ const TemplateForm = () => {
           >
             Submit Form
           </Button>
-          <p className="text-red-600">Not build yet. soon it will be functional</p>
+          <p className="text-red-600">
+            Not build yet. soon it will be functional
+          </p>
         </form>
         {/* Likes and comments section */}
         <LikeButton />

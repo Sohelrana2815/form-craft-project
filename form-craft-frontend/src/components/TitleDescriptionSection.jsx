@@ -25,9 +25,10 @@ const TitleDescriptionSection = () => {
             fullWidth
             label={<span className="dark:text-gray-300">Template title</span>}
             variant="standard"
-            InputProps={{
-              style: {
-                color: isDark ? "#e0e0e0" : "#000000",
+            focused={isDark}
+            sx={{
+              input: {
+                color: isDark ? "white" : "black",
               },
             }}
           />

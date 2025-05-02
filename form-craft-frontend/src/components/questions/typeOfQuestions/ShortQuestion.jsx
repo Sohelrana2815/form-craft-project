@@ -2,9 +2,11 @@ import { TextField, Checkbox, FormControlLabel } from "@mui/material";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useTheme } from "../../../providers/ThemeProvider";
 const ShortQuestion = () => {
+  const { isDark } = useTheme();
   const { register } = useFormContext();
-  const [questionCount, setQuestionCount] = useState(0);
+  const [questionCount, setQuestionCount] = useState(1);
   const maxQuestions = 4;
 
   const addQuestion = () => {
@@ -28,6 +30,10 @@ const ShortQuestion = () => {
             label={`Short question ${index + 1}`}
             defaultValue=""
             margin="normal"
+            focused={isDark}
+            sx={{
+              
+            }}
           />
           <br />
           <FormControlLabel
@@ -35,6 +41,16 @@ const ShortQuestion = () => {
               <Checkbox
                 {...register(`showShortQ${index + 1}`)}
                 defaultChecked={true}
+                sx={{
+                  color: isDark
+                    ? "rgba(255,255,255,0.7)" // unchecked color
+                    : undefined,
+                  "&.Mui-checked": {
+                    color: isDark
+                      ? "rgba(255,255,255,1)" // checked color
+                      : undefined,
+                  },
+                }}
               />
             }
             label="Show in results"
@@ -45,7 +61,7 @@ const ShortQuestion = () => {
       <div className="flex items-center gap-x-4">
         {questionCount < maxQuestions && (
           <button
-            className="btn rounded-full"
+            className="btn rounded-full dark:btn-primary"
             type="button"
             onClick={addQuestion}
           >

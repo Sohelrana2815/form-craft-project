@@ -58,47 +58,65 @@ const LoginPage = () => {
 
   return (
     <div className="hero bg-base-200 min-h-screen dark:bg-[#121212] dark:text-black">
-      <div className="hero-content w-full ">
-        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-          <form onSubmit={handleSubmit(onSubmit)} className="card-body">
+      <div className="hero-content w-full px-4">
+        <div className="card bg-base-100 w-full max-w-xs shrink-0 shadow-2xl">
+          <form onSubmit={handleSubmit(onSubmit)} className="card-body p-4">
             <h2 className="text-center text-2xl font-semibold">Login</h2>
-            <fieldset className="fieldset">
-              <label className="fieldset-label">Email</label>
-              <input
-                {...register("email", { required: "Password is required" })}
-                type="email"
-                className="input w-full focus:outline-none focus:border-blue-500"
-                placeholder="Email"
-              />
-              {errors.email && (
-                <span className="text-red-600">{errors.email.message}</span>
-              )}
-              <label className="fieldset-label">Password</label>
-              <input
-                {...register("password", { required: "Password is required" })}
-                type={showPassword ? "text" : "password"}
-                className="input w-full focus:outline-none focus:border-blue-500"
-                placeholder="Password"
-              />
-              <button
-                onClick={togglePasswordVisibility}
-                className="cursor-pointer relative bottom-[34px] left-72"
-                type="button"
-              >
-                {showPassword ? (
-                  <FaRegEye className="text-lg" />
-                ) : (
-                  <LuEyeClosed className="text-lg" />
+            <fieldset className="fieldset space-y-3">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Email</span>
+                </label>
+                <input
+                  {...register("email", { required: "Email is required" })}
+                  type="email"
+                  className="input input-bordered w-full"
+                  placeholder="Email"
+                />
+                {errors.email && (
+                  <span className="text-red-600 text-sm">
+                    {errors.email.message}
+                  </span>
                 )}
-              </button>
-              {errors.password && (
-                <span className="text-red-600">{errors.password.message}</span>
-              )}
-              <button type="submit" className="btn bg-blue-600 text-white mt-4">
+              </div>
+
+              <div className="form-control relative">
+                <label className="label">
+                  <span className="label-text">Password</span>
+                </label>
+                <div className="relative">
+                  <input
+                    {...register("password", {
+                      required: "Password is required",
+                    })}
+                    type={showPassword ? "text" : "password"}
+                    className="input input-bordered w-full pr-10"
+                    placeholder="Password"
+                  />
+                  <button
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    type="button"
+                  >
+                    {showPassword ? (
+                      <FaRegEye className="text-lg" />
+                    ) : (
+                      <LuEyeClosed className="text-lg" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <span className="text-red-600 text-sm">
+                    {errors.password.message}
+                  </span>
+                )}
+              </div>
+
+              <button type="submit" className="btn btn-primary mt-4">
                 {isSubmitting ? "Login..." : "Login"}
               </button>
             </fieldset>
-            <p className="text-center text-[14px]">
+            <p className="text-center text-sm mt-4">
               Don't have an account?{" "}
               <Link to="/sign-up" className="text-blue-600 font-medium">
                 Sign Up

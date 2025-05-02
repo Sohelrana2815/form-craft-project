@@ -153,6 +153,7 @@ exports.updateTemplate = async (req, res) => {
     const updatedTemplate = await prisma.template.update({
       where: { id: Number(id) },
       data: data,
+      select: { id: true },
     });
     res.status(200).json(updatedTemplate);
   } catch (error) {

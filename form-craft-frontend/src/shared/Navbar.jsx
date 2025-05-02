@@ -3,11 +3,10 @@ import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
 import { useTheme } from "../providers/ThemeProvider";
 import { IoMdMenu } from "react-icons/io";
-import useUserRole from "../hooks/useUserRole";
 const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const { user, loading: authLoading, logOut } = useAuth();
-  const { userRole } = useUserRole();
+  const { userRole } = useAuth();
 
   const handleLogout = () => {
     try {

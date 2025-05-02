@@ -1,8 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import Toolbar from "./Toolbar";
-// import useAuth from "../../../hooks/useAuth";
-// import useUserRole from "../../../hooks/useUserRole";
 import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Swal from "sweetalert2";
@@ -88,31 +86,8 @@ const ManageUsers = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const queryClient = useQueryClient();
   const { data: users = [], isError, error } = useUsers();
-  // Added auth and role checks
 
-  // const { user, isLoading: authLoading } = useAuth();
-
-  // const { userRole, loading: roleLoading } = useUserRole();
-
-  // const fetchUsers = async () => {
-  //   const response = await axiosSecure.get("/users");
-  //   return response.data;
-  // };
   console.log(selectedIds);
-
-  // const {
-  //   isLoading,
-  //   isError,
-  //   data: users = [],
-  //   error,
-  // } = useQuery({
-  //   queryKey: ["users"],
-  //   queryFn: fetchUsers,
-  //   // Add query enabling condition
-  //   enabled: !!user && userRole === "admin",
-  // });
-
-  // delete mutation function
 
   const deleteMutation = useMutation({
     mutationFn: (userIds) =>

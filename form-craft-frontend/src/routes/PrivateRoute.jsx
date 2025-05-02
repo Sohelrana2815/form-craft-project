@@ -1,13 +1,15 @@
 import { Navigate, useLocation } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useUserRole from "../hooks/useUserRole";
+import useUsers from "../hooks/useUsers";
 
 const PrivateRoute = ({ children, requiredRole }) => {
   const { userRole, loading: roleLoading } = useUserRole();
+  const { isLoading: usersLoading } = useUsers();
   const { loading: authLoading, user } = useAuth();
   const location = useLocation();
 
-  if (authLoading || roleLoading) {
+  if (authLoading || roleLoading || usersLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <p className="loading loading-dots loading-xl text-blue-700"></p>

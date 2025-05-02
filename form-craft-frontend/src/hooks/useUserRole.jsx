@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import useAuth from "./useAuth";
 import useAxiosPublic from "./useAxiosPublic";
+// import useAxiosSecure from "./useAxiosSecure";
 const useUserRole = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const axiosPublic = useAxiosPublic();
+  // const axiosSecure = useAxiosSecure();
 
   // load user role data
 

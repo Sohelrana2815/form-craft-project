@@ -161,6 +161,13 @@ exports.updateTemplate = async (req, res) => {
   }
 };
 
+// Delete templates
+
+exports.deletedTemplates = async (req, res) => {
+  const { templateIds } = req.body;
+  console.log("Template Ids from client side:", templateIds);
+};
+
 // Add Comment
 
 exports.addComment = async (req, res) => {

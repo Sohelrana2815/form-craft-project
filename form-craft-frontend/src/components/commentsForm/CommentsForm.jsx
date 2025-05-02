@@ -29,7 +29,7 @@ const CommentsForm = () => {
       setCommentText("");
       toast.success("Thanks for comment", {
         theme: "dark",
-        autoClose: "1500",
+        autoClose: 1000,
       });
     },
     onError: (err) => {

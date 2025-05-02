@@ -7,6 +7,9 @@ import { formatDistanceToNow } from "date-fns";
 import TemplateToolbar from "../../../components/toolbar/TemplateToolbar";
 import { useState } from "react";
 import { useTheme } from "../../../providers/ThemeProvider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 //------------------------------------------------//
 const columns = [
@@ -34,11 +37,43 @@ const columns = [
 ];
 //----------------------------------//
 const TemplateList = () => {
+  const axiosSecure = useAxiosSecure();
   const { isDark } = useTheme();
   const navigate = useNavigate();
   const { templates, isLoading, isError, error } = useMyTemplates();
   const [selectedIds, setSelectedIds] = useState([]);
+  const queryClient = useQueryClient();
   console.log("My selected ids:", selectedIds);
+
+  // Delete mutation function
+
+  const deleteMutation = useMutation({
+    mutationFn: (templateIds) =>
+      axiosSecure.delete("/templates", { data: { templateIds } }),
+    onSuccess: () => {
+      toast.success("Deleted successfully!", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 1500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        transition: Bounce,
+      });
+      queryClient.invalidateQueries(["templates"]);
+      setSelectedIds([]);
+    },
+    onError: (error) => {
+      console.error("Error delete templates.");
+
+      toast.error(error.response?.data?.error, {
+        autoClose: 1500,
+      });
+    },
+  });
+
+  const deleteTemplate = () => {
+    deleteMutation.mutate(selectedIds);
+  };
 
   if (isLoading) return <Typography>Loading templates...</Typography>;
 
@@ -47,7 +82,14 @@ const TemplateList = () => {
 
   return (
     <>
-      <TemplateToolbar />
+      <TemplateToolbar
+        onDelete={deleteTemplate}
+        actionDisabled={selectedIds.length === 0}
+        // Get selected templates only
+        // selectedTemplates={templates.filter((template) =>
+        //   selectedIds.includes(template.id)
+        // )}
+      />
       <Box className="p-4 max-w-6xl mx-auto" sx={{ height: 600 }}>
         <DataGrid
           rows={templates || []}
@@ -90,6 +132,7 @@ const TemplateList = () => {
             },
           }}
         />
+        <ToastContainer />
       </Box>
     </>
   );

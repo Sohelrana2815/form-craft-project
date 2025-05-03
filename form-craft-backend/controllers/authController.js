@@ -90,29 +90,11 @@ exports.updateLogin = async (req, res) => {
       where: { email: userEmail },
       data: { lastLogin: new Date() },
       select: {
-        id: true,
-        email: true,
-        uid: true,
         lastLogin: true,
       },
     });
 
-    // 4. JWT token generate
-
-    const token = jwt.sign(
-      {
-        uid: user.uid,
-        email: user.email,
-        id: user.id,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "6h" }
-    );
-
-    res.status(200).json({
-      token,
-      user: updateUser,
-    });
+    res.status(200).json(updateUser);
   } catch (error) {
     console.error("Failed update last login:", error);
     // Prisma error
@@ -120,6 +102,45 @@ exports.updateLogin = async (req, res) => {
       return res.status(404).json({ error: "No user found" });
     }
 
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.generateToken = async (req, res) => {
+  const { email } = req.body;
+  console.log(email);
+
+  try {
+    //1. Find user from Database
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, uid: true, isBlocked: true, email: true },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // 2. Check the user is blocked or not
+    if (user.isBlocked) {
+      return res.status(403).json({ error: "User is blocked!" });
+    }
+
+    // 3. JWT token generate
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        uid: user.uid,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Token generation failed:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

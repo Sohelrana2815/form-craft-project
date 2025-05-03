@@ -10,6 +10,7 @@ import PersonalPage from "../pages/personalPage/PersonalPage";
 import CreateTemplate from "../pages/createTemplate/CreateTemplate";
 import TemplateForm from "../pages/home/gallery/TemplateForm";
 import TemplatePage from "../pages/personalPage/myTemplates/templatePage/TemplatePage";
+import AdminRoute from "./AdminRoute";
 
 const MainRoutes = () => {
   return (
@@ -22,9 +23,9 @@ const MainRoutes = () => {
           <Route
             path="manage-users"
             element={
-              <PrivateRoute>
+              <AdminRoute>
                 <ManageUsers />
-              </PrivateRoute>
+              </AdminRoute>
             }
           />
           <Route path="templateForm/:id" element={<TemplateForm />} />

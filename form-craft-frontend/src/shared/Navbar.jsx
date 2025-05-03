@@ -3,10 +3,11 @@ import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
 import { useTheme } from "../providers/ThemeProvider";
 import { IoMdMenu } from "react-icons/io";
+import useRole from "../hooks/useRole";
 const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const { user, logOut, loading: authLoading } = useAuth();
-
+  const { role, isLoading } = useRole();
   const handleLogout = () => {
     try {
       Swal.fire({
@@ -51,7 +52,7 @@ const Navbar = () => {
           <NavLink to="login">Login</NavLink>
         </li>
       )}
-      {user && (
+      {role === "admin" && (
         <li>
           <NavLink to="manage-users">Manage users</NavLink>
         </li>
@@ -63,7 +64,7 @@ const Navbar = () => {
       )}
     </>
   );
-  if (authLoading) {
+  if (authLoading || isLoading) {
     return <div>Loading...</div>;
   }
   return (

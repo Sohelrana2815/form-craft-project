@@ -14,7 +14,7 @@ const AdminRoute = ({ children }) => {
     const checkAdmin = async () => {
       if (user?.email) {
         try {
-          const adminRes = await axiosPublic.get(`/role/${user.email}`);
+          const adminRes = await axiosPublic.get(`/users/role/${user.email}`);
           setIsAdmin(adminRes.data.userRole === "admin");
         } catch (error) {
           console.error("Admin check failed:", error);

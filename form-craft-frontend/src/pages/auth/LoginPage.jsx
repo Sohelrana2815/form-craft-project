@@ -35,11 +35,10 @@ const LoginPage = () => {
       // if login success & got user (update lastLogin)
       if (user) {
         const response = await axiosPublic.patch(`/login/${user?.email}`);
-        console.log("login page:", response.data.updateUser);
+        console.log("login page:", response.data);
 
-        if (response.data.token) {
+        if (response.data) {
           navigate(from, { replace: true });
-          localStorage.setItem("token", response.data.token);
         }
       }
     } catch (error) {
@@ -59,7 +58,7 @@ const LoginPage = () => {
   return (
     <div className="hero bg-base-200 min-h-screen dark:bg-[#121212] dark:text-black">
       <div className="hero-content w-full px-4">
-        <div className="card bg-base-100 w-full max-w-xs shrink-0 shadow-2xl">
+        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
           <form onSubmit={handleSubmit(onSubmit)} className="card-body p-4">
             <h2 className="text-center text-2xl font-semibold">Login</h2>
             <fieldset className="fieldset space-y-3">

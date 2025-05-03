@@ -1,8 +1,8 @@
 import { Navigate, useLocation } from "react-router";
 import useAuth from "../hooks/useAuth";
 
-const PrivateRoute = ({ children, requiredRole }) => {
-  const { loading: authLoading, user, userRole } = useAuth();
+const PrivateRoute = ({ children }) => {
+  const { loading: authLoading, user } = useAuth();
   const location = useLocation();
 
   if (authLoading) {
@@ -15,10 +15,6 @@ const PrivateRoute = ({ children, requiredRole }) => {
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  if (requiredRole && userRole !== requiredRole) {
-    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;

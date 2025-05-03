@@ -7,15 +7,17 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import { LuEyeClosed } from "react-icons/lu";
 import { FaRegEye } from "react-icons/fa6";
+import GoogleSignIn from "./GoogleSignIn";
 
 // ----------------------IMPORT--------------------------//
 
 const SignupPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const axiosPublic = useAxiosPublic();
-  const navigate = useNavigate();
   const { createUser, logOut } = useAuth();
 
+  // Logout
   const logOutUser = async () => {
     await logOut();
   };
@@ -92,7 +94,7 @@ const SignupPage = () => {
   return (
     <div className="hero bg-base-200 min-h-screen dark:bg-[#121212] dark:text-black">
       <div className="hero-content w-full px-4">
-        <div className="card bg-base-100 w-full max-w-xs shrink-0 shadow-2xl">
+        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
           <form onSubmit={handleSubmit(onSubmit)} className="card-body p-4">
             <h2 className="text-center text-2xl font-semibold">Sign up</h2>
             <fieldset className="fieldset space-y-3">
@@ -165,6 +167,8 @@ const SignupPage = () => {
                 {isSubmitting ? "Signing up..." : "Sign up"}
               </button>
             </fieldset>
+            {/* Google signIng button */}
+            <GoogleSignIn />
             <p className="text-center text-sm mt-4">
               Already have an account?{" "}
               <Link to="/login" className="text-blue-600 font-medium">

@@ -11,19 +11,17 @@ import auth from "../../firebase/firebase.config";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 
 // Google Provider
-const googleProvider = new GoogleAuthProvider();
 
 export const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(null);
   const axiosPublic = useAxiosPublic();
-
   // Google sign in option
+  const googleProvider = new GoogleAuthProvider();
 
-  const googleSignin = () => {
+  const googleSignIn = () => {
     setLoading(true);
     return signInWithPopup(auth, googleProvider);
   };
@@ -45,41 +43,39 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
+      console.log("User at authStateChange:", currentUser);
 
       if (currentUser) {
-        const email = currentUser?.email;
+        const email = { email: currentUser?.email };
+
         try {
-          setLoading(true);
-          const response = await axiosPublic.get(`/users/role/${email}`);
-          setUserRole(response.data.userRole);
-          setLoading(false);
+          // 1. Jwt generate during signup/login
+          const tokenResponse = await axiosPublic.post("/jwt", email);
+          console.log("AuthProvider Page token:", tokenResponse.data);
+
+          if (tokenResponse.data.token) {
+            localStorage.setItem("token", tokenResponse.data.token);
+            setLoading(false);
+          }
         } catch (error) {
-          console.log("Fetching role error", error);
+          console.error("Auth error:", error);
         }
       } else {
-        setUserRole(null);
+        localStorage.removeItem("token");
         setLoading(false);
       }
-
-      if (!currentUser) {
-        // Remove token form LC
-        localStorage.removeItem("token");
-      }
-
-      // console.log("observer:", currentUser);
+      setUser(currentUser);
+      setLoading(false);
     });
     return () => {
       unsubscribe();
     };
-  }, [axiosPublic]);
+  }, [axiosPublic, user?.email]);
 
   const authValue = {
     createUser,
     user,
-    googleSignin,
-    userRole,
+    googleSignIn,
     loginUser,
     logOut,
     loading,
@@ -91,3 +87,25 @@ const AuthProvider = ({ children }) => {
 };
 
 export default AuthProvider;
+
+// if (currentUser) {
+//   const email = currentUser?.email;
+//   try {
+//     setLoading(true);
+//     const response = await axiosPublic.get(`/users/role/${email}`);
+//     setUserRole(response.data.userRole);
+//     setLoading(false);
+//   } catch (error) {
+//     console.log("Fetching role error", error);
+//   }
+// } else {
+//   setUserRole(null);
+//   setLoading(false);
+// }
+
+// if (!currentUser) {
+//   // Remove token form LC
+//   localStorage.removeItem("token");
+// }
+
+// console.log("observer:", currentUser);

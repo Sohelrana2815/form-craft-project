@@ -5,8 +5,7 @@ import { useTheme } from "../providers/ThemeProvider";
 import { IoMdMenu } from "react-icons/io";
 const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
-  const { user, loading: authLoading, logOut } = useAuth();
-  const { userRole } = useAuth();
+  const { user, logOut, loading: authLoading } = useAuth();
 
   const handleLogout = () => {
     try {
@@ -52,7 +51,7 @@ const Navbar = () => {
           <NavLink to="login">Login</NavLink>
         </li>
       )}
-      {userRole === "admin" && (
+      {user && (
         <li>
           <NavLink to="manage-users">Manage users</NavLink>
         </li>
@@ -64,11 +63,9 @@ const Navbar = () => {
       )}
     </>
   );
-
   if (authLoading) {
     return <div>Loading...</div>;
   }
-
   return (
     <>
       <div className="navbar bg-base-100 shadow-sm dark:bg-gray-800">

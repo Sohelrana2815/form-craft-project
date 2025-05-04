@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import ReactMarkdown from "react-markdown";
+import Markdown from "react-markdown";
 import { useParams } from "react-router";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
@@ -187,8 +187,8 @@ const TemplateForm = () => {
             )}
             <h1 className="text-2xl font-bold mb-2">{template.title}</h1>
 
-            <div className="prose mb-4">
-              <ReactMarkdown>{template.description}</ReactMarkdown>
+            <div>
+              <Markdown>{template.description}</Markdown>
             </div>
 
             <div className="flex gap-2 mb-4">

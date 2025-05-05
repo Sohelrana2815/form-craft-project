@@ -28,25 +28,35 @@ const GalleryTemplate = () => {
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-4 mt-10 max-w-6xl mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-5 gap-x-4 mt-10 max-w-6xl mx-auto p-4">
       {publicTemplates.map((template) => (
-        <div key={template.id} className="flex justify-center">
-          <Link to={`/templateForm/${template.id}`}>
-            <div className="card bg-base-100 dark:bg-gray-800 max-w-xs h-64 shadow-sm border border-primary">
-              <figure className="px-10 pt-10">
+        <Link
+          key={template.id}
+          to={`/templateForm/${template.id}`}
+          className="flex justify-center"
+        >
+          <div className="card bg-base-100 dark:bg-gray-800 h-64 shadow-sm border border-primary sm:w-full w-72">
+            <figure className="px-10 pt-10 h-40 overflow-hidden">
+              {template.imageUrl ? (
                 <img
-                  src={template?.imageUrl}
+                  src={template.imageUrl}
                   alt={template.title}
-                  className="rounded-xl"
+                  className="rounded-xl w-full h-full object-cover"
                 />
-              </figure>
-              <div className="card-body items-center text-center">
-                <h2 className="card-title">{template.title}</h2>
-                <p className="font-medium">Topic: {template.topic}</p>
-              </div>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-xl">
+                  <span className="text-gray-500 dark:text-gray-300">
+                    No Image
+                  </span>
+                </div>
+              )}
+            </figure>
+            <div className="card-body items-center text-center">
+              <h2 className="card-title">{template.title}</h2>
+              <p className="font-medium">Topic: {template.topic}</p>
             </div>
-          </Link>
-        </div>
+          </div>
+        </Link>
       ))}
     </div>
   );

@@ -135,8 +135,8 @@ const TemplateForm = () => {
               key={index}
               control={
                 <Checkbox
-                  // disabled={!user}
-                  disabled
+                  disabled={!user}
+                  // disabled
                   value={option}
                   {...register(`checkboxQ${questionNumber}`)}
                   sx={{

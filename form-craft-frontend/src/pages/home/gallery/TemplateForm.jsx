@@ -16,6 +16,7 @@ import useAuth from "../../../hooks/useAuth";
 import CommentsForm from "../../../components/commentsForm/CommentsForm";
 import LikeButton from "../../../components/likesStatus/LikeButton";
 import { useTheme } from "../../../providers/ThemeProvider";
+import { AiOutlineLock } from "react-icons/ai";
 // ------------------------------ IMPORT ----------------------------------//
 
 const TemplateForm = () => {
@@ -206,9 +207,18 @@ const TemplateForm = () => {
             disabled
             variant="contained"
             color="primary"
-            sx={{ mt: 3 }}
+            sx={{
+              mt: 3,
+              backgroundColor: isDark ? "#2e7d32" : undefined,
+              color: "#ffffff",
+              // (Disabled state)
+              "&.Mui-disabled": {
+                backgroundColor: isDark ? "#424242" : undefined,
+                color: isDark ? "#E0E0E0" : undefined,
+              },
+            }}
           >
-            Submit Form
+            Submit Form <AiOutlineLock className="ml-2 text-lg" />
           </Button>
           <p className="text-red-600">
             Not build yet. soon it will be functional

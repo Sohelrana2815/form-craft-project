@@ -19,21 +19,37 @@ const CreateTemplate = () => {
   const methods = useForm();
   const onSubmit = async (data) => {
     try {
-      const imgFile = { image: data.image[0] };
-      const imgRes = await axiosPublic.post(image_hosting_api, imgFile, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      if (!imgRes.data.success) {
-        throw new Error("Failed to upload image");
+      let imageUrl = null; // Default value of imgUrl is null
+
+      // If user select image then only upload it in the cloud
+
+      if (data.image && data.image[0]) {
+        const imgFile = { image: data.image[0] };
+        // Upload to imgbb.com
+        const imgRes = await axiosPublic.post(image_hosting_api, imgFile, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (!imgRes.data.success) {
+          throw new Error("Failed to upload image");
+        }
+
+        // Url after upload the image file
+        imageUrl = imgRes.data?.data?.display_url;
       }
-      const imageUrl = imgRes.data?.data?.display_url ?? null;
+
+      // Remove image property form data
+
+      const { image, ...templateData } = data;
+
+      // Create template with imgUrl or not (optional)
+
       const templateRes = await axiosSecure.post("/templates", {
-        data,
-        imageUrl: imageUrl,
+        data: templateData,
+        imageUrl: imageUrl, // Url or null
       });
-      console.log(data);
 
       if (templateRes.data) {
         Swal.fire("Template created successfully!", "", "success");
@@ -61,3 +77,37 @@ const CreateTemplate = () => {
 };
 
 export default CreateTemplate;
+
+// let imageUrl = null; // Default value in null
+
+// // If user select image then only upload it
+// if (data.image && data.image[0]) {
+//   const imgFile = { image: data.image[0] };
+//   const imgRes = await axiosPublic.post(image_hosting_api, imgFile, {
+//     headers: {
+//       "Content-Type": "multipart-form-data",
+//     },
+//   });
+
+//   if (!imgRes.data.success) {
+//     throw new Error("Failed to upload image");
+//   }
+//   // Get url form img bb
+//   imageUrl = imgRes.data?.data?.display_url;
+// }
+
+// // Remove image field from the form data
+
+// const { image, ...templateData } = data;
+
+// // Create template with image url or not
+// const templateRes = await axiosSecure.post("/templates", {
+//   data: templateData, // without image
+//   imageUrl: imageUrl, // URL or null
+// });
+
+// console.log(data);
+
+// if (templateRes.data) {
+//   Swal.fire("Template created successfully!", "", "success");
+// }

@@ -2,10 +2,7 @@ import { Box } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 
 const ImageUploader = () => {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext();
+  const { register } = useFormContext();
 
   return (
     <Box className="my-4">
@@ -13,13 +10,9 @@ const ImageUploader = () => {
         type="file"
         className="file-input file-input-primary dark:bg-neutral"
         accept="image/*"
-        {...register("image", { required: "Image is required" })}
+        {...register("image")}
       />
-      {errors.image && (
-        <span className="text-sm text-red-600 block my-2">
-          {errors.image.message}
-        </span>
-      )}
+      <span className="ml-4">(Optional)</span>
     </Box>
   );
 };

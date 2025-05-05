@@ -77,57 +77,37 @@ const TemplateForm = () => {
           label={question}
           type={type}
           margin="normal"
-          sx={{
-            // normal text + label color
-            input: {
-              color: isDark ? "white" : "black",
-            },
-            label: {
-              color: isDark ? "white" : "black",
-            },
-
-            // outline color on normal / hover / focus
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&:hover fieldset": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: isDark ? "white" : "black",
-              },
-            },
-
-            // ---- New: overrides for DISABLED state ----
-
-            // change the background of a disabled input so you can actually see the box
-            "& .MuiOutlinedInput-root.Mui-disabled": {
-              backgroundColor: isDark ? "#333333" : undefined,
-            },
-
-            // make the disabled text & placeholder visible
-            "& .MuiOutlinedInput-input.Mui-disabled": {
-              WebkitTextFillColor: isDark ? "rgba(255,255,255,0.7)" : undefined,
-              // WebkitTextFillColor is needed because MUI uses it for disabled text
-            },
-
-            // make the disabled label visible
-            "& .MuiFormLabel-root.Mui-disabled": {
-              color: isDark ? "rgba(255,255,255,0.7)" : undefined,
-            },
-
-            // make the disabled outline border visible
-            "& .MuiOutlinedInput-notchedOutline.Mui-disabled": {
-              borderColor: isDark ? "rgba(255,255,255,0.7)" : undefined,
-            },
-          }}
           InputProps={{
             inputProps: {
               min: type === "number" ? 0 : undefined,
             },
           }}
           {...register(questionKey)}
+          sx={{
+            // Label styling
+            "& .MuiInputLabel-root": {
+              color: isDark ? "#E0E0E0" : undefined,
+              // Disabled state style
+            },
+            // Input field styling
+            "& .MuiOutlinedInput-root": {
+              color: isDark ? "#ffffff" : undefined,
+              backgroundColor: isDark ? "#424242" : undefined,
+
+              // Disabled state style
+              "& .Mui-disabled": {
+                backgroundColor: isDark ? "#616161" : undefined,
+                color: isDark ? "#bdbdbd" : undefined,
+                // Browser fill style override
+                WebkitTextFillColor: isDark ? "#bdbdbd" : undefined,
+              },
+
+              // Border style
+              "& fieldset": {
+                borderColor: isDark ? "#757575" : undefined,
+              },
+            },
+          }}
         />
       );
     });
@@ -177,7 +157,7 @@ const TemplateForm = () => {
         )}
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Common Fields */}
-          <div className="mb-8">
+          <div className="mb-8 space-y-5">
             {template.imageUrl && (
               <img
                 src={template.imageUrl}
@@ -191,10 +171,10 @@ const TemplateForm = () => {
               <Markdown>{template.description}</Markdown>
             </div>
 
-            <div className="flex gap-2 mb-4">
-              <span className="bg-gray-200 px-2 py-1 rounded dark:text-gray-800">
-                {template.topic}
-              </span>
+            <span className="bg-gray-200 px-2 py-1 rounded dark:text-gray-800">
+              {template.topic}
+            </span>
+            <div className="mt-4 flex gap-x-2">
               {template.tags.map((tag, index) => (
                 <span
                   key={index}
@@ -211,13 +191,12 @@ const TemplateForm = () => {
           <div className="space-y-4">
             {/* Short Questions */}
             {renderQuestions("shortQ", "text")}
-
             {/* Paragraph Questions */}
             {renderQuestions("desQ", "textarea")}
 
             {/* Numeric Questions */}
             {renderQuestions("positiveInt", "number")}
-
+            <div className="border-gray-400 border-[1px] mt-4" />
             {/* Checkbox Questions */}
             {renderCheckboxQuestions()}
           </div>

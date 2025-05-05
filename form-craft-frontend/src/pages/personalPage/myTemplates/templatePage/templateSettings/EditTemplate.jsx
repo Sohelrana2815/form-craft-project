@@ -75,6 +75,7 @@ const EditTemplate = () => {
             {isSubmitting ? "Saving..." : "Saved Changes"}
           </Button>
         </Box>
+        {/* 1. Short questions */}
         {maxQuestionCounts.map((num) => (
           <TextField
             key={`shortQ${num}`}
@@ -85,33 +86,26 @@ const EditTemplate = () => {
             label={`Short Q ${num}`}
             defaultValue={template?.[`shortQ${num}`] || ""}
             sx={{
-              /* label */
+              // (Label styling)
               "& .MuiInputLabel-root": {
-                color: isDark ? "white" : "black",
+                color: isDark ? "#E0E0E0" : undefined,
               },
 
-              /* the textarea text */
-              "& .MuiOutlinedInput-input": {
-                color: isDark ? "white" : "black",
+              // (Input field styling)
+              "& .MuiOutlinedInput-root": {
+                color: isDark ? "#E0E0E0" : undefined,
+                backgroundColor: isDark ? "#424242" : undefined,
               },
-              "& .MuiOutlinedInput-inputMultiline": {
-                color: isDark ? "white" : "black",
-              },
-
-              /* the outline itself */
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
+              // (Border styling)
+              "& fieldset": {
+                borderColor: isDark ? "#757575" : undefined,
               },
             }}
           />
         ))}
-
+        {/* Horizontal line */}
+        <div className="border-[1px] border-gray-400 my-4" />
+        {/* 2. Descriptive questions */}
         {maxQuestionCounts.map((num) => (
           <TextField
             key={`desQ${num}`}
@@ -124,33 +118,26 @@ const EditTemplate = () => {
             label={`Descriptive Q ${num}`}
             defaultValue={template?.[`desQ${num}`] || ""}
             sx={{
-              /* label */
+              // (Label styling)
               "& .MuiInputLabel-root": {
-                color: isDark ? "white" : "black",
+                color: isDark ? "#E0E0E0" : undefined,
               },
 
-              /* the textarea text */
-              "& .MuiOutlinedInput-input": {
-                color: isDark ? "white" : "black",
+              // (Input field styling)
+              "& .MuiOutlinedInput-root": {
+                color: isDark ? "#E0E0E0" : undefined,
+                backgroundColor: isDark ? "#424242" : undefined,
               },
-              "& .MuiOutlinedInput-inputMultiline": {
-                color: isDark ? "white" : "black",
-              },
-
-              /* the outline itself */
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
+              // (Border styling)
+              "& fieldset": {
+                borderColor: isDark ? "#757575" : undefined,
               },
             }}
           />
         ))}
-
+        {/* Horizontal line */}
+        <div className="border-[1px] border-gray-400 my-4" />
+        {/* 3. Numeric questions */}
         {maxQuestionCounts.map((num) => (
           <TextField
             key={`positiveInt${num}`}
@@ -161,28 +148,19 @@ const EditTemplate = () => {
             label={`Numeric type Q ${num}`}
             defaultValue={template?.[`positiveInt${num}`] || ""}
             sx={{
-              /* label */
+              // (Label styling)
               "& .MuiInputLabel-root": {
-                color: isDark ? "white" : "black",
+                color: isDark ? "#E0E0E0" : undefined,
               },
 
-              /* the textarea text */
-              "& .MuiOutlinedInput-input": {
-                color: isDark ? "white" : "black",
+              // (Input field styling)
+              "& .MuiOutlinedInput-root": {
+                color: isDark ? "#E0E0E0" : undefined,
+                backgroundColor: isDark ? "#424242" : undefined,
               },
-              "& .MuiOutlinedInput-inputMultiline": {
-                color: isDark ? "white" : "black",
-              },
-
-              /* the outline itself */
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
+              // (Border styling)
+              "& fieldset": {
+                borderColor: isDark ? "#757575" : undefined,
               },
             }}
           />
@@ -193,59 +171,76 @@ const EditTemplate = () => {
             Checkbox Questions
           </Typography>
 
+          {/* 4. Checkbox questions */}
           {maxQuestionCounts.map((num) => (
-           <Box
-           key={`checkbox-${num}`}
-           sx={{
-             mb: 4,
-             p: 2,
-             borderRadius: 2,
-             bgcolor: isDark ? "#333333" : "#f5f5f5",    // ← dynamic bg here
-           }}
-         >
-           {/* Checkbox Question */}
-           <TextField
-             {...register(`checkboxQ${num}Question`)}
-             fullWidth
-             margin="normal"
-             label={`Checkbox Question ${num}`}
-             defaultValue={template?.[`checkboxQ${num}Question`] || ""}
-             sx={{
-               // keep text visible
-               "& .MuiInputBase-input": {
-                 color: isDark ? "white" : "black",
-               },
-               "& .MuiFormLabel-root": {
-                 color: isDark ? "rgba(255,255,255,0.7)" : undefined,
-               },
-             }}
-           />
-         
-           {/* Checkbox Options */}
-           <Grid container spacing={2} sx={{ mt: 1 }}>
-             {maxOptions.map((optionNum) => (
-               <Grid key={`checkbox-${num}-option-${optionNum}`} item xs={12} sm={6}>
-                 <TextField
-                   {...register(`checkboxQ${num}Option${optionNum}`)}
-                   fullWidth
-                   margin="normal"
-                   label={`Option ${optionNum}`}
-                   defaultValue={
-                     template?.[`checkboxQ${num}Option${optionNum}`] || ""
-                   }
-                   sx={{
-                     "& .MuiInputBase-input": {
-                       color: isDark ? "white" : "black",
-                     },
-                     "& .MuiFormLabel-root": {
-                       color: isDark ? "rgba(255,255,255,0.7)" : undefined,
-                     },
-                   }}
-                 />
-               </Grid>
-             ))}
-           </Grid>
-         </Box>
+            <Box
+              key={`checkbox-${num}`}
+              sx={{
+                mb: 4,
+                p: 2,
+                borderRadius: 2,
+                bgcolor: isDark ? "#333333" : "#f5f5f5", // ← dynamic bg here
+              }}
+            >
+              {/* Checkbox Question */}
+              <TextField
+                {...register(`checkboxQ${num}Question`)}
+                fullWidth
+                margin="normal"
+                label={`Checkbox Question ${num}`}
+                defaultValue={template?.[`checkboxQ${num}Question`] || ""}
+                sx={{
+                  // (Label styling)
+                  "& .MuiInputLabel-root": {
+                    color: isDark ? "#E0E0E0" : undefined,
+                  },
+
+                  // (Input field styling)
+                  "& .MuiOutlinedInput-root": {
+                    color: isDark ? "#E0E0E0" : undefined,
+                    backgroundColor: isDark ? "#424242" : undefined,
+                  },
+                  // (Border styling)
+                  "& fieldset": {
+                    borderColor: isDark ? "#757575" : undefined,
+                  },
+                }}
+              />
+
+              {/* Checkbox Options */}
+              <Grid container spacing={2} sx={{ mt: 1 }}>
+                {maxOptions.map((optionNum) => (
+                  <Grid
+                    key={`checkbox-${num}-option-${optionNum}`}
+                    item
+                    xs={12}
+                    sm={6}
+                  >
+                    <TextField
+                      {...register(`checkboxQ${num}Option${optionNum}`)}
+                      fullWidth
+                      margin="normal"
+                      label={`Option ${optionNum}`}
+                      defaultValue={
+                        template?.[`checkboxQ${num}Option${optionNum}`] || ""
+                      }
+                      sx={{
+                        // (Label styling)
+                        "& .MuiInputLabel-root": {
+                          color: isDark ? "#E0E0E0" : undefined,
+                        },
+
+                        // (Input field styling)
+                        "& .MuiOutlinedInput-root": {
+                          color: isDark ? "#E0E0E0" : undefined,
+                          backgroundColor: isDark ? "#424242" : undefined,
+                        },
+                      }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
           ))}
           <ToastContainer />
         </Box>

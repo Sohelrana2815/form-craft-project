@@ -5,17 +5,18 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useParams } from "react-router";
 import CommentLists from "./CommentLists";
 import useAuth from "../../hooks/useAuth";
-import { useTheme } from "../../providers/ThemeProvider";
 import { toast } from "react-toastify";
+import { useTheme } from "../../providers/ThemeProvider";
+
 // ------------------------------ IMPORT ----------------------------------//
 const CommentsForm = () => {
+  const { isDark } = useTheme();
   const { user } = useAuth();
   const [commentText, setCommentText] = useState("");
   const { id } = useParams();
   const templateId = parseInt(id, 10);
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient(); // Get the query client
-  const { isDark } = useTheme();
   const {
     mutate: addComment,
     isLoading,
@@ -58,6 +59,7 @@ const CommentsForm = () => {
         <Box>
           <TextField
             disabled={!user}
+            // disabled
             multiline
             rows={3}
             value={commentText}
@@ -67,28 +69,17 @@ const CommentsForm = () => {
             fullWidth
             margin="normal"
             sx={{
-              /* label */
+              // Label styling
               "& .MuiInputLabel-root": {
-                color: isDark ? "white" : "black",
+                color: isDark ? "#E0E0E0" : undefined,
               },
-
-              /* the textarea text */
-              "& .MuiOutlinedInput-input": {
-                color: isDark ? "white" : "black",
+              // Input field styling
+              "& .MuiOutlinedInput-root": {
+                color: isDark ? "#E0E0E0" : undefined,
+                backgroundColor: isDark ? "#424242" : undefined,
               },
-              "& .MuiOutlinedInput-inputMultiline": {
-                color: isDark ? "white" : "black",
-              },
-
-              /* the outline itself */
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: isDark ? "white" : "black",
+              "& fieldset": {
+                borderColor: isDark ? "#757575" : undefined,
               },
             }}
           />
@@ -99,6 +90,15 @@ const CommentsForm = () => {
               variant="contained"
               color="success"
               className="justify-end"
+              sx={{
+                backgroundColor: isDark ? "#2e7d32" : undefined,
+                color: "#ffffff",
+                // (Disabled state)
+                "&.Mui-disabled": {
+                  backgroundColor: isDark ? "#424242" : undefined,
+                  color: isDark ? "#757575" : undefined,
+                },
+              }}
             >
               {isLoading ? "Posting..." : `Comment`}
             </Button>

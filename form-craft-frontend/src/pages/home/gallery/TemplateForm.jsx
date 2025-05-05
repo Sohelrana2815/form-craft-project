@@ -129,18 +129,36 @@ const TemplateForm = () => {
 
       return (
         <Box key={questionKey} sx={{ mb: 3 }}>
-          <p className="mb-2 font-medium">{question}</p>
+          <p className="mb-2 font-medium dark:text-gray-300">{question}</p>
           {options.map((option, index) => (
             <FormControlLabel
               key={index}
               control={
                 <Checkbox
-                  disabled={!user}
+                  // disabled={!user}
+                  disabled
                   value={option}
                   {...register(`checkboxQ${questionNumber}`)}
+                  sx={{
+                    // Uncheck state color
+                    color: isDark ? "#E0E0E0" : undefined,
+                    // Disabled state
+                    "&.Mui-disabled": {
+                      color: isDark ? "#616161" : "rgba(0, 0, 0, 0.26)",
+                    },
+                  }}
                 />
               }
               label={option}
+              sx={{
+                "& .MuiFormControlLabel-label": {
+                  color: isDark ? "#E0E0E0" : "inherit",
+                },
+                // Disabled state
+                "&.Mui-disabled .MuiFormControlLabel-label": {
+                  color: isDark ? "#616161" : "inherit", 
+                },
+              }}
             />
           ))}
         </Box>

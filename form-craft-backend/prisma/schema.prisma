@@ -91,6 +91,7 @@ model Template {
 
   createdBy   User @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById Int
+
   // Single-line questions
 
   shortQ1     String?

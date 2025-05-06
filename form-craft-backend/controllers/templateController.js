@@ -12,7 +12,7 @@ exports.createTemplate = async (req, res) => {
       data: {
         title: data.title,
         description: data.description,
-        imageUrl: imageUrl,
+        imageUrl: imageUrl || null, // Set null if no img url
         topic: data.topic,
         tags: data.tags,
         accessType: data.accessType || "PUBLIC",

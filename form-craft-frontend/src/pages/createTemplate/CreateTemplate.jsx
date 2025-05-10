@@ -77,37 +77,3 @@ const CreateTemplate = () => {
 };
 
 export default CreateTemplate;
-
-// let imageUrl = null; // Default value in null
-
-// // If user select image then only upload it
-// if (data.image && data.image[0]) {
-//   const imgFile = { image: data.image[0] };
-//   const imgRes = await axiosPublic.post(image_hosting_api, imgFile, {
-//     headers: {
-//       "Content-Type": "multipart-form-data",
-//     },
-//   });
-
-//   if (!imgRes.data.success) {
-//     throw new Error("Failed to upload image");
-//   }
-//   // Get url form img bb
-//   imageUrl = imgRes.data?.data?.display_url;
-// }
-
-// // Remove image field from the form data
-
-// const { image, ...templateData } = data;
-
-// // Create template with image url or not
-// const templateRes = await axiosSecure.post("/templates", {
-//   data: templateData, // without image
-//   imageUrl: imageUrl, // URL or null
-// });
-
-// console.log(data);
-
-// if (templateRes.data) {
-//   Swal.fire("Template created successfully!", "", "success");
-// }

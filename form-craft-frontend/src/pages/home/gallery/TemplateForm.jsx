@@ -3,7 +3,7 @@ import Markdown from "react-markdown";
 import { useParams } from "react-router";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
-
+import { truncateString } from "../../../components/utils/stringUtils";
 import {
   TextField,
   Checkbox,
@@ -25,6 +25,10 @@ const TemplateForm = () => {
   const axiosPublic = useAxiosPublic();
   const { register, handleSubmit } = useForm();
   const { user } = useAuth();
+
+  const maxLength1 = 25;
+  const maxLength2 = 50;
+
   // Fetch single template
   const fetchTemplate = async () => {
     const response = await axiosPublic.get(`/templates/${id}`);
@@ -156,7 +160,7 @@ const TemplateForm = () => {
                 },
                 // Disabled state
                 "&.Mui-disabled .MuiFormControlLabel-label": {
-                  color: isDark ? "#616161" : "inherit", 
+                  color: isDark ? "#616161" : "inherit",
                 },
               }}
             />
@@ -184,10 +188,14 @@ const TemplateForm = () => {
                 className="mb-4 rounded-lg max-h-64 object-cover"
               />
             )}
-            <h1 className="text-2xl font-bold mb-2">{template.title}</h1>
+            <h1 className="text-2xl font-bold mb-2">
+              {truncateString(template.title, maxLength1)}
+            </h1>
 
             <div>
-              <Markdown>{template.description}</Markdown>
+              <Markdown>
+                {truncateString(template.description, maxLength2)}
+              </Markdown>
             </div>
 
             <span className="bg-gray-200 px-2 py-1 rounded dark:text-gray-800">

@@ -1,8 +1,11 @@
 import { Link } from "react-router";
 import useTemplates from "../../../hooks/useTemplates";
 import svg from "../../../assets/no-template.webp";
+import { truncateString } from "../../../components/utils/stringUtils";
 const GalleryTemplate = () => {
   const { data: templates, isLoading, isError, error } = useTemplates();
+
+  const maxLength = 20;
 
   if (isLoading) {
     return <p className="loading loading-dots loading-xl text-blue-700"></p>;
@@ -52,7 +55,9 @@ const GalleryTemplate = () => {
               )}
             </figure>
             <div className="card-body items-center text-center">
-              <h2 className="card-title">{template.title}</h2>
+              <h2 className="card-title">
+                {truncateString(template.title, maxLength)}
+              </h2>
               <p className="font-medium">Topic: {template.topic}</p>
             </div>
           </div>

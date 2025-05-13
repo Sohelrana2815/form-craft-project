@@ -4,7 +4,7 @@ exports.createTemplate = async (req, res) => {
   // const imageUrl = data.imgRes?.data?.data?.display_url ?? null;
   const { data, imageUrl } = req.body;
   const userId = req?.user?.id;
-  console.log(data, userId, imageUrl);
+  // console.log(data, userId, imageUrl);
 
   try {
     // Insert Data
@@ -70,7 +70,7 @@ exports.createTemplate = async (req, res) => {
         checkboxQ4Option4: data.checkboxQ4?.option4,
       },
     });
-    console.log("Template post data:", newTemplate);
+    // console.log("Template post data:", newTemplate);
 
     res.status(201).json(newTemplate);
   } catch (error) {
@@ -145,6 +145,7 @@ exports.getTemplateById = async (req, res) => {
   }
 };
 
+// Update template
 exports.updateTemplate = async (req, res) => {
   const { id } = req.params;
   const data = req.body;
@@ -205,7 +206,7 @@ exports.addComment = async (req, res) => {
     if (!text) {
       return res.status(400).json({ error: "Comment text is required" });
     }
-    // Searching for template if not template then comment will not work
+    // Searching for template if no template then comment will not work
     const template = await prisma.template.findUnique({
       where: { id: parseInt(templateId, 10) },
     });
@@ -215,7 +216,7 @@ exports.addComment = async (req, res) => {
       return res.status(404).json({ error: "Template not found" });
     }
 
-    // Create comment
+    // Create comment/ add comment
 
     const newComment = await prisma.comment.create({
       data: {
@@ -249,7 +250,7 @@ exports.getCommentsByTemplateId = async (req, res) => {
   }
 };
 
-// POST LIKE
+// POST METHOD FOR LIKE
 exports.addLike = async (req, res) => {
   try {
     const { templateId } = req.params;

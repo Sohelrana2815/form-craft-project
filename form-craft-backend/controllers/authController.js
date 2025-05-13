@@ -108,7 +108,7 @@ exports.updateLogin = async (req, res) => {
 
 exports.generateToken = async (req, res) => {
   const { email } = req.body;
-  console.log(email);
+  // console.log(email);
 
   try {
     //1. Find user from Database

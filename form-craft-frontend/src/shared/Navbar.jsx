@@ -98,7 +98,7 @@ const Navbar = () => {
           </button>
           {/* User profile */}
           {user && (
-            <div className="dropdown dropdown-end">
+            <div className="dropdown dropdown-end" title={user?.displayName}>
               <div
                 tabIndex={0}
                 role="button"
@@ -106,10 +106,7 @@ const Navbar = () => {
               >
                 <div className="w-10 rounded-full">
                   {user?.photoURL ? (
-                    <img
-                      alt="Tailwind CSS Navbar component"
-                      src={user?.photoURL}
-                    />
+                    <img alt="profile" src={user?.photoURL} />
                   ) : (
                     <div className="flex justify-center items-center min-h-full">
                       <p className="font-semibold uppercase">

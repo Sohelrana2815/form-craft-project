@@ -99,14 +99,14 @@ const SignupPage = () => {
             <h2 className="text-center text-2xl font-semibold">Sign up</h2>
             <fieldset className="fieldset space-y-3">
               <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Name</span>
+                <label className="label block my-1">
+                  <span className="label-text">Username</span>
                 </label>
                 <input
                   {...register("name", { required: true })}
                   type="text"
-                  className="input input-bordered w-full"
-                  placeholder="Name"
+                  className="input input-bordered w-full pr-10 focus:border-blue-700 focus:outline-none"
+                  placeholder="Enter your username"
                 />
                 {errors.name && (
                   <span className="text-red-600 text-sm">Name is required</span>
@@ -114,14 +114,14 @@ const SignupPage = () => {
               </div>
 
               <div className="form-control">
-                <label className="label">
+                <label className="label block my-1">
                   <span className="label-text">Email</span>
                 </label>
                 <input
                   {...register("email", { required: true })}
                   type="email"
-                  className="input input-bordered w-full"
-                  placeholder="Email"
+                  className="input w-full pr-10 focus:border-blue-700 focus:outline-none"
+                  placeholder="Enter your email"
                 />
                 {errors.email && (
                   <span className="text-red-600 text-sm">
@@ -131,19 +131,19 @@ const SignupPage = () => {
               </div>
 
               <div className="form-control relative">
-                <label className="label">
+                <label className="label block my-1">
                   <span className="label-text">Password</span>
                 </label>
                 <div className="relative">
                   <input
                     {...register("password", { required: true })}
                     type={showPassword ? "text" : "password"}
-                    className="input input-bordered w-full pr-10"
-                    placeholder="Password"
+                    className="input input-bordered w-full pr-10 focus:border-blue-700 focus:outline-none"
+                    placeholder="Enter your password"
                   />
                   <button
                     onClick={togglePasswordVisibility}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-gray-200 cursor-pointer p-1 rounded-full"
                     type="button"
                   >
                     {showPassword ? (
@@ -164,7 +164,11 @@ const SignupPage = () => {
                 type="submit"
                 className="btn btn-primary mt-4 border-none"
               >
-                {isSubmitting ? "Signing up..." : "Sign up"}
+                {isSubmitting ? (
+                  <span className="loading loading-spinner loading-lg"></span>
+                ) : (
+                  "Sign up"
+                )}
               </button>
             </fieldset>
             {/* Google signIng button */}

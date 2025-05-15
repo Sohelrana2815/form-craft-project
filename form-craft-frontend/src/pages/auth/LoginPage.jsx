@@ -69,7 +69,7 @@ const LoginPage = () => {
                 <input
                   {...register("email", { required: "Email is required" })}
                   type="email"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full pr-10 focus:border-blue-700 focus:outline-none block my-1"
                   placeholder="Email"
                 />
                 {errors.email && (
@@ -80,7 +80,7 @@ const LoginPage = () => {
               </div>
 
               <div className="form-control relative">
-                <label className="label">
+                <label className="label block my-1">
                   <span className="label-text">Password</span>
                 </label>
                 <div className="relative">
@@ -89,12 +89,12 @@ const LoginPage = () => {
                       required: "Password is required",
                     })}
                     type={showPassword ? "text" : "password"}
-                    className="input input-bordered w-full pr-10"
+                    className="input input-bordered w-full pr-10 focus:border-blue-700 focus:outline-none"
                     placeholder="Password"
                   />
                   <button
                     onClick={togglePasswordVisibility}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-gray-200 cursor-pointer p-1 rounded-full"
                     type="button"
                   >
                     {showPassword ? (

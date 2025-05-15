@@ -11,6 +11,7 @@ import CreateTemplate from "../pages/createTemplate/CreateTemplate";
 import TemplateForm from "../pages/home/gallery/TemplateForm";
 import TemplatePage from "../pages/personalPage/myTemplates/templatePage/TemplatePage";
 import AdminRoute from "./AdminRoute";
+import UserProfile from "../pages/profile/UserProfile";
 
 const MainRoutes = () => {
   return (
@@ -40,6 +41,7 @@ const MainRoutes = () => {
               </PrivateRoute>
             }
           />
+          <Route path="user-profile" element={<UserProfile />} />
         </Route>
       </Routes>
     </>

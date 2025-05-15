@@ -69,10 +69,10 @@ const Navbar = () => {
   }
   return (
     <>
-      <div className="navbar bg-base-100 shadow-sm dark:bg-gray-800">
+      <div className="navbar bg-base-100 shadow-sm dark:bg-gray-800 2xl:px-20">
         <div className="navbar-start">
           <div className="dropdown">
-            <div tabIndex={0} className=" mx-3 lg:hidden">
+            <div tabIndex={0} className=" mx-3 lg:hidden ">
               <IoMdMenu className="text-2xl cursor-pointer" />
             </div>
             <ul
@@ -96,14 +96,45 @@ const Navbar = () => {
           >
             {isDark ? "🔆 Light" : "🌙 Dark"}
           </button>
+          {/* User profile */}
           {user && (
-            <button
-              className="btn dark:bg-primary btn-sm btn-neutral dark:btn-primary dark:text-white border-none"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-neutral btn-circle avatar"
+              >
+                <div className="w-10 rounded-full">
+                  {user?.photoURL ? (
+                    <img
+                      alt="Tailwind CSS Navbar component"
+                      src={user?.photoURL}
+                    />
+                  ) : (
+                    <div className="flex justify-center items-center min-h-full">
+                      <p className="font-semibold uppercase">
+                        {user?.displayName.charAt(0)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow dark:bg-gray-800 dark:mt-4"
+              >
+                <Link to="/user-profile">
+                  <li className="hover:bg-gray-900">
+                    <p className="justify-between">Profile Settings</p>
+                  </li>
+                </Link>
+                <li className="hover:bg-gray-900">
+                  {user && <button onClick={handleLogout}>Logout</button>}
+                </li>
+              </ul>
+            </div>
           )}
+          {/*  */}
         </div>
       </div>
     </>

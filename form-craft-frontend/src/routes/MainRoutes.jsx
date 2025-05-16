@@ -41,7 +41,14 @@ const MainRoutes = () => {
               </PrivateRoute>
             }
           />
-          <Route path="user-profile" element={<UserProfile />} />
+          <Route
+            path="user-profile"
+            element={
+              <PrivateRoute>
+                <UserProfile />
+              </PrivateRoute>
+            }
+          />
         </Route>
       </Routes>
     </>

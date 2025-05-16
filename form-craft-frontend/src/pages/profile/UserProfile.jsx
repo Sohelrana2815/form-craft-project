@@ -1,13 +1,20 @@
 import { FaPen } from "react-icons/fa6";
+import { useRef } from "react";
 import { FcSettings } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
 import { useState } from "react";
 import { updateProfile } from "firebase/auth";
+import { LiaUserEditSolid } from "react-icons/lia";
 const UserProfile = () => {
   const { user } = useAuth();
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [profileLoading, setProfileLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const imgFileRef = useRef(null);
+
+  const editProfilePic = () => {
+    imgFileRef.current.click(); // Open file system when icon is clicked
+  };
 
   const profileUpdate = async (e) => {
     e.preventDefault();
@@ -41,18 +48,42 @@ const UserProfile = () => {
           className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl dark:bg-gray-700"
         >
           <div className="card-body">
-            {/* Profile pic */}
-            {user?.photoURL ? (
-              <div className="flex justify-center">
-                <img src={user?.photoURL} className="rounded-full" />
+            <div className="relative w-28 h-28 mx-auto">
+              {/* Profile pic */}
+              {user?.photoURL ? (
+                <img
+                  src={user?.photoURL}
+                  alt="Profile"
+                  className="w-28 h-28 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-28 h-28 border rounded-full bg-neutral flex items-center justify-center border-primary">
+                  {user ? (
+                    <span className="text-white text-sm md:text-4xl">
+                      {displayName.charAt(0)}
+                    </span>
+                  ) : (
+                    <span>No User</span>
+                  )}
+                </div>
+              )}
+
+              {/* Hidden file input form img */}
+              <input
+                type="file"
+                accept="image/*"
+                ref={imgFileRef}
+                className="hidden"
+              />
+
+              {/* Edit pen icon repositioned at the bottom-right */}
+              <div
+                onClick={editProfilePic}
+                className="absolute right-0 bottom-0 transform translate-x-1/4 translate-y-1/4  bg-white rounded-full p-1 border border-gray-300"
+              >
+                <LiaUserEditSolid className="text-lg text-primary cursor-pointer" />
               </div>
-            ) : (
-              <div className="border w-28 mx-auto md:h-28 rounded-full bg-gray-400 flex items-center justify-center">
-                <span className="text-gray-600 text-sm md:text-base">
-                  No Image
-                </span>
-              </div>
-            )}
+            </div>
 
             <fieldset className="fieldset">
               <label className="label">Display Name</label>

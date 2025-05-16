@@ -4,11 +4,19 @@ import { FcSettings } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
 import { updateProfile } from "firebase/auth";
 import { LiaUserEditSolid } from "react-icons/lia";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+// Image hosting configuration
+
+const img_hosting_key = import.meta.env.VITE_IMG_HOSTING_KEY;
+const img_hosting_api = `https://api.imgbb.com/1/upload?key=${img_hosting_key}`;
+
 const UserProfile = () => {
   const { user } = useAuth();
+  const axiosPublic = useAxiosPublic();
   const [displayName, setDisplayName] = useState(user?.displayName || "");
-  // Show user selected Profile (initial moment show the user.photoURL if available)
+  // Show the img PREVIEW
   const [previewProfileImg, setPreviewProfileImg] = useState(user?.photoURL);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [message, setMessage] = useState("");
   const imgFileRef = useRef(null);
@@ -16,33 +24,62 @@ const UserProfile = () => {
   const editProfilePic = () => {
     imgFileRef.current.click(); // Open file system when icon is clicked
   };
-  // When a file is chosen, update the preview
+  // When a file is chosen, update the preview and save the file
 
   const fileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log("Profile picture image file:", file);
+      setSelectedFile(file);
       setPreviewProfileImg(URL.createObjectURL(file));
     }
   };
 
-  const profileUpdate = async (e) => {
+  // This function handle the user form submission after update
+  const userProfileUpdate = async (e) => {
     e.preventDefault();
     if (!user) return;
     setProfileLoading(true);
     setMessage("");
 
     try {
-      // Update user displayName from firebase
-      await updateProfile(user, { displayName });
-      setMessage("Display Name updated successfully!");
+      let imageUrl = user.photoURL;
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("image", selectedFile);
+        const uploadRes = await axiosPublic.post(img_hosting_api, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (!uploadRes.data.success) {
+          throw new Error("Image upload failed");
+        }
+
+        imageUrl = uploadRes.data.data.display_url;
+      }
+
+      // Update profile regardless of image selection
+
+      await updateProfile(user, {
+        displayName,
+        photoURL: imageUrl,
+      });
+
+      // Update local state
+      setPreviewProfileImg(imageUrl);
+      setSelectedFile(null);
+      setMessage(
+        <p className="text-green-500">Profile updated successfully!</p>
+      );
     } catch (error) {
       console.error("Error updating profile:", error);
-      setMessage("Could not update Display Name. Please try again");
+      setMessage(error.message || "Could not update profile. Please try again");
+    } finally {
+      setProfileLoading(false);
     }
-
-    setProfileLoading(false);
   };
-
   return (
     <div className="hero my-40">
       <div className="hero-content flex-col w-full">
@@ -53,7 +90,7 @@ const UserProfile = () => {
           </h1>
         </div>
         <form
-          onSubmit={profileUpdate}
+          onSubmit={userProfileUpdate}
           className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl dark:bg-gray-700"
         >
           <div className="card-body">

@@ -1,19 +1,28 @@
 import { FaPen } from "react-icons/fa6";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FcSettings } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
-import { useState } from "react";
 import { updateProfile } from "firebase/auth";
 import { LiaUserEditSolid } from "react-icons/lia";
 const UserProfile = () => {
   const { user } = useAuth();
   const [displayName, setDisplayName] = useState(user?.displayName || "");
+  // Show user selected Profile (initial moment show the user.photoURL if available)
+  const [previewProfileImg, setPreviewProfileImg] = useState(user?.photoURL);
   const [profileLoading, setProfileLoading] = useState(false);
   const [message, setMessage] = useState("");
   const imgFileRef = useRef(null);
 
   const editProfilePic = () => {
     imgFileRef.current.click(); // Open file system when icon is clicked
+  };
+  // When a file is chosen, update the preview
+
+  const fileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPreviewProfileImg(URL.createObjectURL(file));
+    }
   };
 
   const profileUpdate = async (e) => {
@@ -49,10 +58,16 @@ const UserProfile = () => {
         >
           <div className="card-body">
             <div className="relative w-28 h-28 mx-auto">
-              {/* Profile pic */}
-              {user?.photoURL ? (
+              {/* Show live preview if available; else fallback to user.photoURL; and then placeholder */}
+              {previewProfileImg ? (
                 <img
-                  src={user?.photoURL}
+                  src={previewProfileImg}
+                  alt="Profile"
+                  className="w-28 h-28 rounded-full object-cover"
+                />
+              ) : user?.photoURL ? (
+                <img
+                  src={user.photoURL}
                   alt="Profile"
                   className="w-28 h-28 rounded-full object-cover"
                 />
@@ -74,6 +89,7 @@ const UserProfile = () => {
                 accept="image/*"
                 ref={imgFileRef}
                 className="hidden"
+                onChange={fileChange}
               />
 
               {/* Edit pen icon repositioned at the bottom-right */}

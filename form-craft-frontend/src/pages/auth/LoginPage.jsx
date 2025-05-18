@@ -89,7 +89,7 @@ const LoginPage = () => {
                       required: "Password is required",
                     })}
                     type={showPassword ? "text" : "password"}
-                    className="input input-bordered w-full pr-10 focus:border-blue-700 focus:outline-none"
+                    className="input  w-full pr-10 focus:border-blue-700 focus:outline-none"
                     placeholder="Password"
                   />
                   <button

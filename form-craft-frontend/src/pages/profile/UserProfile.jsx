@@ -91,7 +91,7 @@ const UserProfile = () => {
 
   return (
     <>
-      <div className="hero my-40">
+      <div className="hero  my-10">
         <div className="hero-content flex-col w-full">
           <div className="text-center lg:text-left">
             <h1 className="text-xl font-bold flex items-center gap-x-2">

@@ -14,6 +14,7 @@ const img_hosting_api = `https://api.imgbb.com/1/upload?key=${img_hosting_key}`;
 const UserProfile = () => {
   const { user } = useAuth();
   const axiosPublic = useAxiosPublic();
+  // Inside UserProfile component
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   // Show the img PREVIEW
   const [previewProfileImg, setPreviewProfileImg] = useState(user?.photoURL);
@@ -88,6 +89,8 @@ const UserProfile = () => {
 
   const openModal = () => dialogRef.current.showModal();
   const closeModal = () => dialogRef.current.close();
+
+  // Salesforce handle submit
 
   return (
     <>

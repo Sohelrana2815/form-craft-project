@@ -11,7 +11,7 @@ const authRoutes = require("./routes/authRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const topicRoutes = require("./routes/topicRoutes");
 const tagRoutes = require("./routes/tagRoutes");
-
+const salesforceRoutes = require("./routes/salesforceRoutes");
 // Middlewares
 app.use(express.json());
 app.use(
@@ -26,6 +26,7 @@ app.use(
 );
 
 // Routes handlers
+app.use("/api/salesforce", salesforceRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", authRoutes);
 app.use("/api", templateRoutes);

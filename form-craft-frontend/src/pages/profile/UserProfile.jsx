@@ -6,6 +6,7 @@ import { updateProfile } from "firebase/auth";
 import { LiaUserEditSolid } from "react-icons/lia";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import salesforce from "../../assets/salesforce.png";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 // Image hosting configuration
 
 const img_hosting_key = import.meta.env.VITE_IMG_HOSTING_KEY;
@@ -14,6 +15,7 @@ const img_hosting_api = `https://api.imgbb.com/1/upload?key=${img_hosting_key}`;
 const UserProfile = () => {
   const { user } = useAuth();
   const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   // Inside UserProfile component
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   // Show the img PREVIEW
@@ -21,6 +23,12 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // State for salesforce form data
+
+  const [company, setCompany] = useState("");
+  const [phone, setPhone] = useState("");
+
   // Use ref for <dialog>
   const dialogRef = useRef(null);
   const imgFileRef = useRef(null);
@@ -90,7 +98,31 @@ const UserProfile = () => {
   const openModal = () => dialogRef.current.showModal();
   const closeModal = () => dialogRef.current.close();
 
-  // Salesforce handle submit
+  // Salesforce submit
+
+  const salesforceSubmit = async (e) => {
+    e.preventDefault();
+    const salesforceData = {
+      companyName: company,
+      phone: phone,
+      displayName: displayName,
+    };
+
+    console.log(salesforceData);
+    try {
+      const salesforceRes = await axiosSecure.post(
+        "/salesforce/create-account",
+        salesforceData
+      );
+      if (salesforceRes.data.success) {
+        alert("Salesforce Account & Contact Created!");
+        closeModal();
+      }
+    } catch (error) {
+      alert("Error: Check console");
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -207,18 +239,26 @@ const UserProfile = () => {
           </div>
           <div className="py-4 space-y-4">
             <input
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
               type="text"
               placeholder="Company Name"
               className="input w-full dark:bg-gray-700 dark:placeholder-gray-300 focus:border-gray-500 focus:outline-none"
             />
             <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               type="tel"
               placeholder="Phone"
               className="input w-full dark:bg-gray-700 dark:placeholder-gray-300 focus:border-gray-500 focus:outline-none"
             />
           </div>
           <div className="modal-action">
-            <button type="submit" className="btn btn-primary">
+            <button
+              onClick={salesforceSubmit}
+              type="submit"
+              className="btn btn-primary"
+            >
               Submit
             </button>
           </div>

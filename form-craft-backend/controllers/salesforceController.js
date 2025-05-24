@@ -1,63 +1,37 @@
 const { URLSearchParams } = require("url");
 const axios = require("axios");
+
+const TOKEN_URL = "https://login.salesforce.com/services/oauth2/token";
+const API_VERSION = "v58.0";
+
 exports.createSalesforceAccount = async (req, res) => {
   try {
     const { companyName, phone, displayName } = req.body;
 
-    const user = req.user; // from jwt token
-    // Build and send the OAuth token request
+    const { email } = req.body; // from jwt token
+
+    console.log(
+      `companyName: ${companyName}, phone: ${phone} and displayName: ${displayName}`
+    );
+
     const params = new URLSearchParams({
       grant_type: "password",
-      client_id: process.env.SALESFORCE_CONSUMER_KEY || "",
-      client_secret: process.env.SALESFORCE_CONSUMER_SECRET || "",
-      username: process.env.SALESFORCE_USERNAME || "",
-      // Make sure this var really is "password+token"
-      password:
-        (process.env.SALESFORCE_PASSWORD ?? "") +
-        (process.env.SALESFORCE_SECURITY_TOKEN ?? ""),
+      client_id: process.env.SALESFORCE_CONSUMER_KEY,
+      client_secret: process.env.SALESFORCE_CONSUMER_SECRET,
+      username: process.env.SALESFORCE_USERNAME,
+      // PASS + SECURITY TOKEN
+      password: process.env.SALESFORCE_PASSWORD,
     });
+
     console.log(params.toString());
-    console.log(
-      "Final password string:",
-      process.env.SALESFORCE_PASSWORD + process.env.SALESFORCE_SECURITY_TOKEN
-    );
 
-    // // 1. Salesforce Authentication (OAuth2 password flow)
-    const authResponse = await axios.post(
-      "https://login.salesforce.com/services/oauth2/token",
-      params,
-      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
-    );
-    console.log("Got token:", authResponse.data.access_token);
+    const authRes = await axios.post(TOKEN_URL, params, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
 
-    const { access_token, instance_url } = authResponse.data;
-
-    // Create Account
-    const accountRes = await axios.post(
-      `${instance_url}/services/data/v58.0/sobjects/Account`,
-      { Name: companyName, Phone: phone },
-      { headers: { Authorization: `Bearer ${access_token}` } }
-    );
-
-    // Create Contact
-    await axios.post(
-      `${instance_url}/services/data/v58.0/sobjects/Contact`,
-      {
-        LastName: displayName || "Unknown",
-        Email: user.email,
-        AccountId: accountRes.data.id,
-      },
-      { headers: { Authorization: `Bearer ${access_token}` } }
-    );
-
-    res.json({ success: true, accountId: accountRes.data.id });
-  } catch (error) {
-    console.error(
-      "Salesforce Error Details:",
-      error.response?.data,
-      "Status Code:",
-      error.response?.status
-    );
-    res.status(500).json({ error: "Salesforce Integration Failed" });
+    console.log(authRes.data);
+  } catch (err) {
+    console.error("SF Integration Error:", err.response?.data || err.message);
+    return res.status(500).json({ error: "Salesforce integration failed" });
   }
 };

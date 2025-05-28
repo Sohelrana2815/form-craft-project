@@ -12,7 +12,7 @@ exports.createSalesforceAccount = async (req, res) => {
 
     console.log(
       `companyName: ${companyName}, phone: ${phone} and displayName: ${displayName}`
-    );
+    )
 
     const params = new URLSearchParams({
       grant_type: "password",

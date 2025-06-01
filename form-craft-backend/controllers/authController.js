@@ -3,72 +3,94 @@ const prisma = require("../db");
 const admin = require("../firebase-admin/firebase-admin-config");
 
 exports.signupUser = async (req, res) => {
-  const { name, email, uid } = req.body;
+  const { username, email, uid } = req.body;
+  console.log("Received signup data:", { username, email, uid });
+  // Basic validation: Ensure essential fields are provided
+
+  if (!username || !email || !uid) {
+    return res
+      .status(400)
+      .json({ message: "Username, email and UID are required." });
+  }
 
   try {
+    // Create user in PostgreSQL DB via Prisma
     const newUser = await prisma.user.create({
-      data: { name, email, uid },
+      data: {
+        username: username,
+        email: email,
+        uid: uid, // Firebase UID
+        // createdAt, role and isBlocked will be handled by schema defaults
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        uid: true,
+        role: true,
+        isBlocked: true,
+      },
     });
-    res.status(201).json(newUser);
-  } catch (error) {
-    if (error.code === "P2002") {
+    res
+      .status(201)
+      .json({ message: "User created successfully in PostgreSQL DB." });
+  } catch (err) {
+    console.error("Error creating in database:", err);
+    // Unique constraint violation
+    if (err.code === "P2002") {
       try {
         await admin.auth().deleteUser(uid);
-        return res.status(409).json({ error: "This Email already exist!" });
-      } catch (firebaseError) {
-        console.error("Firebase user delete failed.", firebaseError);
-        res.status(500).json({
-          error: "Email conflict failed to delete firebase error",
+        // console.log(
+        //   `Firebase user with UID ${uid} deleted due to database conflict.`
+        // );
+        return res.status(409).json({
+          message:
+            "User already exists in the database. Firebase user deleted to resolve conflict. Please try signing up again.",
+          error: "Email or UID already exists.",
         });
-
-        res.status(500).json({ error: "Internal server error" });
+      } catch (firebaseError) {
+        console.error("Firebase user deletion failed:", firebaseError);
+        // If Firebase deletion also fails, it's a critical inconsistency.
+        return res.status(500).json({
+          message:
+            "Database conflict detected, but failed to delete user from Firebase. Manual intervention may be required.",
+          error: "Failed to synchronize user deletion with Firebase.",
+        });
       }
     } else {
-      res.status(500).json({ error: "Internal server error" });
+      // Handle other potential database errors
+      return res
+        .status(500)
+        .json({ message: "Internal server error during user creation." });
     }
   }
 };
 
-exports.checkConflict = async (req, res) => {
-  const { name, email } = req.body;
-
-  try {
-    // Check for existing email
-    const existingEmail = await prisma.user.findUnique({
-      where: { email },
-      select: { email: true },
-    });
-
-    // Check for existing name
-
-    const existingName = await prisma.user.findUnique({
-      where: { name },
-      select: { name: true },
-    });
-
-    // If already exist user name & email in DB, then return the user
-    if (existingEmail) {
-      return res.status(409).json({ error: "This email already exist!" });
-    }
-    if (existingName) {
-      return res.status(409).json({ error: "This name is already taken." });
-    }
-
-    // No conflict
-
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error("Conflict check error:", error);
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.updateLogin = async (req, res) => {
+exports.checkUserStatus = async (req, res) => {
   const userEmail = req.params.email;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+      select: { isBlocked: true },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "No user found." });
+    }
+    if (user.isBlocked) {
+      return res.status(403).json({ error: "User is Blocked" });
+    }
+    res.status(200).json({ status: "active" });
+  } catch (err) {
+    console.error("Status check failed:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
+exports.updateLastLogin = async (req, res) => {
+  const userEmail = req.params.email;
+  // console.log("User email in the updateLogin API:", userEmail);
   try {
     // 1. Find user
-
     const user = await prisma.user.findUnique({
       where: { email: userEmail },
       select: { id: true, uid: true, isBlocked: true, email: true },
@@ -77,55 +99,42 @@ exports.updateLogin = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "No user found." });
     }
-
     // 2. Block check
-
     if (user.isBlocked) {
       return res.status(403).json({ error: "User is blocked!" });
     }
 
-    // 3. Last login update
-
-    const updateUser = await prisma.user.update({
+    // 3. Update lastLogin timestamp
+    const updateTimestamp = await prisma.user.update({
       where: { email: userEmail },
       data: { lastLogin: new Date() },
       select: {
         lastLogin: true,
       },
     });
-
-    res.status(200).json(updateUser);
-  } catch (error) {
-    console.error("Failed update last login:", error);
-    // Prisma error
-    if (error.code === "P2025") {
-      return res.status(404).json({ error: "No user found" });
-    }
-
-    res.status(500).json({ error: "Internal server error" });
+    res.status(200).json(updateTimestamp);
+  } catch (err) {
+    console.error("Failed to update lastLogin:", err);
   }
+  res.status(500).json({ error: "Internal server error" });
 };
 
-exports.generateToken = async (req, res) => {
+exports.generateJwtToken = async (req, res) => {
   const { email } = req.body;
   // console.log(email);
-
   try {
-    //1. Find user from Database
+    // 1. Find user from DB
     const user = await prisma.user.findUnique({
       where: { email },
       select: { id: true, uid: true, isBlocked: true, email: true },
     });
-
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
-
-    // 2. Check the user is blocked or not
+    // 2. Check user block or not
     if (user.isBlocked) {
       return res.status(403).json({ error: "User is blocked!" });
     }
-
     // 3. JWT token generate
 
     const token = jwt.sign(
@@ -135,11 +144,10 @@ exports.generateToken = async (req, res) => {
         email: user.email,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" }
+      { expiresIn: "1h" }
     );
-
     res.status(200).json({ token });
-  } catch (error) {
+  } catch (err) {
     console.error("Token generation failed:", error);
     res.status(500).json({ error: "Internal server error" });
   }

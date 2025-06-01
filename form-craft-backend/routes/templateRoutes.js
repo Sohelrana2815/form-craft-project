@@ -4,44 +4,6 @@ const router = express.Router();
 const templateController = require("../controllers/templateController");
 const { verifyToken } = require("../middleware/authMiddleware");
 
-router.get("/templates", templateController.getTemplates);
-
 router.post("/templates", verifyToken, templateController.createTemplate);
-router.get(
-  "/templates/my-templates",
-  verifyToken,
-  templateController.getMyTemplates
-);
-
-// Delete templates
-
-router.delete("/templates", verifyToken, templateController.deleteTemplates);
-
-router.get("/templates/:id", templateController.getTemplateById);
-
-router.patch("/templates/:id", templateController.updateTemplate);
-
-router.post(
-  "/templates/:templateId/comments",
-  verifyToken,
-  templateController.addComment
-);
-
-router.get(
-  "/templates/:templateId/comments",
-  templateController.getCommentsByTemplateId
-);
-
-// Post likes
-
-router.post(
-  "/templates/:templateId/likes",
-  verifyToken,
-  templateController.addLike
-);
-
-// Get the likes count
-
-router.get("/templates/:templateId/likes", templateController.getLikesCount);
 
 module.exports = router;

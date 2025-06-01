@@ -7,10 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// USER MODEL 
+
 model User {
   id        Int       @id @default(autoincrement())
-  name      String    @unique @db.VarChar(100)
-  email     String    @unique @db.VarChar(100)
+  username  String    @unique @db.VarChar(50)
+  email     String    @unique @db.VarChar(50)
+  uid       String    @unique @db.VarChar(200)
   createdAt DateTime  @default(now()) @map("created_at")
   lastLogin DateTime? @map("last_login")
   role      String    @default("user") @db.VarChar(10)
@@ -25,21 +28,27 @@ model User {
   @@map("users")
 }
 
+// TOPIC MODEL 
+
 model Topic {
   id        Int        @id @default(autoincrement())
-  name      String     @unique @db.VarChar(100)
+  name      String     @unique @db.VarChar(20)
   templates Template[]
 
   @@map("topics")
 }
 
+// TAG MODEL 
+
 model Tag {
   id        Int        @id @default(autoincrement())
-  name      String     @unique @db.VarChar(100)
+  name      String     @unique @db.VarChar(20)
   templates Template[] @relation("TaggedTemplates")
 
   @@map("tags")
 }
+
+// TEMPLATE MODEL
 
 model Template {
   id          Int        @id @default(autoincrement())
@@ -63,26 +72,28 @@ model Template {
   @@map("templates")
 }
 
+// QUESTION MODEL 
+
 model Question {
   id          Int          @id @default(autoincrement())
-  title       String       @db.VarChar(255)
-  description String? // ADD THIS FIELD - for question description [cite: 35]
+  title       String       @db.VarChar(200)
+  description String? // Question description
   type        QuestionType
   order       Int          @default(0)
   showInList  Boolean      @default(false) @map("show_in_list")
   options     String[] // For checkbox/multiple choice
-
-  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  templateId Int
-  Answer     Answer[]
+  template    Template     @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  templateId  Int
+  Answer      Answer[]
 
   @@map("questions")
 }
 
-model Form {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// MODEL FORM 
 
+model Form {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
   template    Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
   templateId  Int
   responder   User     @relation(fields: [responderId], references: [id], onDelete: Cascade)
@@ -92,9 +103,11 @@ model Form {
   @@map("forms")
 }
 
+// ANSWER MODEL 
+
 model Answer {
   id         Int      @id @default(autoincrement())
-  value      String // Stores answer as JSON string 
+  value      String // Stores answer as JSON string
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   questionId Int
   form       Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
@@ -102,6 +115,8 @@ model Answer {
 
   @@map("answers")
 }
+
+// TEMPLATE PERMISSION MODEL
 
 model TemplatePermission {
   id         Int      @id @default(autoincrement())
@@ -114,9 +129,10 @@ model TemplatePermission {
   @@map("template_permissions")
 }
 
+// COMMENT MODEL
 model Comment {
   id        Int      @id @default(autoincrement())
-  text      String   @db.Text
+  text      String   @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -129,6 +145,7 @@ model Comment {
   @@map("comments")
 }
 
+// LIKE MODEL
 model Like {
   id         Int      @id @default(autoincrement())
   template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)

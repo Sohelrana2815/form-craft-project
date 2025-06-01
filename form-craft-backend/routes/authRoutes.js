@@ -4,7 +4,7 @@ const authController = require("../controllers/authController");
 
 // Authentication-related routes
 router.post("/signup", authController.signupUser);
-router.post("/jwt", authController.generateToken);
-router.patch("/login/:email", authController.updateLogin);
-router.post("/check-user", authController.checkConflict);
+router.post("/jwt", authController.generateJwtToken);
+router.get("/user-status/:email", authController.checkUserStatus);
+router.patch("/login/:email", authController.updateLastLogin);
 module.exports = router;

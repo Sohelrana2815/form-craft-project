@@ -7,8 +7,9 @@ CREATE TYPE "QuestionType" AS ENUM ('SHORT_TEXT', 'LONG_TEXT', 'INTEGER', 'CHECK
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
-    "name" VARCHAR(100) NOT NULL,
-    "email" VARCHAR(100) NOT NULL,
+    "username" VARCHAR(50) NOT NULL,
+    "email" VARCHAR(50) NOT NULL,
+    "uid" VARCHAR(200) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "last_login" TIMESTAMP(3),
     "role" VARCHAR(10) NOT NULL DEFAULT 'user',
@@ -20,7 +21,7 @@ CREATE TABLE "users" (
 -- CreateTable
 CREATE TABLE "topics" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" VARCHAR(20) NOT NULL,
 
     CONSTRAINT "topics_pkey" PRIMARY KEY ("id")
 );
@@ -28,7 +29,7 @@ CREATE TABLE "topics" (
 -- CreateTable
 CREATE TABLE "tags" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" VARCHAR(20) NOT NULL,
 
     CONSTRAINT "tags_pkey" PRIMARY KEY ("id")
 );
@@ -36,7 +37,7 @@ CREATE TABLE "tags" (
 -- CreateTable
 CREATE TABLE "templates" (
     "id" SERIAL NOT NULL,
-    "title" TEXT NOT NULL,
+    "title" VARCHAR(255) NOT NULL,
     "description" TEXT NOT NULL,
     "image_url" TEXT,
     "topicId" INTEGER NOT NULL,
@@ -50,7 +51,7 @@ CREATE TABLE "templates" (
 -- CreateTable
 CREATE TABLE "questions" (
     "id" SERIAL NOT NULL,
-    "title" TEXT NOT NULL,
+    "title" VARCHAR(200) NOT NULL,
     "description" TEXT,
     "type" "QuestionType" NOT NULL,
     "order" INTEGER NOT NULL DEFAULT 0,
@@ -93,7 +94,7 @@ CREATE TABLE "template_permissions" (
 -- CreateTable
 CREATE TABLE "comments" (
     "id" SERIAL NOT NULL,
-    "text" TEXT NOT NULL,
+    "text" VARCHAR(255) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "templateId" INTEGER NOT NULL,
@@ -120,10 +121,13 @@ CREATE TABLE "_TaggedTemplates" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_name_key" ON "users"("name");
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_uid_key" ON "users"("uid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "topics_name_key" ON "topics"("name");

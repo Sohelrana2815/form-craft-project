@@ -1,5 +1,6 @@
 const prisma = require("../db");
 
+// Post topics
 exports.createTopic = async (req, res) => {
   const { name } = req.body;
 
@@ -29,6 +30,17 @@ exports.createTopic = async (req, res) => {
         .json({ message: "Topic with this name is already exists." });
     }
     console.error("Error creating topic:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+// GET all topics
+exports.getTopics = async (req, res) => {
+  try {
+    const topics = await prisma.topic.findMany();
+    res.status(200).json(topics);
+  } catch (err) {
+    console.error("Error fetching topics:", err);
     res.status(500).json({ error: "Internal server error." });
   }
 };

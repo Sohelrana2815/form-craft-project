@@ -2,7 +2,7 @@
 CREATE TYPE "AccessType" AS ENUM ('PUBLIC', 'RESTRICTED');
 
 -- CreateEnum
-CREATE TYPE "QuestionType" AS ENUM ('SHORT_TEXT', 'LONG_TEXT', 'INTEGER', 'CHECKBOX', 'MULTIPLE_CHOICE');
+CREATE TYPE "QuestionType" AS ENUM ('SHORT_TEXT', 'LONG_TEXT', 'INTEGER', 'CHOICE');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -54,6 +54,7 @@ CREATE TABLE "questions" (
     "title" VARCHAR(200) NOT NULL,
     "description" TEXT,
     "type" "QuestionType" NOT NULL,
+    "allow_multiple" BOOLEAN NOT NULL DEFAULT false,
     "order" INTEGER NOT NULL DEFAULT 0,
     "show_in_list" BOOLEAN NOT NULL DEFAULT false,
     "options" TEXT[],

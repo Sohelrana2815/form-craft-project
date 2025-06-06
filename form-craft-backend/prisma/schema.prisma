@@ -75,16 +75,17 @@ model Template {
 // QUESTION MODEL 
 
 model Question {
-  id          Int          @id @default(autoincrement())
-  title       String       @db.VarChar(200)
-  description String? // Question description
-  type        QuestionType
-  order       Int          @default(0)
-  showInList  Boolean      @default(false) @map("show_in_list")
-  options     String[] // For checkbox/multiple choice
-  template    Template     @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  templateId  Int
-  Answer      Answer[]
+  id            Int          @id @default(autoincrement())
+  title         String       @db.VarChar(200)
+  description   String? // optional helper text
+  type          QuestionType
+  allowMultiple Boolean      @default(false) @map("allow_multiple")
+  order         Int          @default(0)
+  showInList    Boolean      @default(false) @map("show_in_list")
+  options       String[] // used only when type = CHOICE
+  template      Template     @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  templateId    Int
+  Answer        Answer[]
 
   @@map("questions")
 }
@@ -130,6 +131,7 @@ model TemplatePermission {
 }
 
 // COMMENT MODEL
+
 model Comment {
   id        Int      @id @default(autoincrement())
   text      String   @db.VarChar(255)
@@ -146,6 +148,7 @@ model Comment {
 }
 
 // LIKE MODEL
+
 model Like {
   id         Int      @id @default(autoincrement())
   template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
@@ -157,6 +160,8 @@ model Like {
   @@map("likes")
 }
 
+// ENUMS
+
 enum AccessType {
   PUBLIC
   RESTRICTED
@@ -166,6 +171,5 @@ enum QuestionType {
   SHORT_TEXT
   LONG_TEXT
   INTEGER
-  CHECKBOX
-  MULTIPLE_CHOICE
+  CHOICE // merged from CHECKBOX + MULTIPLE_CHOICE
 }

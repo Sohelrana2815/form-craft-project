@@ -9,6 +9,7 @@ const app = require("./app");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const templateRoutes = require("./routes/templateRoutes");
+const questionRoutes = require("./routes/questionRoutes");
 const topicRoutes = require("./routes/topicRoutes");
 const tagRoutes = require("./routes/tagRoutes");
 const salesforceRoutes = require("./routes/salesforceRoutes");
@@ -35,6 +36,7 @@ app.use("/api", authRoutes);
 app.use("/api", templateRoutes);
 app.use("/api", topicRoutes);
 app.use("/api", tagRoutes);
+app.use("/api/templates", questionRoutes);
 // Default /
 app.get("/", (req, res) => {
   res.send("Hello server!");

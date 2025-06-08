@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import { updateProfile } from "firebase/auth";
@@ -12,15 +12,11 @@ import GoogleSignIn from "./GoogleSignIn";
 // ----------------------IMPORT--------------------------//
 
 const SignupPage = () => {
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const axiosPublic = useAxiosPublic();
-  const { createUser, logOut } = useAuth();
+  const { createUser } = useAuth();
+  // Navigate user to the desire page
 
-  // Logout
-  const logOutUser = async () => {
-    await logOut();
-  };
   // React hook form
   const {
     register,
@@ -30,42 +26,32 @@ const SignupPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      const { name, email, password } = data;
+      const { fullName, username, email, password } = data;
+      console.log("User info:", username, email, password);
 
       // Step 1: Check for conflicts in your database
-      const checkResponse = await axiosPublic.post("/check-user", {
-        name,
-        email,
-      });
-      if (checkResponse.data.error) {
-        throw new Error(checkResponse.data.error);
-      }
 
-      // Step 2: Proceed to create Firebase account if no existing user in DB.
       const userCredential = await createUser(email, password);
       const user = userCredential.user;
-      await updateProfile(user, { displayName: name });
+      await updateProfile(user, { displayName: fullName });
 
       // Step 3: Save user data to your database
-
       const userData = {
-        name,
+        username,
         email,
         uid: user.uid,
       };
-      // Step 4: Show success and redirect
-      const response = await axiosPublic.post("/signup", userData);
-      if (response.data.id) {
+
+      const newUserRes = await axiosPublic.post("/signup", userData);
+      console.log(newUserRes.data.user);
+      if (newUserRes.data.user) {
         Swal.fire({
           title: "Registered successfully!",
-          text: `Login please ${name}.`,
+          text: `${username} login please.`,
           icon: "success",
           draggable: true,
         });
-        logOutUser();
-        navigate("/login");
       }
-      // Add uid as well in data
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         Swal.fire(
@@ -100,16 +86,33 @@ const SignupPage = () => {
             <fieldset className="fieldset space-y-3">
               <div className="form-control">
                 <label className="label block my-1">
-                  <span className="label-text">Username</span>
+                  <span className="label-text">Full Name</span>
                 </label>
                 <input
-                  {...register("name", { required: true })}
+                  {...register("fullName", { required: true })}
                   type="text"
                   className="input input-bordered w-full pr-10 focus:border-blue-700 focus:outline-none"
-                  placeholder="Enter your username"
+                  placeholder="Enter your fullname"
                 />
                 {errors.name && (
                   <span className="text-red-600 text-sm">Name is required</span>
+                )}
+              </div>
+
+              <div className="form-control">
+                <label className="label block my-1">
+                  <span className="label-text">Username</span>
+                </label>
+                <input
+                  {...register("username", { required: true })}
+                  type="text"
+                  className="input input-bordered w-full pr-10 focus:border-blue-700 focus:outline-none"
+                  placeholder="Username must be unique"
+                />
+                {errors.name && (
+                  <span className="text-red-600 text-sm">
+                    Username is required
+                  </span>
                 )}
               </div>
 

@@ -7,11 +7,11 @@ import PrivateRoute from "./PrivateRoute";
 import ManageUsers from "../pages/admin/manage-users/ManageUsers";
 import Unauthorized from "../pages/error/Unauthorized";
 import PersonalPage from "../pages/personalPage/PersonalPage";
-import CreateTemplate from "../pages/createTemplate/CreateTemplate";
 import TemplateForm from "../pages/home/gallery/TemplateForm";
 import TemplatePage from "../pages/personalPage/myTemplates/templatePage/TemplatePage";
 import AdminRoute from "./AdminRoute";
 import UserProfile from "../pages/profile/UserProfile";
+import CreateTemplateWithQuestions from "../components/questions/CreateTemplateWithQuestions";
 
 const MainRoutes = () => {
   return (
@@ -37,7 +37,7 @@ const MainRoutes = () => {
             path="create-template"
             element={
               <PrivateRoute>
-                <CreateTemplate />
+                <CreateTemplateWithQuestions />
               </PrivateRoute>
             }
           />

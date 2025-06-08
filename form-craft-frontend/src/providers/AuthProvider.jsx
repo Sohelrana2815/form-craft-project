@@ -87,25 +87,3 @@ const AuthProvider = ({ children }) => {
 };
 
 export default AuthProvider;
-
-// if (currentUser) {
-//   const email = currentUser?.email;
-//   try {
-//     setLoading(true);
-//     const response = await axiosPublic.get(`/users/role/${email}`);
-//     setUserRole(response.data.userRole);
-//     setLoading(false);
-//   } catch (error) {
-//     console.log("Fetching role error", error);
-//   }
-// } else {
-//   setUserRole(null);
-//   setLoading(false);
-// }
-
-// if (!currentUser) {
-//   // Remove token form LC
-//   localStorage.removeItem("token");
-// }
-
-// console.log("observer:", currentUser);

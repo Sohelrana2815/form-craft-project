@@ -52,7 +52,7 @@ const Navbar = () => {
           <NavLink to="login">Login</NavLink>
         </li>
       )}
-      {role === "admin" && (
+      {role === "admin" && user && (
         <li>
           <NavLink to="manage-users">Manage users</NavLink>
         </li>

@@ -6,11 +6,13 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import { FaRegEye } from "react-icons/fa6";
 import { LuEyeClosed } from "react-icons/lu";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { loginUser } = useAuth();
   const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,26 +28,35 @@ const LoginPage = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
+    const { email, password } = data;
     try {
-      // Destructured
-      const { email, password } = data;
+      // 1. FIRST check user status in database
+      const statusCheck = await axiosPublic.get(`/user-status/${email}`);
+      if (!statusCheck.data.status) {
+        throw new Error("User is Blocked");
+      }
+      // 2. Only proceed if status is active
       const userCredential = await loginUser(email, password);
       const user = userCredential.user;
 
-      // if login success & got user (update lastLogin)
-      if (user) {
-        const response = await axiosPublic.patch(`/login/${user?.email}`);
-        console.log("login page:", response.data);
+      // 3. Update last login (optional)
 
-        if (response.data) {
-          navigate(from, { replace: true });
-        }
+      if (user) {
+        await axiosSecure.patch(`/login/${user.email}`);
+        navigate(from, { replace: true });
       }
     } catch (error) {
-      if (error.status === 403) {
+      // Handle different error types
+      if (error.response?.status === 403) {
         Swal.fire("Blocked", "Your account has been blocked.", "error");
+      } else if (error.response?.status === 404) {
+        Swal.fire("Not Found", "No user found with that email.", "error");
+      } else if (error.code) {
+        // Firebase errors
+        Swal.fire("Login Failed", error.message, "error");
+      } else {
+        Swal.fire("Error", "An unknown error occurred", "error");
       }
-      console.error("Error login:", error);
     }
   };
 

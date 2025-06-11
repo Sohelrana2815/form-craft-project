@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,496 +6,231 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  RadioGroup,
+  Autocomplete,
+  FormLabel,
   FormControlLabel,
   Radio,
-  Autocomplete,
-  Checkbox,
-  Typography,
-  Divider,
-  Grid,
-  IconButton,
-  Tooltip,
-  Collapse,
-  Card,
-  CardContent,
+  RadioGroup,
 } from "@mui/material";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-
-// --- 1. Validation Schema (Yup) ---
-
-const questionSchema = yup.object({
-  type: yup
-    .string()
-    .oneOf(["SHORT_TEXT", "LONG_TEXT", "INTEGER", "CHOICE"])
-    .required(),
-  title: yup.string().trim().required().max(200),
-  description: yup.string().nullable(),
-  showInList: yup.boolean().required(),
-  allowMultiple: yup.boolean().when("type", {
-    is: "CHOICE",
-    then: yup.boolean().required(),
-    otherwise: yup.boolean().notRequired(),
-  }),
-  options: yup.array().when("type", {
-    is: "CHOICE",
-    then: yup
-      .array()
-      .of(yup.string().trim().required().max(100))
-      .min(1, "At least one option is required")
-      .max(4, "Up to 4 options allowed")
-      .required(),
-    otherwise: yup.array().notRequired(),
-  }),
-  order: yup.number().integer().min(0).required(),
-});
-
-const schema = yup.object({
-  title: yup.string().trim().required("Title is required").max(255),
-  description: yup.string().trim().required("Description is required"),
-  topicId: yup.number().required("Topic is required"),
-  tags: yup
-    .array()
-    .of(yup.string().trim().required())
-    .min(1, "At least one tag")
-    .notRequired(),
-  imageUrl: yup.string().url("Must be a valid URL").nullable(),
-  accessType: yup.string().oneOf(["PUBLIC", "RESTRICTED"]).required(),
-  allowedUsers: yup.array().when("accessType", {
-    is: "RESTRICTED",
-    then: yup
-      .array()
-      .of(yup.number().integer().positive("User ID must be positive"))
-      .min(1, "Select at least one user")
-      .required(),
-    otherwise: yup.array().notRequired(),
-  }),
-  questions: yup
-    .array()
-    .of(questionSchema.required())
-    .min(1, "At least one question is required")
-    .max(16, "You can’t have more than 16 questions total"), // 4 per type × 4 types = 16
-});
-
-// --- 2. Mocked “fetch” helper stubs for topics, existing tags, existing users ---
-
-// In real code, replace with API calls (e.g. axios.get("/api/topics"))
-const getTopics = async () => [
-  { id: 1, name: "Programming" },
-  { id: 2, name: "Education" },
-  { id: 3, name: "Quiz" },
-];
-const getAllTags = async () => [
-  "web-dev",
-  "frontend",
-  "backend",
-  "database",
-  "ui-ux",
-];
-const getAllUsers = async () => [
-  { id: 2, username: "John Doe" },
-  { id: 3, username: "Jane Smith" },
-  { id: 5, username: "Michael M." },
-  { id: 7, username: "Alice Admin" },
-];
-
-// --- 3. Main Component ---
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { useEffect, useState } from "react";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+//--------------------IMPORT PART ---------------------//
 
 export default function CreateTemplateWithQuestions() {
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      title: "",
-      description: "",
-      topicId: "",
-      tags: [],
-      imageUrl: "",
-      accessType: "PUBLIC",
-      allowedUsers: [],
-      questions: [],
-    },
-  });
-
-  // --- 3a. For dynamic questions, useFieldArray ---
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "questions",
-  });
-
-  // --- 3b. Load dropdown data (topics, tags, users) ---
+  const axiosPublic = useAxiosPublic();
   const [topics, setTopics] = useState([]);
-  const [allTags, setAllTags] = useState([]);
+  const [tags, setTags] = useState([]); // Array of string name
+  const [isUploading, setIsUploading] = useState(false); // Loading
   const [allUsers, setAllUsers] = useState([]);
+  // console.log("All Users:", allUsers);
+  // form state
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [accessType, setAccessType] = useState("PUBLIC");
+  const [allowedUsers, setAllowedUsers] = useState([]);
+  // console.log("Topics and Tags:", topics, tags);
 
   useEffect(() => {
-    getTopics().then(setTopics);
-    getAllTags().then(setAllTags);
-    getAllUsers().then(setAllUsers);
-  }, []);
+    const fetchData = async () => {
+      try {
+        const [topicsRes, tagsRes, usersRes] = await Promise.all([
+          axiosPublic.get("/topics"),
+          axiosPublic.get("/tags"),
+          axiosPublic.get("/users"),
+        ]);
+        setTopics(topicsRes.data);
+        setTags(tagsRes.data.map((tag) => tag.name));
+        setAllUsers(usersRes.data);
+      } catch (err) {
+        console.error("Failed to fetch topics, tags or users", err);
+      }
+    };
+    fetchData();
+  }, [axiosPublic]);
 
-  // --- 3c. Watch question types to enforce “≤ 4 per type” ---
-  const questions = watch("questions"); // array of question objects
-  const typeCounts = questions.reduce(
-    (acc, q) => {
-      acc[q.type] = (acc[q.type] || 0) + 1;
-      return acc;
-    },
-    { SHORT_TEXT: 0, LONG_TEXT: 0, INTEGER: 0, CHOICE: 0 }
-  );
+  // File upload
 
-  // Handler to add a blank question of a given type
-  const handleAddQuestion = (type) => {
-    if (typeCounts[type] >= 4) return; // do nothing if already 4 of that type
-
-    // Determine new index/order
-    const newIndex = fields.length; // 0‐based
-    append({
-      type,
-      title: "",
-      description: "",
-      showInList: true,
-      allowMultiple: false,
-      options: [],
-      order: newIndex,
-    });
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files?.[0] || null);
   };
 
-  // --- 4. Form Submission: call your two APIs in sequence ---
-  const onSubmit = async (data) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsUploading(true);
+    let imageUrl = null;
+
     try {
-      // 4.1. Create the template
-      const templatePayload = {
-        title: data.title.trim(),
-        description: data.description.trim(),
-        topicId: Number(data.topicId),
-        tags: data.tags, // array of strings
-        imageUrl: data.imageUrl || null,
-        accessType: data.accessType,
-        allowedUsers:
-          data.accessType === "RESTRICTED"
-            ? data.allowedUsers.map((u) => Number(u))
-            : [],
-      };
-
-      const createTemplateRes = await fetch("/api/templates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(templatePayload),
-      });
-      if (!createTemplateRes.ok) {
-        throw new Error(
-          `Template creation failed: ${await createTemplateRes.text()}`
+      if (selectedFile) {
+        const data = new FormData();
+        data.append("file", selectedFile);
+        data.append("upload_preset", "Image_upload_to_cloudinary");
+        data.append("cloud_name", "djmhyrvxd");
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/djmhyrvxd/image/upload",
+          { method: "POST", body: data }
         );
+        const uploadResult = await response.json();
+        imageUrl = uploadResult.url;
       }
-      const { template } = await createTemplateRes.json();
-      const templateId = template.id;
-
-      // 4.2. Create questions
-      // Build payload exactly as your API expects
-      const questionsPayload = {
-        questions: data.questions.map((q, idx) => ({
-          title: q.title.trim(),
-          description: q.description?.trim() || null,
-          type: q.type,
-          showInList: q.showInList,
-          order: idx, // use the index in array as order
-          allowMultiple: q.type === "CHOICE" ? q.allowMultiple : false,
-          options: q.type === "CHOICE" ? q.options.map((o) => o.trim()) : [],
-        })),
-      };
-
-      const createQuestionsRes = await fetch(
-        `/api/templates/${templateId}/questions`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(questionsPayload),
-        }
-      );
-      if (!createQuestionsRes.ok) {
-        throw new Error(
-          `Questions creation failed: ${await createQuestionsRes.text()}`
-        );
-      }
-
-      // Both calls succeeded
-      alert("Template & Questions created successfully!");
-      // Optionally: redirect to “/templates” or clearing form, etc.
     } catch (err) {
-      console.error(err);
-      alert("Error: " + err.message);
+      console.error("Upload failed:", err);
+    } finally {
+      setIsUploading(false);
     }
+    const templateData = {
+      title: title,
+      description: description,
+      topicId: selectedTopic,
+      tags: selectedTags,
+      imageUrl: imageUrl, // Will be null if no file selected
+      accessType: accessType,
+      allowedUsers:
+        accessType === "RESTRICTED" ? allowedUsers.map((u) => u.id) : [],
+    };
+    console.log("Submitting Data:", templateData);
   };
 
-  // --- 5. Render ---
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{ maxWidth: 900, mx: "auto", p: 2 }}
+      onSubmit={handleSubmit}
+      sx={{
+        mt: 4,
+        maxWidth: 600,
+        mx: "auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+      }}
     >
-      <Typography variant="h4" gutterBottom>
-        Create New Template
-      </Typography>
+      {/* Title */}
+      <TextField
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        label="Title"
+        variant="outlined"
+        fullWidth
+      />
+      {/* Description */}
+      <TextField
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        label="Description"
+        variant="outlined"
+        fullWidth
+        multiline
+        rows={3}
+      />
 
-      {/* ─────── Template Details ─────── */}
-      <Card variant="outlined" sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Template Details
-          </Typography>
-          <Grid container spacing={2}>
-            {/* Title */}
-            <Grid item xs={12}>
-              <Controller
-                name="title"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Title"
-                    fullWidth
-                    error={!!errors.title}
-                    helperText={errors.title?.message}
-                  />
-                )}
-              />
-            </Grid>
+      {/* File upload */}
 
-            {/* Description */}
-            <Grid item xs={12}>
-              <Controller
-                name="description"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Description (Markdown)"
-                    fullWidth
-                    multiline
-                    minRows={3}
-                    error={!!errors.description}
-                    helperText={errors.description?.message}
-                  />
-                )}
-              />
-            </Grid>
+      <Button
+        variant="outlined"
+        fullWidth
+        component="label"
+        endIcon={<CloudUploadIcon />}
+        color={selectedFile ? "success" : "primary"}
+        disabled={isUploading}
+      >
+        {selectedFile ? selectedFile.name : "Upload Cover Image"}
+        <input
+          onChange={handleFileChange}
+          type="file"
+          accept="image/*"
+          hidden
+        />
+      </Button>
 
-            {/* Topic Dropdown */}
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="topicId"
-                control={control}
-                render={({ field }) => (
-                  <FormControl fullWidth error={!!errors.topicId}>
-                    <InputLabel id="topic-label">Topic</InputLabel>
-                    <Select
-                      {...field}
-                      labelId="topic-label"
-                      label="Topic"
-                      value={field.value || ""}
-                    >
-                      {topics.map((t) => (
-                        <MenuItem key={t.id} value={t.id}>
-                          {t.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <Typography variant="caption" color="error" sx={{ ml: 1 }}>
-                      {errors.topicId?.message}
-                    </Typography>
-                  </FormControl>
-                )}
-              />
-            </Grid>
-
-            {/* Tags Autocomplete (freeSolo) */}
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="tags"
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    multiple
-                    freeSolo
-                    options={allTags}
-                    onChange={(_, value) => field.onChange(value)}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Tags (type or select)"
-                        error={!!errors.tags}
-                        helperText={errors.tags?.message}
-                      />
-                    )}
-                  />
-                )}
-              />
-            </Grid>
-
-            {/* Image URL */}
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="imageUrl"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Cover Image URL"
-                    fullWidth
-                    error={!!errors.imageUrl}
-                    helperText={errors.imageUrl?.message}
-                  />
-                )}
-              />
-            </Grid>
-
-            {/* Access Type (Radio) */}
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="accessType"
-                control={control}
-                render={({ field }) => (
-                  <FormControl component="fieldset" error={!!errors.accessType}>
-                    <Typography>Access Type</Typography>
-                    <RadioGroup
-                      {...field}
-                      row
-                      onChange={(e) => field.onChange(e.target.value)}
-                    >
-                      <FormControlLabel
-                        value="PUBLIC"
-                        control={<Radio />}
-                        label="Public"
-                      />
-                      <FormControlLabel
-                        value="RESTRICTED"
-                        control={<Radio />}
-                        label="Restricted"
-                      />
-                    </RadioGroup>
-                    <Typography variant="caption" color="error" sx={{ ml: 1 }}>
-                      {errors.accessType?.message}
-                    </Typography>
-                  </FormControl>
-                )}
-              />
-            </Grid>
-
-            {/* Allowed Users (only if RESTRICTED) */}
-            {watch("accessType") === "RESTRICTED" && (
-              <Grid item xs={12}>
-                <Controller
-                  name="allowedUsers"
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      {...field}
-                      multiple
-                      options={allUsers.map((u) => u.id)}
-                      getOptionLabel={(id) => {
-                        const user = allUsers.find((u) => u.id === id);
-                        return user ? user.username : id.toString();
-                      }}
-                      onChange={(_, value) => field.onChange(value)}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Allowed Users"
-                          error={!!errors.allowedUsers}
-                          helperText={errors.allowedUsers?.message}
-                        />
-                      )}
-                    />
-                  )}
-                />
-              </Grid>
-            )}
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* ─────── Questions Editor ─────── */}
-      <Card variant="outlined" sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Questions
-          </Typography>
-
-          {/* Summary counters */}
-          <Box mb={2}>
-            {["SHORT_TEXT", "LONG_TEXT", "INTEGER", "CHOICE"].map((type) => (
-              <Typography
-                key={type}
-                variant="body2"
-                component="span"
-                sx={{ mr: 2 }}
-              >
-                {type} ({typeCounts[type] || 0}/4)
-              </Typography>
-            ))}
-          </Box>
-
-          {/* “Add Question” Buttons */}
-          <Box display="flex" flexWrap="wrap" gap={2} mb={2}>
-            {["SHORT_TEXT", "LONG_TEXT", "INTEGER", "CHOICE"].map((type) => (
-              <Button
-                key={type}
-                variant="contained"
-                size="small"
-                startIcon={<AddIcon />}
-                disabled={typeCounts[type] >= 4}
-                onClick={() => handleAddQuestion(type)}
-              >
-                Add {type.replace("_", " ").toLowerCase()} question
-              </Button>
-            ))}
-          </Box>
-
-          {/* Render each question row */}
-          <Box>
-            {fields.map((fieldItem, index) => (
-              <QuestionRow
-                key={fieldItem.id}
-                index={index}
-                control={control}
-                remove={remove}
-                totalCount={fields.length}
-              />
-            ))}
-            {errors.questions && (
-              <Typography color="error" variant="body2">
-                {errors.questions?.message}
-              </Typography>
-            )}
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* ─────── Publish Button ─────── */}
-      <Box textAlign="center" mb={4}>
-        <Button
-          type="submit"
-          variant="contained"
-          size="large"
-          disabled={isSubmitting}
+      {/* Topics dropdown */}
+      <FormControl>
+        <InputLabel id="topic-label">Topic</InputLabel>
+        <Select
+          labelId="topic-label"
+          id="topic-select"
+          label="Topic"
+          value={selectedTopic}
+          onChange={(e) => setSelectedTopic(e.target.value)}
         >
-          {isSubmitting ? "Publishing…" : "Publish Template"}
-        </Button>
-      </Box>
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+
+          {topics.map((topic) => (
+            <MenuItem key={topic.id} value={topic.id}>
+              {topic.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* Tags Autocomplete */}
+
+      <Autocomplete
+        id="tags-autocomplete"
+        multiple
+        freeSolo
+        options={tags}
+        value={selectedTags}
+        onChange={(_, newValue) => {
+          setSelectedTags(newValue);
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label="Tags"
+            placeholder="Select or add tags"
+          />
+        )}
+      />
+      {/* ACCESS TYPE RADIO BUTTONS */}
+      <FormControl component="fieldset" sx={{ mt: 2 }}>
+        <FormLabel component="legend">Access Type</FormLabel>
+        <RadioGroup
+          row
+          value={accessType}
+          onChange={(e) => setAccessType(e.target.value)}
+        >
+          <FormControlLabel
+            value="PUBLIC"
+            control={<Radio size="small" />}
+            label="Public"
+          />
+          <FormControlLabel
+            value="RESTRICTED"
+            control={<Radio size="small" />}
+            label="Restricted"
+          />
+        </RadioGroup>
+      </FormControl>
+      {/* Allowed User (Only when user's select RESTRICTED) */}
+
+      {accessType === "RESTRICTED" && (
+        <Autocomplete
+          multiple
+          options={allUsers}
+          getOptionLabel={(u) => `${u.username} (${u.email})`}
+          onChange={(_, v) => setAllowedUsers(v)}
+          value={allowedUsers}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Allowed Users"
+              placeholder="Select users"
+              size="small"
+            />
+          )}
+          sx={{ mt: 2 }}
+        />
+      )}
+      {/* Submit button */}
+      <Button type="submit" variant="contained" color="primary">
+        {isUploading ? "Uploading..." : "Create Template"}
+      </Button>
     </Box>
   );
 }

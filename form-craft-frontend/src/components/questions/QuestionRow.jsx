@@ -1,188 +1,121 @@
-import React, { useState } from "react";
-import {
-  Box,
-  TextField,
-  Grid,
-  IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControlLabel,
-  Checkbox,
-  Collapse,
-  Typography,
-  Divider,
-} from "@mui/material";
-import { Controller } from "react-hook-form";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+// import {
+//   Box,
+//   Button,
+//   TextField,
+//   Select,
+//   MenuItem,
+//   InputLabel,
+//   FormControl,
+// } from "@mui/material";
+// import useAxiosPublic from "../../hooks/useAxiosPublic";
+// import { useEffect, useState } from "react";
+// import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
-// We expect props:
-//   index        → numeric index in the field array
-//   control      → from react-hook-form
-//   remove       → function to remove this index
-//   totalCount   → total number of questions (for 'order' calculation, if needed)
-export default function QuestionRow({ index, control, remove }) {
-  const [open, setOpen] = useState(true);
+// export default function CreateTemplateWithQuestions() {
+//   const axiosPublic = useAxiosPublic();
+//   const [topics, setTopics] = useState([]);
+//   const [tags, setTags] = useState([]);
 
-  // fieldNamePrefix is “questions[index]”
-  const fieldName = (name) => `questions[${index}].${name}`;
+//   // form state
+//   const [title, setTitle] = useState("");
+//   const [description, setDescription] = useState("");
+//   const [selectedTopic, setSelectedTopic] = useState("");
+//   const [file, setFile] = useState(null);
 
-  return (
-    <Box
-      mb={2}
-      p={2}
-      border="1px solid #ddd"
-      borderRadius={1}
-      position="relative"
-    >
-      <IconButton
-        size="small"
-        sx={{ position: "absolute", top: 8, right: 8 }}
-        onClick={() => remove(index)}
-      >
-        <RemoveCircleOutlineIcon color="error" />
-      </IconButton>
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const [topicsRes, tagsRes] = await Promise.all([
+//           axiosPublic.get("/topics"),
+//           axiosPublic.get("/tags"),
+//         ]);
+//         setTopics(topicsRes.data);
+//         setTags(tagsRes.data.map((t) => t.name));
+//       } catch (err) {
+//         console.error("Failed to fetch topics or tags:", err);
+//       }
+//     };
+//     fetchData();
+//   }, [axiosPublic]);
 
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        onClick={() => setOpen((prev) => !prev)}
-        sx={{ cursor: "pointer", mb: 1 }}
-      >
-        <Typography variant="subtitle1">Question #{index + 1}</Typography>
-        <IconButton size="small">
-          {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </IconButton>
-      </Box>
+//   const handleFileChange = (e) => {
+//     const picked = e.target.files?.[0] || null;
+//     setFile(picked);
+//   };
 
-      <Collapse in={open}>
-        <Grid container spacing={2}>
-          {/* 1. Type Selector */}
-          <Grid item xs={12} sm={4}>
-            <Controller
-              name={fieldName("type")}
-              control={control}
-              defaultValue="SHORT_TEXT"
-              render={({ field }) => (
-                <FormControl fullWidth>
-                  <InputLabel>Type</InputLabel>
-                  <Select {...field} label="Type" value={field.value}>
-                    <MenuItem value="SHORT_TEXT">Short Text</MenuItem>
-                    <MenuItem value="LONG_TEXT">Long Text</MenuItem>
-                    <MenuItem value="INTEGER">Integer</MenuItem>
-                    <MenuItem value="CHOICE">Choice</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-            />
-          </Grid>
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     console.log("Title:", title);
+//     console.log("Description:", description);
+//     console.log("Selected Topic ID:", selectedTopic);
+//     console.log("Image File:", file);
+//     // here you can send to server
+//   };
 
-          {/* 2. Title (required) */}
-          <Grid item xs={12} sm={8}>
-            <Controller
-              name={fieldName("title")}
-              control={control}
-              defaultValue=""
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  label="Question Text"
-                  fullWidth
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                />
-              )}
-            />
-          </Grid>
+//   return (
+//     <Box
+//       component="form"
+//       onSubmit={handleSubmit}
+//       sx={{
+//         mt: 4,
+//         maxWidth: 600,
+//         mx: "auto",
+//         display: "flex",
+//         flexDirection: "column",
+//         gap: 2,
+//       }}
+//     >
+//       <TextField
+//         label="Title"
+//         variant="outlined"
+//         fullWidth
+//         value={title}
+//         onChange={(e) => setTitle(e.target.value)}
+//       />
 
-          {/* 3. Description (optional) */}
-          <Grid item xs={12}>
-            <Controller
-              name={fieldName("description")}
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Description (optional)"
-                  fullWidth
-                  multiline
-                  minRows={2}
-                />
-              )}
-            />
-          </Grid>
+//       <TextField
+//         label="Description"
+//         variant="outlined"
+//         fullWidth
+//         multiline
+//         rows={3}
+//         value={description}
+//         onChange={(e) => setDescription(e.target.value)}
+//       />
 
-          {/* 4. ShowInList Toggle */}
-          <Grid item xs={12}>
-            <Controller
-              name={fieldName("showInList")}
-              control={control}
-              defaultValue={true}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={<Checkbox {...field} checked={field.value} />}
-                  label="Show answer in summary"
-                />
-              )}
-            />
-          </Grid>
+//       <Button
+//         variant="outlined"
+//         fullWidth
+//         component="label"
+//         endIcon={<CloudUploadIcon />}
+//       >
+//         Upload Cover Image
+//         <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+//       </Button>
 
-          {/* 5. If type=INTEGER, you could show a small note “Numeric only.” */}
-          {/* But no extra inputs needed. */}
+//       <FormControl fullWidth>
+//         <InputLabel id="topic-label">Topic</InputLabel>
+//         <Select
+//           labelId="topic-label"
+//           id="topic-select"
+//           label="Topic"
+//           value={selectedTopic}
+//           onChange={(e) => setSelectedTopic(e.target.value)}
+//         >
+//           <MenuItem value="">
+//             <em>None</em>
+//           </MenuItem>
+//           {topics.map((topic) => (
+//             <MenuItem key={topic.id} value={topic.id}>
+//               {topic.name}
+//             </MenuItem>
+//           ))}
+//         </Select>
+//       </FormControl>
 
-          {/* 6. If type=CHOICE, show allowMultiple + up to 4 option fields */}
-          <Controller
-            name={fieldName("type")}
-            control={control}
-            render={({ field }) =>
-              field.value === "CHOICE" ? (
-                <>
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name={fieldName("allowMultiple")}
-                      control={control}
-                      defaultValue={false}
-                      render={({ field: f2 }) => (
-                        <FormControlLabel
-                          control={<Checkbox {...f2} checked={f2.value} />}
-                          label="Allow multiple selections"
-                        />
-                      )}
-                    />
-                  </Grid>
-                  {[0, 1, 2, 3].map((optIdx) => (
-                    <Grid item xs={12} sm={4} key={optIdx}>
-                      <Controller
-                        name={fieldName(`options.${optIdx}`)}
-                        control={control}
-                        defaultValue=""
-                        render={({ field: fo, fieldState }) => (
-                          <TextField
-                            {...fo}
-                            label={`Option ${optIdx + 1}`}
-                            fullWidth
-                            error={!!fieldState.error}
-                            helperText={
-                              fieldState.error ? fieldState.error.message : ""
-                            }
-                          />
-                        )}
-                      />
-                    </Grid>
-                  ))}
-                </>
-              ) : null
-            }
-          />
-        </Grid>
-      </Collapse>
-
-      <Divider sx={{ mt: 2 }} />
-    </Box>
-  );
-}
+//       <Button type="submit" variant="contained" color="primary">
+//         Create Template
+//       </Button>
+//     </Box>
+//   );
+// }

@@ -1,5 +1,7 @@
+// src/controllers/questionController.js
 const prisma = require("../db");
 
+// Now that schema’s enum is [SHORT_TEXT, LONG_TEXT, INTEGER, CHOICE], adjust VALID_TYPES:
 const VALID_TYPES = ["SHORT_TEXT", "LONG_TEXT", "INTEGER", "CHOICE"];
 
 exports.createQuestions = async (req, res) => {
@@ -7,28 +9,29 @@ exports.createQuestions = async (req, res) => {
   const { questions } = req.body;
   const creatorId = req.user.id;
 
-  //  ─── 1. Validate templateId ───
-
+  // ─── 1. Validate templateId ────
   const templateIdNum = Number(templateId);
   if (!Number.isInteger(templateIdNum) || templateIdNum <= 0) {
     return res
       .status(400)
       .json({ message: "templateId must be a positive integer." });
-  } // Convert id to integer value
+  }
 
   // Verify template exists and that this user is its creator
-
   const existingTemplate = await prisma.template.findUnique({
     where: { id: templateIdNum },
     select: { id: true, creatorId: true },
   });
-
   if (!existingTemplate) {
     return res.status(404).json({ message: "Template not found." });
   }
+  if (existingTemplate.creatorId !== creatorId) {
+    return res.status(403).json({
+      message: "You are not authorized to add questions to this template.",
+    });
+  }
 
   // ─── 2. Validate payload shape ───
-
   if (!Array.isArray(questions) || questions.length === 0) {
     return res.status(400).json({
       message:
@@ -37,11 +40,8 @@ exports.createQuestions = async (req, res) => {
   }
 
   // 2.1. Check for duplicate order values in this batch
-
-  const orders = questions.map((q) => q.order); // questions from req.body
-
+  const orders = questions.map((q) => q.order);
   const uniqueOrders = new Set(orders);
-
   if (uniqueOrders.size !== orders.length) {
     return res
       .status(400)
@@ -49,16 +49,14 @@ exports.createQuestions = async (req, res) => {
   }
 
   // 2.2. Validate each question’s fields & tally counts by type
-
   const toCreate = [];
-
   const incomingTypeCounts = {
     SHORT_TEXT: 0,
     LONG_TEXT: 0,
     INTEGER: 0,
     CHOICE: 0,
   };
-  // Doubt ???
+
   for (let i = 0; i < questions.length; i++) {
     const q = questions[i];
 
@@ -121,7 +119,6 @@ exports.createQuestions = async (req, res) => {
     // OPTIONS: Only if type === "CHOICE"
     let optionsArray = [];
     let allowMultiple = false;
-
     if (q.type === "CHOICE") {
       // Must include allowMultiple (boolean) and options (non-empty array of strings)
       if (typeof q.allowMultiple !== "boolean") {
@@ -156,35 +153,33 @@ exports.createQuestions = async (req, res) => {
       // Trim each option
       optionsArray = q.options.map((opt) => opt.trim());
     } else {
+      // For non‐CHOICE types, ignore any passed-in options/allowMultiple
       optionsArray = [];
       allowMultiple = false;
     }
 
     // Build the object for createMany()
-
     toCreate.push({
       title: q.title.trim(),
-      description: q.description.trim(),
+      description: q.description?.trim() || null,
       type: q.type, // one of SHORT_TEXT, LONG_TEXT, INTEGER, CHOICE
       allowMultiple, // only meaningful when type === "CHOICE"
       order: q.order,
       showInList: q.showInList,
-      options: optionsArray,
+      options: optionsArray, // string[] column
       templateId: templateIdNum,
     });
   }
 
-  // ─── 3. Enforce “max 4 per type” ────
-
+  // ─── 3. Enforce “max 4 per type” ───
   const existingCounts = await prisma.question.groupBy({
     by: ["type"],
     where: { templateId: templateIdNum },
     _count: { type: true },
   });
-
   const existingTypeCounts = existingCounts.reduce(
     (acc, row) => {
-      acc[(row, type)] = row._count.type;
+      acc[row.type] = row._count.type;
       return acc;
     },
     { SHORT_TEXT: 0, LONG_TEXT: 0, INTEGER: 0, CHOICE: 0 }
@@ -192,7 +187,6 @@ exports.createQuestions = async (req, res) => {
 
   for (const type of VALID_TYPES) {
     const total = existingTypeCounts[type] + incomingTypeCounts[type];
-
     if (total > 4) {
       return res.status(400).json({
         message: `You can have at most 4 questions of type '${type}' per template. Currently existing: ${existingTypeCounts[type]}, incoming: ${incomingTypeCounts[type]}.`,
@@ -200,8 +194,7 @@ exports.createQuestions = async (req, res) => {
     }
   }
 
-  // ─── 4. Bulk‐insert all new questions ───
-
+  // ─── 4. Bulk‐insert all new questions ────
   try {
     const created = await prisma.$transaction(async (tx) => {
       // 4.1. Insert all questions in one batch
@@ -210,7 +203,6 @@ exports.createQuestions = async (req, res) => {
       });
 
       // 4.2. Fetch back all questions for this template, ordered by `order`
-
       return tx.question.findMany({
         where: { templateId: templateIdNum },
         orderBy: { order: "asc" },
@@ -221,8 +213,18 @@ exports.createQuestions = async (req, res) => {
       message: "Questions created successfully.",
       questions: created,
     });
-  } catch (err) {
+  } catch (dbErr) {
     console.error("Error creating questions:", dbErr);
     return res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+exports.getQuestions = async (req, res) => {
+  try {
+    const questions = await prisma.question.findMany();
+    res.status(200).json(questions);
+  } catch (error) {
+    console.error("Error fetching topics:", err);
+    res.status(500).json({ error: "Failed to fetch tags" });
   }
 };

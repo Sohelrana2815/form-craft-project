@@ -233,51 +233,9 @@ exports.createTemplate = async (req, res) => {
 };
 
 exports.getTemplates = async (req, res) => {
-  const currentUserId = req.user.id; // assume this is set by your auth middleware
-
   try {
-    const templates = await prisma.template.findMany({
-      where: {
-        // (Optional) If you want to filter out restricted templates the current user
-        // isn’t allowed to see, keep the OR‐clause; otherwise remove `where` entirely.
-        OR: [
-          { accessType: "PUBLIC" },
-          {
-            accessType: "RESTRICTED",
-            permissions: { some: { userId: currentUserId } },
-          },
-          // If you want creators to always see their own restricted templates,
-          // uncomment the next line:
-          // { creatorId: currentUserId }
-        ],
-      },
-      include: {
-        // Include the tags array on every template:
-        tags: {
-          select: { id: true, name: true },
-        },
-
-        // (Optional) Also include topic name & creator info, if your front end needs it:
-        topic: {
-          select: { id: true, name: true },
-        },
-        creator: {
-          select: { id: true, username: true, email: true },
-        },
-
-        // (Optional) If you’d like to know which users have access to a restricted template:
-        permissions: {
-          select: {
-            user: {
-              select: { id: true, username: true, email: true },
-            },
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return res.status(200).json({ templates });
+    const templates = await prisma.template.findMany();
+    return res.status(200).json(templates);
   } catch (err) {
     console.error("Error fetching templates:", err);
     return res.status(500).json({ error: "Internal server error." });
@@ -302,7 +260,7 @@ exports.getPublicTemplates = async (req, res) => {
       },
       orderBy: { createdAt: "desc" },
     });
-    return res.status(200).json({ templates: publicTemplates });
+    return res.status(200).json(publicTemplates);
   } catch (err) {
     console.error("Error fetching public templates:", err);
     return res.status(500).json({ error: "Internal server error." });

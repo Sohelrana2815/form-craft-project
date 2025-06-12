@@ -8,5 +8,6 @@ router.post(
   verifyToken,
   questionController.createQuestions
 );
+router.get("/allQuestions", questionController.getQuestions);
 
 module.exports = router;

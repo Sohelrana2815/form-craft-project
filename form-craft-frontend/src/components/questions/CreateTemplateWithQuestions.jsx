@@ -15,10 +15,14 @@ import {
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { useEffect, useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import QuestionsManager from "./QuestionsManager";
 //--------------------IMPORT PART ---------------------//
 
 export default function CreateTemplateWithQuestions() {
   const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const [topics, setTopics] = useState([]);
   const [tags, setTags] = useState([]); // Array of string name
   const [isUploading, setIsUploading] = useState(false); // Loading
@@ -91,6 +95,21 @@ export default function CreateTemplateWithQuestions() {
       allowedUsers:
         accessType === "RESTRICTED" ? allowedUsers.map((u) => u.id) : [],
     };
+
+    const templateRes = await axiosSecure.post("/templates", templateData);
+    if (templateRes.data) {
+      toast.success("📃 Template created successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
     console.log("Submitting Data:", templateData);
   };
 
@@ -100,13 +119,20 @@ export default function CreateTemplateWithQuestions() {
       onSubmit={handleSubmit}
       sx={{
         mt: 4,
-        maxWidth: 600,
+        maxWidth: 800,
         mx: "auto",
         display: "flex",
         flexDirection: "column",
         gap: 2,
+        p: 3,
       }}
     >
+      {/* Submit button */}
+      <Box sx={{ display: "flex", justifyContent: "end" }}>
+        <Button type="submit" variant="contained" color="primary" size="small">
+          {isUploading ? "Uploading..." : "Create Template"}
+        </Button>
+      </Box>
       {/* Title */}
       <TextField
         value={title}
@@ -227,10 +253,11 @@ export default function CreateTemplateWithQuestions() {
           sx={{ mt: 2 }}
         />
       )}
-      {/* Submit button */}
-      <Button type="submit" variant="contained" color="primary">
-        {isUploading ? "Uploading..." : "Create Template"}
-      </Button>
+
+      <div className="divider">Add Questions</div>
+      <QuestionsManager />
+
+      <ToastContainer />
     </Box>
   );
 }

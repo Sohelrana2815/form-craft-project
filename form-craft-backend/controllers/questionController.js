@@ -7,6 +7,7 @@ const VALID_TYPES = ["SHORT_TEXT", "LONG_TEXT", "INTEGER", "CHOICE"];
 exports.createQuestions = async (req, res) => {
   const { templateId } = req.params;
   const { questions } = req.body;
+  console.log(questions, templateId);
   const creatorId = req.user.id;
 
   // ─── 1. Validate templateId ────

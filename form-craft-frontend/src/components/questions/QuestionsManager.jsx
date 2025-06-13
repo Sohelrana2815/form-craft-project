@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState } from "react";
 import {
   Box,
   Button,
@@ -10,6 +10,8 @@ import {
   IconButton,
   Stack,
   Typography,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -20,22 +22,23 @@ const QUESTION_TYPES = [
   { value: "CHOICE", label: "Multiple Choice" },
 ];
 
-export default function QuestionsManager() {
-  const [questions, setQuestions] = useState([]);
-
-  // Add a new blank question
+export default function QuestionsManager({ questions, onQuestionChange }) {
+  // Add a new blank question with default showInList = true
   const addQuestion = () => {
-    setQuestions((qs) => [...qs, { type: "", text: "", options: [] }]);
+    onQuestionChange((qs) => [
+      ...qs,
+      { title: "", description: "", type: "", options: [], showInList: true },
+    ]);
   };
 
   // Remove one
   const removeQuestion = (idx) => {
-    setQuestions((qs) => qs.filter((_, i) => i !== idx));
+    onQuestionChange((qs) => qs.filter((_, i) => i !== idx));
   };
 
   // Update a field on question i
   const updateQuestion = (idx, data) => {
-    setQuestions((qs) => {
+    onQuestionChange((qs) => {
       const copy = [...qs];
       copy[idx] = { ...copy[idx], ...data };
       return copy;
@@ -58,8 +61,10 @@ export default function QuestionsManager() {
                 onChange={(e) =>
                   updateQuestion(i, {
                     type: e.target.value,
-                    text: "",
+                    title: "",
+                    description: "",
                     options: [],
+                    showInList: true,
                   })
                 }
               >
@@ -81,13 +86,38 @@ export default function QuestionsManager() {
             <Box
               sx={{ ml: 2, display: "flex", flexDirection: "column", gap: 2 }}
             >
-              {/* Question text field */}
+              {/* Question title field */}
               <TextField
                 label="Question"
-                value={q.text}
-                onChange={(e) => updateQuestion(i, { text: e.target.value })}
+                value={q.title}
+                onChange={(e) => updateQuestion(i, { title: e.target.value })}
                 fullWidth
                 size="small"
+              />
+
+              {/* Optional description field */}
+              <TextField
+                label="Description (optional)"
+                value={q.description}
+                onChange={(e) =>
+                  updateQuestion(i, { description: e.target.value })
+                }
+                fullWidth
+                size="small"
+              />
+
+              {/* Show in summary checkbox */}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={q.showInList}
+                    onChange={(e) =>
+                      updateQuestion(i, { showInList: e.target.checked })
+                    }
+                    size="small"
+                  />
+                }
+                label="Show in summary"
               />
 
               {/* If Choice type, render options */}

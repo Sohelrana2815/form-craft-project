@@ -24,10 +24,9 @@ export default function CreateTemplateWithQuestions() {
   const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
   const [topics, setTopics] = useState([]);
-  const [tags, setTags] = useState([]); // Array of string name
-  const [isUploading, setIsUploading] = useState(false); // Loading
+  const [tags, setTags] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
-  // console.log("All Users:", allUsers);
   // form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -36,7 +35,7 @@ export default function CreateTemplateWithQuestions() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [accessType, setAccessType] = useState("PUBLIC");
   const [allowedUsers, setAllowedUsers] = useState([]);
-  // console.log("Topics and Tags:", topics, tags);
+  const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,8 +66,9 @@ export default function CreateTemplateWithQuestions() {
     setIsUploading(true);
     let imageUrl = null;
 
-    try {
-      if (selectedFile) {
+    // Upload image if selected
+    if (selectedFile) {
+      try {
         const data = new FormData();
         data.append("file", selectedFile);
         data.append("upload_preset", "Image_upload_to_cloudinary");
@@ -79,26 +79,63 @@ export default function CreateTemplateWithQuestions() {
         );
         const uploadResult = await response.json();
         imageUrl = uploadResult.url;
+      } catch (err) {
+        console.log("Failed to create template:", err);
+      } finally {
+        setIsUploading(false);
       }
-    } catch (err) {
-      console.error("Upload failed:", err);
-    } finally {
-      setIsUploading(false);
     }
+
+    // Build payload to create template
     const templateData = {
-      title: title,
-      description: description,
+      title,
+      description,
       topicId: selectedTopic,
       tags: selectedTags,
-      imageUrl: imageUrl, // Will be null if no file selected
-      accessType: accessType,
+      imageUrl,
+      accessType,
       allowedUsers:
         accessType === "RESTRICTED" ? allowedUsers.map((u) => u.id) : [],
     };
 
-    const templateRes = await axiosSecure.post("/templates", templateData);
-    if (templateRes.data) {
-      toast.success("📃 Template created successfully!", {
+    try {
+      // 1) Create template
+      const templateRes = await axiosSecure.post("/templates", templateData);
+
+      // Template ID
+      const templateId = templateRes.data.template.id;
+
+      // 2) Prepare questions data
+
+      const formattedQuestions = questions.map((q, idx) => {
+        const base = {
+          title: q.title,
+          description: q.description,
+          type: q.type,
+          order: idx + 1,
+          showInList: q.showInList,
+        };
+
+        if (q.type === "CHOICE") {
+          return {
+            ...base,
+            allowMultiple: false,
+            options: q.options.filter((opt) => opt),
+          };
+        }
+        return base;
+      });
+
+      // 3) Create questions under the new template
+
+      if (templateId) {
+        setIsUploading(true);
+        await axiosSecure.post(`/templates/${templateId}/questions`, {
+          questions: formattedQuestions,
+        });
+      }
+
+      toast.success("📃 Template created with questions successfully!", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -109,8 +146,12 @@ export default function CreateTemplateWithQuestions() {
         theme: "light",
         transition: Bounce,
       });
+    } catch (err) {
+      console.error("Creation failed:", err);
+      toast.error("Failed to create template or questions.");
+    } finally {
+      setIsUploading(false);
     }
-    console.log("Submitting Data:", templateData);
   };
 
   return (
@@ -130,7 +171,11 @@ export default function CreateTemplateWithQuestions() {
       {/* Submit button */}
       <Box sx={{ display: "flex", justifyContent: "end" }}>
         <Button type="submit" variant="contained" color="primary" size="small">
-          {isUploading ? "Uploading..." : "Create Template"}
+          {isUploading ? (
+            <span className="loading loading-bars loading-md"></span>
+          ) : (
+            "Create Template"
+          )}
         </Button>
       </Box>
       {/* Title */}
@@ -255,7 +300,7 @@ export default function CreateTemplateWithQuestions() {
       )}
 
       <div className="divider">Add Questions</div>
-      <QuestionsManager />
+      <QuestionsManager questions={questions} onQuestionChange={setQuestions} />
 
       <ToastContainer />
     </Box>

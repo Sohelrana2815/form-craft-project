@@ -5,10 +5,6 @@ import SignupPage from "../pages/auth/SignupPage";
 import LoginPage from "../pages/auth/LoginPage";
 import PrivateRoute from "./PrivateRoute";
 import ManageUsers from "../pages/admin/manage-users/ManageUsers";
-import Unauthorized from "../pages/error/Unauthorized";
-import PersonalPage from "../pages/personalPage/PersonalPage";
-import TemplateForm from "../pages/home/gallery/TemplateForm";
-import TemplatePage from "../pages/personalPage/myTemplates/templatePage/TemplatePage";
 import AdminRoute from "./AdminRoute";
 import UserProfile from "../pages/profile/UserProfile";
 import CreateTemplateWithQuestions from "../components/questions/CreateTemplateWithQuestions";
@@ -29,10 +25,6 @@ const MainRoutes = () => {
               </AdminRoute>
             }
           />
-          <Route path="templateForm/:id" element={<TemplateForm />} />
-          <Route path="personal" element={<PersonalPage />} />
-          <Route path="templates/:id" element={<TemplatePage />} />
-          <Route path="unauthorized" element={<Unauthorized />} />
           <Route
             path="create-template"
             element={

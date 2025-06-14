@@ -59,7 +59,7 @@ const Navbar = () => {
       )}
       {user && (
         <li>
-          <NavLink to="personal">Personal Page</NavLink>
+          <NavLink to="personal-page">Personal Page</NavLink>
         </li>
       )}
     </>

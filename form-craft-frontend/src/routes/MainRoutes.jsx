@@ -8,6 +8,7 @@ import ManageUsers from "../pages/admin/manage-users/ManageUsers";
 import AdminRoute from "./AdminRoute";
 import UserProfile from "../pages/profile/UserProfile";
 import CreateTemplateWithQuestions from "../components/questions/CreateTemplateWithQuestions";
+import PersonalPage from "../pages/personalPage/PersonalPage";
 
 const MainRoutes = () => {
   return (
@@ -41,6 +42,7 @@ const MainRoutes = () => {
               </PrivateRoute>
             }
           />
+          <Route path="personal-page" element={<PersonalPage />} />
         </Route>
       </Routes>
     </>

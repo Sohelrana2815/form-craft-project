@@ -266,3 +266,23 @@ exports.getPublicTemplates = async (req, res) => {
     return res.status(500).json({ error: "Internal server error." });
   }
 };
+
+// GET A SINGLE TEMPLATE
+
+exports.getTemplateById = async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || i <= 0) {
+    return res
+      .status(400)
+      .json({ message: "Template ID must be a positive integer" });
+  }
+
+  try {
+    const template = await prisma.template.findUnique({
+      where: { id },
+      include: {
+        topic:{select:{}}
+      }
+    });
+  } catch (err) {}
+};

@@ -80,7 +80,7 @@ export default function CreateTemplateWithQuestions() {
         const uploadResult = await response.json();
         imageUrl = uploadResult.url;
       } catch (err) {
-        console.log("Failed to create template:", err);
+        console.error("Failed to create template:", err);
       } finally {
         setIsUploading(false);
       }
@@ -119,13 +119,12 @@ export default function CreateTemplateWithQuestions() {
         if (q.type === "CHOICE") {
           return {
             ...base,
-            allowMultiple: false,
+            allowMultiple: q?.allowMultiple,
             options: q.options.filter((opt) => opt),
           };
         }
         return base;
       });
-
       // 3) Create questions under the new template
 
       if (templateId) {
@@ -134,7 +133,6 @@ export default function CreateTemplateWithQuestions() {
           questions: formattedQuestions,
         });
       }
-
       toast.success("📃 Template created with questions successfully!", {
         position: "top-right",
         autoClose: 3000,

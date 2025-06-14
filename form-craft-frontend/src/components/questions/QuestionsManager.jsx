@@ -27,7 +27,14 @@ export default function QuestionsManager({ questions, onQuestionChange }) {
   const addQuestion = () => {
     onQuestionChange((qs) => [
       ...qs,
-      { title: "", description: "", type: "", options: [], showInList: true },
+      {
+        title: "",
+        description: "",
+        type: "",
+        options: [],
+        showInList: true,
+        allowMultiple: false,
+      },
     ]);
   };
 
@@ -65,6 +72,7 @@ export default function QuestionsManager({ questions, onQuestionChange }) {
                     description: "",
                     options: [],
                     showInList: true,
+                    allowMultiple: false,
                   })
                 }
               >
@@ -123,6 +131,20 @@ export default function QuestionsManager({ questions, onQuestionChange }) {
               {/* If Choice type, render options */}
               {q.type === "CHOICE" && (
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  {/* ALLOW MULTIPLE CHECKBOX */}
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={q.allowMultiple}
+                        onChange={(e) =>
+                          updateQuestion(i, { allowMultiple: e.target.checked })
+                        }
+                        size="small"
+                      />
+                    }
+                    label="Allow multiple selections"
+                  />
+
                   {q.options.map((opt, j) => (
                     <Stack
                       direction="row"

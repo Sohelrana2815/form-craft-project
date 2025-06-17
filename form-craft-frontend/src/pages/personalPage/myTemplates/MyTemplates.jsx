@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { FaPen, FaRegEye } from "react-icons/fa";
+import { Link } from "react-router";
+
 import {
   Table,
   TableBody,
@@ -90,9 +92,12 @@ const MyTemplates = () => {
                     {new Date(template.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    <Button>
-                      <FaRegEye />
-                    </Button>
+                    {/* View button */}
+                    <Link to={`/temp-tabs/${template.id}`}>
+                      <Button size="small">
+                        <FaRegEye />
+                      </Button>
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <Button>

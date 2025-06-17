@@ -23,20 +23,19 @@ const EditTemplate = () => {
   const { templateId } = useParams();
   const axiosSecure = useAxiosSecure();
 
-  // 1.
+  // 1) Initialize RHF with an empty questions array
   const {
     register,
     handleSubmit,
     control,
-    reset,
+    reset, // we’ll use this to seed the form
     formState: { isSubmitting },
   } = useForm({
     defaultValues: { questions: [] },
-    shouldUnregister: true,
+    shouldUnregister: true, // unmounting fields get removed from form state
   });
 
-  // 2.
-
+  // 2) Fetch the template
   const {
     data: template,
     isLoading,
@@ -44,29 +43,28 @@ const EditTemplate = () => {
   } = useQuery({
     queryKey: ["single-template", templateId],
     queryFn: async () => {
-      const templateRes = await axiosSecure.get(`/template/${templateId}`);
-      return templateRes.data;
+      const { data } = await axiosSecure.get(`/template/${templateId}`);
+      return data;
     },
   });
 
-  // 3.
-
+  // 3) When template arrives, reset the form to its questions
   useEffect(() => {
     if (template) {
       reset({ questions: template.questions });
     }
   }, [template, reset]);
 
-  // 4.
-
+  // 4) Watch to get live form values (for conditional UI)
   const formValues = useWatch({ control, name: "questions" });
 
-  // 5.
-
+  // 5) Submission handler
   const onSubmit = (data) => {
     console.log("Question data:", data.questions);
+    // TODO: call your API to save changes
   };
 
+  // Loading / error states
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
@@ -74,7 +72,6 @@ const EditTemplate = () => {
       </Box>
     );
   }
-
   if (isError || !template) {
     return (
       <Alert severity="error" sx={{ mt: 2 }}>
@@ -95,14 +92,12 @@ const EditTemplate = () => {
             <strong>Title:</strong> {template.title}
           </Typography>
           <Typography variant="body1">
-            <strong>Topic:</strong>
-            {template.topic?.name || "No topic"}
+            <strong>Topic:</strong> {template.topic?.name || "No topic"}
           </Typography>
         </Box>
       </Paper>
 
       {/* Questions Section */}
-
       <Typography
         variant="h6"
         gutterBottom
@@ -115,7 +110,6 @@ const EditTemplate = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {template.questions.map((_, index) => {
           // Determine the currently selected type
-
           const currentType =
             formValues?.[index]?.type ?? template.questions[index].type;
 
@@ -132,6 +126,7 @@ const EditTemplate = () => {
               >
                 Question {index + 1}
               </Typography>
+
               {/* Title */}
               <TextField
                 fullWidth
@@ -140,16 +135,18 @@ const EditTemplate = () => {
                 margin="normal"
                 {...register(`questions.${index}.title`)}
               />
+
               {/* Description */}
               <TextField
                 fullWidth
-                label="Question Type"
+                label="Description"
                 defaultValue={template.questions[index].description}
                 margin="normal"
                 multiline
                 rows={3}
                 {...register(`questions.${index}.description`)}
               />
+
               {/* Type selector */}
               <TextField
                 select
@@ -164,13 +161,13 @@ const EditTemplate = () => {
                 <MenuItem value="INTEGER">Integer</MenuItem>
                 <MenuItem value="CHOICE">Multiple Choice</MenuItem>
               </TextField>
-              {/* Options only when CHOICE   */}
+
+              {/* Options only when CHOICE */}
               {currentType === "CHOICE" && (
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="body2" gutterBottom>
                     Options:
                   </Typography>
-
                   {template.questions[index].options.map((_, optIdx) => (
                     <Box key={optIdx} display="flex" alignItems="center" mb={1}>
                       <TextField
@@ -189,15 +186,14 @@ const EditTemplate = () => {
                   </Button>
                 </Box>
               )}
+
               {/* Checkboxes */}
               <Box sx={{ mt: 2 }}>
                 {currentType === "CHOICE" && (
                   <FormControlLabel
                     control={
                       <Checkbox
-                        defaultChecked={
-                          template.questions[index].allowedMultiple
-                        }
+                        defaultChecked={template.questions[index].allowMultiple}
                         {...register(`questions.${index}.allowMultiple`)}
                       />
                     }
@@ -216,7 +212,6 @@ const EditTemplate = () => {
               </Box>
 
               {/* Delete Question */}
-
               <Box display="flex" justifyContent="flex-end" mt={2}>
                 <Button variant="contained" color="error">
                   Delete Question
@@ -227,7 +222,6 @@ const EditTemplate = () => {
         })}
 
         {/* Save Changes */}
-
         <Box display="flex" justifyContent="flex-end" mt={4} gap={2}>
           <Button variant="outlined" disabled={isSubmitting}>
             Cancel

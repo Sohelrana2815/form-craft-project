@@ -2,7 +2,7 @@
 const TemplateSettings = () => {
     return (
         <div>
-            
+            General Settings
         </div>
     );
 };

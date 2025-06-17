@@ -9,6 +9,7 @@ import AdminRoute from "./AdminRoute";
 import UserProfile from "../pages/profile/UserProfile";
 import CreateTemplateWithQuestions from "../components/questions/CreateTemplateWithQuestions";
 import PersonalPage from "../pages/personalPage/PersonalPage";
+import TempDetailTabs from "../pages/personalPage/myTemplates/templateDetails/TempDetailTabs";
 
 const MainRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const MainRoutes = () => {
           <Route index element={<Home />} />
           <Route path="sign-up" element={<SignupPage />} />
           <Route path="login" element={<LoginPage />} />
+          {/* Manage user route */}
           <Route
             path="manage-users"
             element={
@@ -43,6 +45,8 @@ const MainRoutes = () => {
             }
           />
           <Route path="personal-page" element={<PersonalPage />} />
+          {/* Temp-Detail-tabs  */}
+          <Route path="temp-tabs/:templateId" element={<TempDetailTabs />} />
         </Route>
       </Routes>
     </>

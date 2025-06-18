@@ -100,9 +100,11 @@ const MyTemplates = () => {
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Button>
-                      <FaPen />
-                    </Button>
+                    <Link to={`/temp-tabs/${template.id}?tab=1`}>
+                      <Button>
+                        <FaPen />
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))}

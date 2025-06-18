@@ -1,6 +1,5 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import { useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import TemplateSettings from "./TemplateSettings";
 import EditTemplate from "./EditTemplate";
 import Results from "./Results";
@@ -8,13 +7,19 @@ import TemplateAnalytics from "./TemplateAnalytics";
 
 const TempDetailTabs = () => {
   const { templateId } = useParams();
-  const [activeTab, setActiveTab] = useState(0);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // GET tab index from URL or default to 0
+
+  const tabParam = searchParams.get("tab");
+
+  const activeTab = tabParam ? parseInt(tabParam) : 0;
 
   const handleTabChange = (_, newValue) => {
-    setActiveTab(newValue);
+    // Update the url when tab changes
+    setSearchParams({ tab: newValue });
   };
-
-  // Data
 
   return (
     <Box sx={{ p: 3 }}>

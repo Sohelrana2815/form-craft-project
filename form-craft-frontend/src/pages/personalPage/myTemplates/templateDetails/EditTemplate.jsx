@@ -17,13 +17,13 @@ import {
   Divider,
 } from "@mui/material";
 import { FaPen } from "react-icons/fa";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, useFieldArray } from "react-hook-form"; // ✅ New: imported useFieldArray
 
 const EditTemplate = () => {
   const { templateId } = useParams();
   const axiosSecure = useAxiosSecure();
 
-  // 1.
+  // 1) Initialize RHF
   const {
     register,
     handleSubmit,
@@ -35,34 +35,34 @@ const EditTemplate = () => {
     shouldUnregister: true,
   });
 
-  // 2.
+  // ✅ New: setup useFieldArray for "questions"
+  const { fields, remove } = useFieldArray({
+    control,
+    name: "questions",
+  });
 
+  // 2) Fetch the template
   const {
     data: template,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["single-template", templateId],
-    queryFn: async () => {
-      const templateRes = await axiosSecure.get(`/template/${templateId}`);
-      return templateRes.data;
-    },
+    queryFn: async () =>
+      (await axiosSecure.get(`/template/${templateId}`)).data,
   });
 
-  // 3.
-
+  // 3) Seed form on data arrival
   useEffect(() => {
     if (template) {
       reset({ questions: template.questions });
     }
   }, [template, reset]);
 
-  // 4.
-
+  // 4) Watch to know which type is selected
   const formValues = useWatch({ control, name: "questions" });
 
-  // 5.
-
+  // 5) Submission handler
   const onSubmit = (data) => {
     console.log("Question data:", data.questions);
   };
@@ -95,14 +95,12 @@ const EditTemplate = () => {
             <strong>Title:</strong> {template.title}
           </Typography>
           <Typography variant="body1">
-            <strong>Topic:</strong>
-            {template.topic?.name || "No topic"}
+            <strong>Topic:</strong> {template.topic?.name || "No topic"}
           </Typography>
         </Box>
       </Paper>
 
       {/* Questions Section */}
-
       <Typography
         variant="h6"
         gutterBottom
@@ -113,49 +111,42 @@ const EditTemplate = () => {
       <Divider sx={{ mb: 3 }} />
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        {template.questions.map((_, index) => {
-          // Determine the currently selected type
-
-          const currentType =
-            formValues?.[index]?.type ?? template.questions[index].type;
+        {fields.map((field, index) => {
+          // ✅ Changed: iterate over fields instead of template.questions
+          const currentType = formValues?.[index]?.type ?? field.type;
 
           return (
-            <Paper
-              key={template.questions[index].id}
-              elevation={2}
-              sx={{ p: 3, mb: 3 }}
-            >
-              <Typography
-                variant="subtitle1"
-                color="textSecondary"
-                gutterBottom
-              >
+            <Paper key={field.id} elevation={2} sx={{ p: 3, mb: 3 }}>
+              <Typography variant="subtitle1" gutterBottom>
                 Question {index + 1}
               </Typography>
+
               {/* Title */}
               <TextField
                 fullWidth
                 label="Question Title"
-                defaultValue={template.questions[index].title}
+                defaultValue={field.title}
                 margin="normal"
                 {...register(`questions.${index}.title`)}
               />
+
               {/* Description */}
               <TextField
                 fullWidth
-                label="Question Type"
-                defaultValue={template.questions[index].description}
+                label="Description"
+                defaultValue={field.description}
                 margin="normal"
                 multiline
                 rows={3}
                 {...register(`questions.${index}.description`)}
               />
+
               {/* Type selector */}
               <TextField
                 select
                 fullWidth
                 label="Question Type"
-                defaultValue={template.questions[index].type}
+                defaultValue={field.type}
                 margin="normal"
                 {...register(`questions.${index}.type`)}
               >
@@ -164,21 +155,22 @@ const EditTemplate = () => {
                 <MenuItem value="INTEGER">Integer</MenuItem>
                 <MenuItem value="CHOICE">Multiple Choice</MenuItem>
               </TextField>
-              {/* Options only when CHOICE   */}
+
+              {/* Options only when CHOICE */}
               {currentType === "CHOICE" && (
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="body2" gutterBottom>
                     Options:
                   </Typography>
-
-                  {template.questions[index].options.map((_, optIdx) => (
+                  {(field.options || []).map((_, optIdx) => (
                     <Box key={optIdx} display="flex" alignItems="center" mb={1}>
                       <TextField
-                        fullWidth
-                        defaultValue={template.questions[index].options[optIdx]}
                         size="small"
+                        fullWidth
+                        defaultValue={field.options[optIdx]}
                         {...register(`questions.${index}.options.${optIdx}`)}
                       />
+                      {/* You can hook up remove(optionIndex) here if you use nested useFieldArray */}
                       <Button color="error" sx={{ ml: 1 }}>
                         <FiMinusCircle />
                       </Button>
@@ -189,15 +181,14 @@ const EditTemplate = () => {
                   </Button>
                 </Box>
               )}
+
               {/* Checkboxes */}
               <Box sx={{ mt: 2 }}>
                 {currentType === "CHOICE" && (
                   <FormControlLabel
                     control={
                       <Checkbox
-                        defaultChecked={
-                          template.questions[index].allowedMultiple
-                        }
+                        defaultChecked={field.allowMultiple}
                         {...register(`questions.${index}.allowMultiple`)}
                       />
                     }
@@ -207,7 +198,7 @@ const EditTemplate = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      defaultChecked={template.questions[index].showInList}
+                      defaultChecked={field.showInList}
                       {...register(`questions.${index}.showInList`)}
                     />
                   }
@@ -216,9 +207,12 @@ const EditTemplate = () => {
               </Box>
 
               {/* Delete Question */}
-
               <Box display="flex" justifyContent="flex-end" mt={2}>
-                <Button variant="contained" color="error">
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => remove(index)} // ✅ New: remove this question from UI
+                >
                   Delete Question
                 </Button>
               </Box>
@@ -226,8 +220,7 @@ const EditTemplate = () => {
           );
         })}
 
-        {/* Save Changes */}
-
+        {/* Action Buttons */}
         <Box display="flex" justifyContent="flex-end" mt={4} gap={2}>
           <Button variant="outlined" disabled={isSubmitting}>
             Cancel

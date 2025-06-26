@@ -16,7 +16,7 @@ import {
   Paper,
   Divider,
 } from "@mui/material";
-import { FaPen } from "react-icons/fa";
+import { FaPen, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { useForm, useWatch, useFieldArray } from "react-hook-form"; // ✅ New: imported useFieldArray
 
 const EditTemplate = () => {
@@ -84,7 +84,7 @@ const EditTemplate = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: "auto", p: 3 }}>
+    <Box className="max-w-4xl mx-auto">
       {/* Template Details */}
       <Paper elevation={1} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" gutterBottom>
@@ -208,13 +208,12 @@ const EditTemplate = () => {
 
               {/* Delete Question */}
               <Box display="flex" justifyContent="flex-end" mt={2}>
-                <Button
-                  variant="contained"
-                  color="error"
+                <button
+                  className="text-red-600 text-lg hover:bg-gray-100 rounded-full p-2 hover:cursor-pointer"
                   onClick={() => remove(index)} // ✅ New: remove this question from UI
                 >
-                  Delete Question
-                </Button>
+                  <FaTrashAlt />
+                </button>
               </Box>
             </Paper>
           );

@@ -267,11 +267,12 @@ exports.getPublicTemplates = async (req, res) => {
   }
 };
 
-// GET A SINGLE TEMPLATE
+// GET A SINGLE TEMPLATE BY ID
 
 exports.getTemplateById = async (req, res) => {
   const id = Number(req.params.id);
-  if (!Number.isInteger(id) || i <= 0) {
+  console.log("GET TEMPLATE ID", id);
+  if (!Number.isInteger(id) || id <= 0) {
     return res
       .status(400)
       .json({ message: "Template ID must be a positive integer" });
@@ -281,8 +282,184 @@ exports.getTemplateById = async (req, res) => {
     const template = await prisma.template.findUnique({
       where: { id },
       include: {
-        topic:{select:{}}
-      }
+        topic: { select: { id: true, name: true } },
+        creator: { select: { id: true, username: true, email: true } },
+        tags: { select: { id: true, name: true } },
+        questions: {
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            type: true,
+            allowMultiple: true,
+            order: true,
+            showInList: true,
+            options: true,
+          },
+        },
+        permissions: {
+          select: {
+            user: { select: { id: true, username: true } },
+          },
+        },
+      },
     });
-  } catch (err) {}
+
+    if (!template) {
+      return res.status(404).json({ message: "Template not found" });
+    }
+
+    // Enforce RESTRICTED access, if you need it
+    if (template.accessType === "RESTRICTED") {
+      const userId = req.user.id;
+      const isCreator = template.creatorId === userId;
+      const isAllowed = template.permissions.some((p) => p.user.id === userId);
+
+      if (!isCreator && !isAllowed) {
+        return res.status(403).json({
+          message: "You do not have permission to view this template.",
+        });
+      }
+    }
+
+    return res.status(200).json(template);
+  } catch (err) {
+    console.error("Error fetching template:", err);
+    return res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+// GET USER CREATED TEMPLATES
+exports.getMyTemplates = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const templates = await prisma.template.findMany({
+      where: { creatorId: userId },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, title: true, createdAt: true },
+    });
+    return res.status(200).json(templates);
+  } catch (error) {
+    console.error("Error fetching my templates:", err);
+    return res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+// UPDATE TEMPLATE QUESTIONS
+
+exports.updateTemplateQuestions = async (req, res) => {
+  const templateId = Number(req.params.id);
+  const userId = req.user.id;
+  const questionsToUpdate = req.body;
+
+  console.log(
+    "templateId:",
+    templateId,
+    "userId:",
+    userId,
+    "Questions:",
+    questionsToUpdate
+  );
+
+  // Validate template ID
+
+  if (!Number.isInteger(templateId) || templateId <= 0) {
+    return res.status(400).json({ message: "Invalid template ID" });
+  }
+
+  // Validate request body
+
+  if (!Array.isArray(questionsToUpdate) || questionsToUpdate.length === 0) {
+    return res.status(400).json({
+      message: "Request body must be a non-empty array of question objects ",
+    });
+  }
+
+  try {
+    // 1. Verify template exists and user has permission
+
+    const template = await prisma.template.findUnique({
+      where: { id: templateId },
+      select: {
+        creatorId: true,
+        accessType: true,
+        permissions: { select: { userId: true } },
+      },
+    });
+
+    if (!template) {
+      return res.status(404).json({ message: "Template not found" });
+    }
+
+    // Authorization check
+    const isCreator = template.creatorId === userId;
+    const hasPermission = template.permissions.some((p) => p.userId === userId);
+
+    if (template.accessType === "RESTRICTED" && !isCreator && !hasPermission) {
+      return res.status(403).json({
+        message: "You don't have permission to modify this template",
+      });
+    }
+
+    // 2. Validate all question IDs belong to this template
+
+    const existingQuestionIds = await prisma.question
+      .findMany({
+        where: { templateId },
+        select: { id: true },
+      })
+      .then((questions) => questions.map((q) => q.id));
+
+    const invalidQuestionIds = questionsToUpdate
+      .filter((q) => !existingQuestionIds.includes(q.id))
+      .map((q) => q.id);
+
+    if (invalidQuestionIds.length > 0) {
+      return res.status(400).json({
+        message: `Invalid question IDs: ${invalidQuestionIds.join(",")}`,
+        validQuestionIds: existingQuestionIds,
+      });
+    }
+
+    // 3. Prepare update operations
+
+    const updateOperations = questionsToUpdate.map((question) => {
+      const updateData = {
+        title: question.title,
+        description: question.description,
+        type: question.type,
+        order: question.order,
+        showInList: question.showInList,
+        // Handle allowMultiple based on question type
+        allowMultiple:
+          question.type === "CHOICE" ? Boolean(question.allowMultiple) : false,
+
+        options:
+          question.type === "CHOICE" && Array.isArray(question.options)
+            ? question.options
+            : [],
+      };
+      return prisma.question.update({
+        where: { id: question.id },
+        data: updateData,
+      });
+    });
+
+    // 4. Execute all updates in a single transaction
+
+    const updatedQuestions = await prisma.$transaction(updateOperations);
+
+    return res.status(200).json({
+      message: "Questions updated successfully",
+      updatedCount: updatedQuestions.length,
+      questions: updatedQuestions,
+    });
+  } catch (error) {
+    console.error("Error updating questions:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error.message,
+    });
+  }
 };
